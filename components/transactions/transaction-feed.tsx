@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 
@@ -28,6 +28,7 @@ export function TransactionFeed({
     useState<TransactionRow[]>(initialTransactions);
 
   useEffect(() => {
+    const supabase = createClient();
     const channel = supabase
       .channel(`transactions:${projectId}`)
       .on(

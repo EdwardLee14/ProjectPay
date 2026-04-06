@@ -13,11 +13,11 @@ import {
 import { HardHat, Home } from "lucide-react";
 
 export function RoleSelector({
-  clerkId,
+  supabaseId,
   name,
   email,
 }: {
-  clerkId: string;
+  supabaseId: string;
   name: string;
   email: string;
 }) {
@@ -30,7 +30,7 @@ export function RoleSelector({
       const res = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ clerkId, name, email, role }),
+        body: JSON.stringify({ supabaseId, name, email, role }),
       });
 
       if (res.ok) {
