@@ -7,14 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Icon } from "@/components/ui/icon";
+import shared from "@/styles/shared.module.css";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -45,21 +39,25 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Sign in to ProjectPay</CardTitle>
-          <CardDescription>
+    <main className={shared.authPage}>
+      <div className={shared.authCard}>
+        <div className={shared.authHeader}>
+          <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+          <h1 className={shared.authTitle}>Sign in</h1>
+          <p className={shared.authSubtitle}>
             Enter your email and password to continue
-          </CardDescription>
-        </CardHeader>
+          </p>
+        </div>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <div className={shared.authBody}>
             {error && (
-              <p className="text-sm text-destructive text-center">{error}</p>
+              <div className={shared.errorBanner}>
+                <Icon name="error" className="text-destructive text-lg" />
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className={shared.fieldGroup}>
+              <Label htmlFor="email" className={shared.fieldLabel}>Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -69,8 +67,8 @@ export default function SignInPage() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className={shared.fieldGroup}>
+              <Label htmlFor="password" className={shared.fieldLabel}>Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -79,20 +77,18 @@ export default function SignInPage() {
                 required
               />
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
+          </div>
+          <div className={shared.authFooter}>
+            <Button variant="pill" type="submit" className="w-full" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
             </Button>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className={shared.authFooterText}>
               Don&apos;t have an account?{" "}
-              <Link href="/sign-up" className="text-primary hover:underline">
-                Sign up
-              </Link>
+              <Link href="/sign-up" className={shared.authLink}>Sign up</Link>
             </p>
-          </CardFooter>
+          </div>
         </form>
-      </Card>
-    </div>
+      </div>
+    </main>
   );
 }

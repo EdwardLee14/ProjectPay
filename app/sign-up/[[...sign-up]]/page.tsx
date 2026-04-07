@@ -7,14 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Icon } from "@/components/ui/icon";
+import shared from "@/styles/shared.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -49,21 +43,23 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Create your account</CardTitle>
-          <CardDescription>
-            Get started with ProjectPay
-          </CardDescription>
-        </CardHeader>
+    <main className={shared.authPage}>
+      <div className={shared.authCard}>
+        <div className={shared.authHeader}>
+          <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+          <h1 className={shared.authTitle}>Create your account</h1>
+          <p className={shared.authSubtitle}>Get started with ProjectPay</p>
+        </div>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <div className={shared.authBody}>
             {error && (
-              <p className="text-sm text-destructive text-center">{error}</p>
+              <div className={shared.errorBanner}>
+                <Icon name="error" className="text-destructive text-lg" />
+                <p className="text-sm text-destructive">{error}</p>
+              </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+            <div className={shared.fieldGroup}>
+              <Label htmlFor="name" className={shared.fieldLabel}>Full Name</Label>
               <Input
                 id="name"
                 type="text"
@@ -73,8 +69,8 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className={shared.fieldGroup}>
+              <Label htmlFor="email" className={shared.fieldLabel}>Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -84,8 +80,8 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className={shared.fieldGroup}>
+              <Label htmlFor="password" className={shared.fieldLabel}>Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -96,20 +92,18 @@ export default function SignUpPage() {
                 minLength={6}
               />
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={loading}>
+          </div>
+          <div className={shared.authFooter}>
+            <Button variant="pill" type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className={shared.authFooterText}>
               Already have an account?{" "}
-              <Link href="/sign-in" className="text-primary hover:underline">
-                Sign in
-              </Link>
+              <Link href="/sign-in" className={shared.authLink}>Sign in</Link>
             </p>
-          </CardFooter>
+          </div>
         </form>
-      </Card>
-    </div>
+      </div>
+    </main>
   );
 }

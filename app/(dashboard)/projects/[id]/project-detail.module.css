@@ -1,0 +1,87 @@
+/* Project detail page styles */
+
+.headerRow {
+  @apply flex flex-col md:flex-row md:items-center justify-between gap-4;
+}
+
+.titleRow {
+  @apply flex items-center gap-3;
+}
+
+.title {
+  @apply font-headline text-3xl font-bold text-foreground;
+}
+
+.metaSummary {
+  @apply text-muted-foreground text-sm;
+}
+
+.actionBtn {
+  @apply bg-surface-container-low border border-outline-variant/20 text-foreground px-5 py-2.5 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-accent transition-colors;
+}
+
+/* Budget overview */
+.budgetBar {
+  @apply bg-primary-container border border-off-black p-6 text-white;
+}
+
+.budgetBarInner {
+  @apply flex flex-col md:flex-row md:items-center gap-6;
+}
+
+.budgetMetrics {
+  @apply flex items-center gap-8 text-sm;
+}
+
+.budgetMetricLabel {
+  @apply text-white/60 text-[10px] uppercase tracking-wider block mb-1;
+}
+
+.budgetMetricSpent {
+  @apply text-lg font-bold text-secondary-fixed;
+}
+
+.budgetMetricRemaining {
+  @apply text-lg font-bold;
+}
+
+.budgetMetricFunded {
+  @apply text-lg font-bold text-primary-fixed-dim;
+}
+
+.budgetUsageText {
+  @apply text-[10px] text-white/60;
+}
+
+/* Budget categories */
+.budgetPanel {
+  @apply bg-card border border-off-black/80 p-8;
+}
+
+.budgetPanelTitle {
+  @apply font-headline text-lg font-bold mb-6;
+}
+
+.categoryList {
+  @apply space-y-5;
+}
+
+.categoryRow {
+  @apply space-y-2;
+}
+
+.categoryHeader {
+  @apply flex justify-between text-xs font-semibold;
+}
+
+.categoryName {
+  @apply text-foreground;
+}
+
+.categoryPct {
+  @apply font-bold;
+}
+
+.categoryMeta {
+  @apply flex justify-between text-[10px] text-muted-foreground font-medium;
+}

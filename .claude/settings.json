@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Edit(/.claude/skills/frontend-design/**)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:guild.com)",
+      "Bash(curl -s https://guild.com/)",
+      "Bash(curl -s \"https://guild.com/_next/static/css/e0138137f70eff47.css\")",
+      "Bash(curl -s \"https://guild.com/_next/static/css/77e9875c9793726b.css\")",
+      "Bash(curl -s \"https://guild.com/_next/static/css/77e9875c9793726b.css?dpl=dpl_C4ZHNWndY7oXebq2nwCsgu33Su16\")",
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/nam/Documents/Projects/ProjectPay/.claude/skills"
+    ]
+  }
+}

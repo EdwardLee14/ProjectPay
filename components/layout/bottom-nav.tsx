@@ -16,7 +16,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white shadow-[0_-4px_20px_-2px_rgba(17,28,45,0.04)] z-50 flex justify-around items-center px-4 h-16">
+    <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-guild-taupe z-50 flex justify-around items-center px-4 h-16">
       {items.slice(0, 2).map((item) => {
         const active =
           item.href === "/dashboard"
@@ -41,7 +41,7 @@ export function BottomNav() {
 
       <Link
         href="/projects/new"
-        className="mb-8 p-3 bg-primary rounded-full text-primary-foreground shadow-lg active:scale-90 transition-transform"
+        className="mb-8 p-3 bg-primary rounded-full text-primary-foreground active:scale-90 transition-transform"
       >
         <Icon name="add" />
       </Link>

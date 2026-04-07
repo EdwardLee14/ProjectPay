@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { HardHat, Home } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
 
 export function RoleSelector({
   supabaseId,
@@ -54,7 +54,7 @@ export function RoleSelector({
           onClick={() => selectRole("CONTRACTOR")}
           disabled={isSubmitting}
         >
-          <HardHat className="h-8 w-8" />
+          <Icon name="construction" className="text-3xl" />
           <span className="text-lg font-medium">I&apos;m a Contractor</span>
         </Button>
         <Button
@@ -63,7 +63,7 @@ export function RoleSelector({
           onClick={() => selectRole("CLIENT")}
           disabled={isSubmitting}
         >
-          <Home className="h-8 w-8" />
+          <Icon name="home" className="text-3xl" />
           <span className="text-lg font-medium">I&apos;m a Homeowner</span>
         </Button>
       </CardContent>

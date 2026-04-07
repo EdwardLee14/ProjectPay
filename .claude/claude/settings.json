@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Edit(/.claude/skills/frontend-design/**)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:guild.com)"
+    ],
+    "additionalDirectories": [
+      "/Users/nam/Documents/Projects/ProjectPay/.claude/skills",
+      "/Users/nam/Documents/Projects/ProjectPay/.claude"
+    ]
+  }
+}

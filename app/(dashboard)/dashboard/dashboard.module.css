@@ -1,0 +1,171 @@
+/* Dashboard page styles */
+
+.header {
+  @apply flex flex-col md:flex-row md:items-end justify-between gap-4;
+}
+
+.headerMeta {
+  @apply text-sm text-off-black/50;
+}
+
+/* KPI grid */
+.kpiGrid {
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-0 border border-off-black/80;
+}
+
+.kpiCell {
+  @apply p-5 lg:p-6 border-off-black/80;
+}
+
+.kpiCellBorderRight {
+  @apply lg:border-r;
+}
+
+.kpiCellBorderBottom {
+  @apply border-b lg:border-b-0;
+}
+
+/* Utilization bar */
+.utilization {
+  @apply border border-off-black/80 p-5;
+}
+
+.utilizationHeader {
+  @apply flex items-center justify-between mb-3;
+}
+
+.utilizationLabel {
+  @apply text-xs font-semibold text-off-black;
+}
+
+.utilizationPct {
+  @apply text-xs font-bold;
+}
+
+/* Content grid */
+.contentGrid {
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-6;
+}
+
+.projectsPanel {
+  @apply lg:col-span-7 border border-off-black/80;
+}
+
+.sidebar {
+  @apply lg:col-span-5 space-y-6;
+}
+
+/* Project row */
+.projectRow {
+  @apply block px-5 py-4 hover:bg-guild-cream/50 transition-colors;
+}
+
+.projectRowBorder {
+  composes: projectRow;
+  @apply border-b border-off-black/20;
+}
+
+.projectName {
+  @apply text-sm font-semibold text-off-black truncate transition-colors;
+}
+
+:global(.group):hover .projectName {
+  @apply text-primary;
+}
+
+.projectMeta {
+  @apply flex justify-between mt-1.5 text-[10px] text-off-black/60;
+}
+
+/* Quick action row */
+.actionRow {
+  @apply flex items-center gap-3 px-5 py-4 hover:bg-guild-cream/50 transition-colors;
+}
+
+.actionTitle {
+  @apply text-sm font-semibold text-off-black;
+}
+
+.actionDesc {
+  @apply text-[10px] text-off-black/60;
+}
+
+/* Summary row */
+.summaryRow {
+  @apply px-5 py-3.5 flex items-center justify-between;
+}
+
+.summaryLabel {
+  @apply text-xs text-off-black/70;
+}
+
+.summaryValue {
+  @apply text-sm font-bold text-off-black;
+}
+
+/* Transactions table */
+.transactionsPanel {
+  @apply border border-off-black/80;
+}
+
+.txToolbar {
+  @apply flex gap-1;
+}
+
+.txVendor {
+  @apply text-sm font-medium text-off-black;
+}
+
+.txDate {
+  @apply text-[10px] text-off-black/60;
+}
+
+.txProject {
+  @apply text-sm text-off-black;
+}
+
+.txCategory {
+  @apply text-[10px] font-bold text-off-black/60 uppercase tracking-wide;
+}
+
+.txAmount {
+  @apply font-headline text-sm font-bold text-off-black;
+}
+
+/* Empty state */
+.emptyGrid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-0 border border-off-black/80;
+}
+
+.emptyHero {
+  @apply bg-guild-mint p-8 lg:p-12 space-y-5;
+}
+
+.emptyHeroTitle {
+  @apply font-headline text-3xl font-bold text-white;
+}
+
+.emptyHeroDesc {
+  @apply text-sm text-white/60 leading-relaxed max-w-sm;
+}
+
+.emptySteps {
+  @apply bg-white border-l border-off-black/80;
+}
+
+.emptyStep {
+  @apply flex items-start gap-4 px-6 py-5;
+}
+
+.emptyStepBorder {
+  composes: emptyStep;
+  @apply border-b border-off-black/20;
+}
+
+.emptyStepTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.emptyStepDesc {
+  @apply text-xs text-off-black/50 mt-0.5;
+}
