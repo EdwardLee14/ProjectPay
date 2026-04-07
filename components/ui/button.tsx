@@ -17,6 +17,13 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        "text-cta":
+          "text-foreground font-semibold underline decoration-2 underline-offset-4 hover:decoration-primary",
+        pill: "bg-off-black text-guild-cream px-8 py-3 rounded-full font-semibold border border-off-black hover:bg-transparent hover:text-off-black transition-colors",
+        "pill-orange":
+          "bg-primary text-white px-8 py-3 rounded-full font-semibold border border-primary hover:bg-transparent hover:text-primary transition-colors",
+        "pill-destructive":
+          "border border-destructive text-destructive px-6 py-2.5 rounded-full font-semibold hover:bg-destructive hover:text-white transition-colors",
       },
       size: {
         default: "h-10 px-4 py-2",

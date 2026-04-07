@@ -1,0 +1,365 @@
+/* Landing page styles */
+
+/* Navigation */
+.siteHeader {
+  @apply fixed top-0 w-full bg-guild-cream z-50 border-b border-off-black/10;
+}
+
+.headerInner {
+  @apply max-w-[1440px] mx-auto px-6 lg:px-10 h-16 flex items-center justify-between;
+}
+
+.logo {
+  @apply font-headline text-xl font-extrabold text-off-black;
+}
+
+.navGroup {
+  @apply hidden md:flex items-center gap-8;
+}
+
+.navActions {
+  @apply flex items-center gap-4;
+}
+
+/* Hero */
+.hero {
+  @apply pt-32 pb-20 lg:pt-40 lg:pb-28 px-6 lg:px-10;
+}
+
+.heroGrid {
+  @apply max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center;
+}
+
+.heroContent {
+  @apply space-y-8;
+}
+
+.heroDesc {
+  @apply text-off-black/60 text-lg leading-relaxed max-w-md;
+}
+
+.heroCtas {
+  @apply flex items-center gap-4;
+}
+
+/* Stats row */
+.stats {
+  @apply px-6 lg:px-10 pb-20;
+}
+
+.statsGrid {
+  @apply max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16;
+}
+
+.statCell {
+  @apply pt-4;
+}
+
+.statLabel {
+  @apply text-sm font-bold uppercase tracking-[0.12em] text-off-black pb-3 mb-4 border-b-[3px] border-off-black;
+}
+
+.statValue {
+  @apply font-headline text-6xl lg:text-7xl font-extrabold tracking-tight text-off-black;
+}
+
+.statDesc {
+  @apply text-sm mt-3 leading-relaxed text-off-black/70;
+}
+
+/* Section: How It Works */
+.howItWorks {
+  @apply px-6 lg:px-10 py-20 lg:py-28 relative overflow-hidden;
+  background-color: #F8F2E9;
+}
+
+.howItWorksBg {
+  @apply absolute inset-0 pointer-events-none w-full h-full;
+}
+
+.howItWorksBg2 {
+  display: none;
+}
+
+.stepsGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+.stepCard {
+  @apply border-[3px] border-off-black overflow-hidden flex flex-col;
+}
+
+.stepTop {
+  @apply bg-guild-peach p-6 flex items-center justify-center;
+  height: 240px;
+}
+
+.stepBottom {
+  @apply bg-guild-cream p-6 flex-1;
+}
+
+.stepNum {
+  @apply font-headline text-sm font-extrabold block mb-3;
+}
+
+.stepTitle {
+  @apply font-headline text-lg font-bold mb-2;
+}
+
+.stepDesc {
+  @apply text-sm leading-relaxed;
+}
+
+/* Two-col section */
+.twoColSection {
+  @apply px-6 lg:px-10 py-20 lg:py-28;
+}
+
+.twoColGrid {
+  @apply max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start;
+}
+
+.sectionContent {
+  @apply space-y-8;
+}
+
+/* Feature list (For Contractors — dark green cards) */
+.featureList {
+  @apply space-y-3;
+}
+
+.featureItem {
+  @apply bg-guild-mint border-[3px] border-off-black p-5 flex gap-4 items-center;
+}
+
+.featureItemBorder {
+  composes: featureItem;
+}
+
+.featureTitle {
+  @apply font-headline text-sm font-bold text-white mb-1;
+}
+
+.featureDesc {
+  @apply text-xs text-white/80 leading-relaxed;
+}
+
+.featureIcon {
+  @apply text-3xl text-white flex-shrink-0;
+}
+
+/* Feature grid (For Clients) */
+.featureGrid {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-3;
+}
+
+.featureGridCell {
+  @apply p-6 border-[3px] border-off-black;
+}
+
+.featureGridCellBorderBottom {
+  composes: featureGridCell;
+}
+
+.featureGridCellBorderRight {
+  composes: featureGridCell;
+}
+
+.featureGridIcon {
+  @apply text-2xl mb-4;
+}
+
+.featureGridTitle {
+  @apply font-headline text-sm font-bold mb-1;
+}
+
+.featureGridDesc {
+  @apply text-xs leading-relaxed text-off-black/70;
+}
+
+/* Footer (merged with trust/Stripe section) */
+.footer {
+  @apply bg-off-black pt-10 pb-8 px-6 lg:px-10;
+}
+
+.footerTrust {
+  @apply max-w-[1440px] mx-auto mb-8;
+}
+
+.trustTitle {
+  @apply font-headline text-xl lg:text-2xl font-bold text-guild-cream tracking-tight leading-tight;
+}
+
+.trustDesc {
+  @apply text-guild-cream/60 mt-2 max-w-lg leading-relaxed text-xs;
+}
+
+.footerInner {
+  @apply max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pt-10 border-t border-guild-cream/10;
+}
+
+.footerBrand {
+  @apply font-headline text-sm font-extrabold text-guild-cream;
+}
+
+.footerSub {
+  @apply text-[10px] text-guild-cream/30;
+}
+
+.footerLinks {
+  @apply flex gap-8;
+}
+
+.footerLink {
+  @apply text-xs text-guild-cream/40 hover:text-guild-cream transition-colors;
+}
+
+.footerCopyright {
+  @apply text-[11px] text-guild-cream/30;
+}
+
+/* Step card mockup diagrams */
+.mockupWrap {
+  @apply flex justify-center;
+}
+
+.mockupScreen {
+  @apply border-[3px] border-off-black bg-white p-3 space-y-2 text-left w-full max-w-[200px];
+}
+
+.mockupScreenDark {
+  @apply border-[3px] border-off-black bg-white p-3 space-y-2 text-left w-full max-w-[200px];
+}
+
+.mockupHeader {
+  @apply flex justify-between items-center mb-1;
+}
+
+.mockupLabel {
+  @apply text-[8px] text-off-black/40 uppercase tracking-wider font-bold;
+}
+
+.mockupLabelLight {
+  @apply text-[8px] text-white/40 uppercase tracking-wider font-bold;
+}
+
+.mockupTitle {
+  @apply text-[9px] font-bold text-off-black truncate;
+}
+
+.mockupBadge {
+  @apply text-[7px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5;
+}
+
+.mockupRow {
+  @apply flex justify-between items-center;
+}
+
+.mockupRowLabel {
+  @apply text-[7px] text-off-black/60;
+}
+
+.mockupRowValue {
+  @apply text-[7px] font-semibold text-off-black;
+}
+
+.mockupBar {
+  @apply h-1 bg-off-black/10 w-full mt-0.5;
+}
+
+.mockupBarFill {
+  @apply h-full bg-primary;
+}
+
+.mockupDashedRow {
+  @apply border border-dashed border-off-black/40 p-1.5 flex items-center justify-center;
+}
+
+.mockupCheck {
+  @apply text-[8px] text-secondary font-bold;
+}
+
+.mockupCheckLabel {
+  @apply text-[7px] text-off-black/50;
+}
+
+.mockupBtn {
+  @apply w-full bg-secondary text-white text-[7px] font-bold py-1.5 text-center;
+}
+
+.mockupCard {
+  @apply bg-off-black border border-off-black rounded-lg p-2.5 mb-2;
+}
+
+.mockupCardLabel {
+  @apply text-[7px] font-bold text-white/70 tracking-wider;
+}
+
+.mockupCardSub {
+  @apply text-[7px] text-white/30;
+}
+
+.mockupCardNum {
+  @apply text-[8px] text-white/40 font-mono tracking-widest;
+}
+
+.mockupLiveDot {
+  @apply w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse;
+}
+
+.mockupTxRow {
+  @apply flex justify-between items-center py-1.5 border-b border-off-black/10;
+}
+
+.mockupTxMerchant {
+  @apply text-[7px] text-white/80 font-medium;
+}
+
+.mockupTxCat {
+  @apply text-[6px] text-white/30;
+}
+
+.mockupTxAmount {
+  @apply text-[7px] text-guild-peach font-semibold;
+}
+
+.mockupCheckCircle {
+  @apply w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center mb-2;
+}
+
+.mockupCompleteBadge {
+  @apply text-[6px] font-bold uppercase tracking-wider bg-secondary/10 text-secondary px-1.5 py-0.5 mt-0.5;
+}
+
+.mockupReleaseBar {
+  @apply bg-secondary text-white text-[7px] font-bold px-3 py-1.5 text-center w-full max-w-[140px];
+}
+
+.mockupTimestamp {
+  @apply text-[6px] text-off-black/30 mt-1;
+}
+
+/* Dark/light text variants for dynamic bg cards */
+.textDark {
+  @apply text-off-black;
+}
+
+.textLight {
+  @apply text-white;
+}
+
+.textDarkMuted {
+  @apply text-off-black/60;
+}
+
+.textLightMuted {
+  @apply text-white/60;
+}
+
+.textDarkFaded {
+  @apply text-off-black/20;
+}
+
+.textLightFaded {
+  @apply text-white/20;
+}
