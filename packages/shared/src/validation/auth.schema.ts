@@ -15,3 +15,17 @@ export const onboardingSchema = z.object({
     country: z.string().default("US"),
   }).optional(),
 });
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  companyName: z.string().max(100).optional().nullable(),
+  phone: z.string().max(20).optional().nullable(),
+  billingAddress: z.object({
+    line1: z.string().min(1),
+    line2: z.string().optional(),
+    city: z.string().min(1),
+    state: z.string().length(2),
+    postalCode: z.string().min(5).max(10),
+    country: z.string().default("US"),
+  }).optional().nullable(),
+});

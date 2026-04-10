@@ -1,0 +1,76 @@
+/* Support page styles */
+
+.header {
+  @apply flex flex-col gap-4;
+}
+
+/* Getting Started */
+.sectionTitle {
+  @apply font-headline text-lg font-bold text-off-black mb-4;
+}
+
+.stepsGrid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+}
+
+.stepCard {
+  @apply rounded-2xl bg-guild-cream border border-border/30 p-6;
+}
+
+.stepInner {
+  @apply rounded-xl bg-white p-4 space-y-3;
+}
+
+.stepNumber {
+  @apply text-[10px] font-bold uppercase tracking-wider text-off-black;
+}
+
+.stepTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.stepDesc {
+  @apply text-xs text-off-black leading-relaxed;
+}
+
+/* FAQ */
+.faqGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+}
+
+.faqCard {
+  @apply rounded-2xl bg-white border border-border/30 overflow-hidden;
+}
+
+.faqAccent {
+  @apply h-1.5 rounded-t-2xl bg-secondary;
+}
+
+.faqBody {
+  @apply p-6 space-y-2;
+}
+
+.faqQuestion {
+  @apply text-sm font-bold text-off-black;
+}
+
+.faqAnswer {
+  @apply text-xs text-off-black leading-relaxed;
+}
+
+/* Contact */
+.contactCard {
+  @apply rounded-2xl bg-guild-mint p-8;
+}
+
+.contactTitle {
+  @apply font-headline text-xl font-bold text-white mb-1;
+}
+
+.contactDesc {
+  @apply text-sm text-white mb-4;
+}
+
+.contactLink {
+  @apply inline-flex items-center gap-2 text-white font-semibold text-sm underline decoration-2 underline-offset-4 hover:decoration-white/60 transition-colors;
+}

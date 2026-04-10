@@ -44,11 +44,11 @@ export default async function ProjectDetailPage({
   if (!isAuthorized) redirect("/dashboard");
 
   const totalSpent = project.budgetCategories.reduce(
-    (sum, cat) => sum + cat.spentAmount,
+    (sum, cat) => sum + Number(cat.spentAmount),
     0
   );
   const usagePct =
-    project.totalBudget > 0 ? (totalSpent / project.totalBudget) * 100 : 0;
+    Number(project.totalBudget) > 0 ? (totalSpent / Number(project.totalBudget)) * 100 : 0;
 
   const statusStyle: Record<string, string> = {
     DRAFT: "bg-muted text-muted-foreground",
@@ -77,8 +77,8 @@ export default async function ProjectDetailPage({
               </span>
             </div>
             <p className={s.metaSummary}>
-              Budget: {formatCurrency(project.totalBudget)} &middot; Funded:{" "}
-              {formatCurrency(project.fundedAmount)} &middot; Spent:{" "}
+              Budget: {formatCurrency(Number(project.totalBudget))} &middot; Funded:{" "}
+              {formatCurrency(Number(project.fundedAmount))} &middot; Spent:{" "}
               {formatCurrency(totalSpent)}
             </p>
           </div>
@@ -104,13 +104,13 @@ export default async function ProjectDetailPage({
               <div>
                 <span className={s.budgetMetricLabel}>Remaining</span>
                 <span className={s.budgetMetricRemaining}>
-                  {formatCurrency(project.totalBudget - totalSpent)}
+                  {formatCurrency(Number(project.totalBudget) - totalSpent)}
                 </span>
               </div>
               <div>
                 <span className={s.budgetMetricLabel}>Funded</span>
                 <span className={s.budgetMetricFunded}>
-                  {formatCurrency(project.fundedAmount)}
+                  {formatCurrency(Number(project.fundedAmount))}
                 </span>
               </div>
             </div>
@@ -146,8 +146,8 @@ export default async function ProjectDetailPage({
               <div className={s.categoryList}>
                 {project.budgetCategories.map((cat) => {
                   const pct =
-                    cat.allocatedAmount > 0
-                      ? (cat.spentAmount / cat.allocatedAmount) * 100
+                    Number(cat.allocatedAmount) > 0
+                      ? (Number(cat.spentAmount) / Number(cat.allocatedAmount)) * 100
                       : 0;
                   return (
                     <div key={cat.id} className={s.categoryRow}>
@@ -172,8 +172,8 @@ export default async function ProjectDetailPage({
                         />
                       </div>
                       <div className={s.categoryMeta}>
-                        <span>Spent: {formatCurrency(cat.spentAmount)}</span>
-                        <span>Budget: {formatCurrency(cat.allocatedAmount)}</span>
+                        <span>Spent: {formatCurrency(Number(cat.spentAmount))}</span>
+                        <span>Budget: {formatCurrency(Number(cat.allocatedAmount))}</span>
                       </div>
                     </div>
                   );
@@ -190,10 +190,10 @@ export default async function ProjectDetailPage({
               id: tx.id,
               projectId: tx.projectId,
               merchantName: tx.merchantName,
-              amount: tx.amount,
+              amount: Number(tx.amount),
               categoryCode: tx.categoryCode,
               note: tx.note,
-              receiptUrl: tx.receiptUrl,
+              receiptUrl: null,
               stripeTransactionId: tx.stripeTransactionId,
               createdAt: tx.createdAt.toISOString(),
             }))}
@@ -204,7 +204,7 @@ export default async function ProjectDetailPage({
           <ChangeOrderList
             changeOrders={project.changeOrders.map((co) => ({
               id: co.id,
-              amount: co.amount,
+              amount: Number(co.amount),
               reason: co.reason,
               status: co.status,
               createdAt: co.createdAt.toISOString(),

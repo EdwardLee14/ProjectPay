@@ -26,17 +26,17 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden md:flex flex-col h-screen w-64 left-0 top-0 fixed bg-guild-taupe border-r border-off-black/80 p-6 z-[60]">
-      <div className="mb-10">
-        <h1 className="font-headline font-extrabold text-xl text-foreground">
-          ProjectPay
+    <aside className="hidden md:flex flex-col h-screen w-64 left-0 top-0 fixed z-[60] bg-guild-peach">
+      <div className="px-6 pt-6 pb-8">
+        <h1 className="font-headline font-extrabold text-xl text-off-black">
+          VisiBill
         </h1>
-        <p className="text-[10px] text-muted-foreground font-bold tracking-[0.12em] uppercase mt-1">
-          Management Console
+        <p className="text-[10px] text-off-black/40 font-bold tracking-[0.12em] uppercase mt-1">
+          ProjectPay
         </p>
       </div>
 
-      <nav className="flex-1 space-y-1">
+      <nav className="flex-1 px-3 space-y-0.5">
         {mainNav.map((item) => {
           const active = isActive(item.href);
           return (
@@ -44,10 +44,10 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "px-4 py-3 flex items-center gap-3 rounded-lg transition-all duration-200",
+                "relative px-4 py-2.5 rounded-lg flex items-center gap-3 transition-all duration-200",
                 active
-                  ? "bg-white text-foreground"
-                  : "text-muted-foreground hover:bg-white/50 hover:text-foreground"
+                  ? "bg-white/60 text-off-black"
+                  : "text-off-black/60 hover:bg-white/30 hover:text-off-black"
               )}
             >
               <Icon
@@ -68,7 +68,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto pt-6 space-y-1">
+      <div className="mt-auto px-3 pb-6 pt-4 border-t border-off-black/10 space-y-0.5">
         {bottomNav.map((item) => {
           const active = isActive(item.href);
           return (
@@ -76,10 +76,10 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "px-4 py-2.5 flex items-center gap-3 rounded-lg text-sm font-medium transition-colors",
+                "relative px-4 py-2.5 rounded-lg flex items-center gap-3 text-sm font-medium transition-colors",
                 active
-                  ? "bg-white text-foreground"
-                  : "text-muted-foreground hover:bg-white/50 hover:text-foreground"
+                  ? "bg-white/60 text-off-black"
+                  : "text-off-black/60 hover:bg-white/30 hover:text-off-black"
               )}
             >
               <Icon name={item.icon} className="text-[20px]" filled={active} />

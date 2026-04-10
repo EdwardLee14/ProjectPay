@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth";
+import { createProjectSchema } from "@projectpay/shared/validation";
 
 export async function GET() {
   try {
@@ -20,8 +22,18 @@ export async function GET() {
           });
 
     return NextResponse.json(projects);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "Unauthorized: no user found"
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    console.error("[GET /api/projects]", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -36,21 +48,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = (await req.json()) as {
-      name: string;
-      totalBudget: number;
-      categories: { name: string; allocatedAmount: number }[];
-    };
+    const body = createProjectSchema.parse(await req.json());
 
     const project = await prisma.project.create({
       data: {
         name: body.name,
+        description: body.description,
+        clientEmail: body.clientEmail || undefined,
         totalBudget: body.totalBudget,
         contractorId: user.id,
         budgetCategories: {
           create: body.categories.map((cat) => ({
             name: cat.name,
             allocatedAmount: cat.allocatedAmount,
+            merchantCategoryCodes: cat.merchantCategoryCodes,
           })),
         },
       },
@@ -58,7 +69,20 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(project, { status: 201 });
-  } catch {
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: "Validation failed", details: error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+    if (
+      error instanceof Error &&
+      error.message === "Unauthorized: no user found"
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    console.error("[POST /api/projects]", error);
     return NextResponse.json(
       { error: "Failed to create project" },
       { status: 500 }

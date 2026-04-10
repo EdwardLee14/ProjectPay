@@ -16,14 +16,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error("STRIPE_WEBHOOK_SECRET is not configured");
+    return NextResponse.json(
+      { error: "Webhook not configured" },
+      { status: 500 }
+    );
+  }
+
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error(`Webhook signature verification failed: ${message}`);
@@ -42,18 +47,41 @@ export async function POST(req: NextRequest) {
 
       const project = await prisma.project.findFirst({
         where: { stripeCardId: cardId },
+        include: { budgetCategories: true },
       });
 
       if (project) {
-        await prisma.transaction.create({
-          data: {
-            projectId: project.id,
-            merchantName: transaction.merchant_data?.name ?? "Unknown Merchant",
-            amount: Math.abs(transaction.amount) / 100,
-            categoryCode: transaction.merchant_data?.category_code ?? "unknown",
-            stripeTransactionId: transaction.id,
-          },
-        });
+        const merchantCategoryCode =
+          transaction.merchant_data?.category_code ?? "unknown";
+        const amount = Math.abs(transaction.amount) / 100;
+
+        // Match transaction to a budget category by merchant category code
+        const matchedCategory = project.budgetCategories.find((cat) =>
+          cat.merchantCategoryCodes.includes(merchantCategoryCode)
+        );
+
+        await prisma.$transaction([
+          prisma.transaction.create({
+            data: {
+              projectId: project.id,
+              budgetCategoryId: matchedCategory?.id ?? null,
+              merchantName:
+                transaction.merchant_data?.name ?? "Unknown Merchant",
+              amount,
+              categoryCode: merchantCategoryCode,
+              stripeTransactionId: transaction.id,
+            },
+          }),
+          // Update spentAmount on the matched budget category
+          ...(matchedCategory
+            ? [
+                prisma.budgetCategory.update({
+                  where: { id: matchedCategory.id },
+                  data: { spentAmount: { increment: amount } },
+                }),
+              ]
+            : []),
+        ]);
       }
       break;
     }

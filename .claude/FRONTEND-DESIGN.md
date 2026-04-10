@@ -6,16 +6,21 @@ This document defines the visual design language for ProjectPay. Every component
 
 ## 1. Design Identity
 
-**Vision:** A fintech platform that directly adopts Guild.com's warm, editorial design language — applied to construction finance.
+**Vision:** A fintech platform that adopts Guild.com's warm, editorial design language — mixing rounded and sharp geometric forms for a layered, visually rich aesthetic applied to construction finance.
 
 **Core Principles:**
 - **Cream canvas for marketing, white for app:** Landing/marketing pages use `guild-cream` (`#F8F2E9`) as the primary background. Dashboard/app pages use white. All content sections on marketing pages share the same cream background — no alternating section colors.
 - **Dark forest green as signature color:** `guild-mint` (`#2D4A34`) is the dark green used for feature cards (For Contractors), stat cards, and accent blocks. Text on green backgrounds is always white. Icons on green backgrounds are white, large (`text-3xl`).
-- **Guild orange accent:** Primary accent is Guild's exact orange (`#E7651C`). Used for pill buttons, icon colors on light backgrounds, progress bar fills, and SVG decorative elements.
-- **Thick off-black borders:** All cards use `border-2 border-off-black` — thick, sharp, black. NO border-radius on cards (radius is `0px`). NO box shadows. Only buttons use `rounded-full`.
+- **Guild orange accent:** Primary accent is Guild's exact orange (`#E7651C`). Used for pill buttons, icon colors on light backgrounds, progress bar fills, accent strips, and SVG decorative elements.
+- **Mixed corner radii — rounded meets sharp:** Cards use `rounded-2xl` for a soft, modern feel. Buttons use `rounded-full` (pill shape). Geometric accent shapes (tags, badges, strips) can be sharp-cornered for contrast. The mix of rounded cards with sharp geometric accents creates visual depth.
+- **Layered, intricate cards:** Cards are not flat rectangles with text. They contain nested elements — accent color strips at the top, nested inner cards, geometric shapes, progress bars, and images. Think Guild Grow (accent strip, clean interior) and Guild Academy (background card with nested card + bar + image).
+- **No internal outlines:** Card interiors are clean — no inner borders or dividers between sections inside a card. Use spacing and background color shifts to create hierarchy within cards, not lines.
+- **All text is black:** ALL text including subtitles, descriptions, secondary labels, and metadata uses `text-foreground` (off-black `#170B01`). Never use grey text (`text-muted-foreground`) for subtitles or descriptions. Grey is only acceptable for placeholder text in inputs.
+- **Mixed font weights in text:** Combine bold and normal weight within the same line to create visual interest. Example: "Your Company's **Leadership Academy**" — mixing `font-normal` and `font-bold` inline. Use `<span>` or `<strong>` to vary weight mid-sentence.
 - **Pastel variety in card grids:** When cards sit in a grid, alternate backgrounds between `white`, `guild-peach`, `guild-mint` (dark green), and `guild-cream` for visual variety. Not all cards should be the same color.
-- **Dark pill buttons:** Primary CTA is `bg-off-black text-guild-cream rounded-full` with hover inversion. Use `<Button variant="pill">`. Orange pill variant for secondary CTAs.
+- **Dark pill buttons with arrows:** Primary CTA is `bg-off-black text-guild-cream rounded-full` with hover inversion. Buttons frequently include a right arrow (`→` or arrow icon) to indicate action. Position buttons at the bottom-left of cards, not centered. Use `<Button variant="pill">`.
 - **Editorial typography:** Large, confident headings (Manrope). Eyebrow labels uppercase with wide tracking. Text-link CTAs with underline and arrows for editorial contexts.
+- **Geometric shapes and icons inside cards:** Cards should contain geometric visual elements — colored tag/pill shapes, icon badges, small nested rectangles, progress bars, accent blocks. These create the layered, visually rich aesthetic seen in Guild Navigator's tag shapes and Guild Academy's nested elements.
 - **Icons float freely:** NO colored circles, squares, or backgrounds behind icons. Icons sit directly inline. On dark backgrounds, icons are white. On light backgrounds, icons are `text-off-black` or `text-primary`.
 - **SVG decorative arcs:** Flowing geometric curves (SVG `<path>` elements) can be used behind sections for visual interest. Use primary orange strokes at low opacity. No blurs, no gradients, no blobs.
 - **Trust-first:** This platform handles real money. Every pixel should reinforce professionalism, reliability, and transparency.
@@ -24,7 +29,7 @@ This document defines the visual design language for ProjectPay. Every component
 - Not a startup landing page (no hero gradients, no floating overlays, no check-circle badge rows)
 - Not a consumer app (no gamification, no badges, no streaks)
 - Not a generic dashboard template (no identical card grids, no shadow-soft cards, no 4-card icon grids)
-- Not "vibe coded" — no rounded card corners, no thin gray borders, no shadow elevation, no icon-in-circle patterns
+- Not "vibe coded" — no thin gray borders, no shadow elevation, no icon-in-circle patterns
 
 ---
 
@@ -43,7 +48,7 @@ This document defines the visual design language for ProjectPay. Every component
   --accent: 28 72% 79%              /* Guild peach #F6CA9E */
   --accent-foreground: 0 0% 0%      /* Black */
   --muted: 40 18% 80%               /* Guild taupe #D7D1BD */
-  --muted-foreground: 0 0% 25%      /* Dark gray */
+  --muted-foreground: 24 100% 4%    /* Off-black — same as foreground, NOT grey */
   --destructive: 0 65% 42%          /* Red */
   --destructive-foreground: 0 0% 100%
   --border: 40 18% 80%              /* Guild taupe */
@@ -53,7 +58,7 @@ This document defines the visual design language for ProjectPay. Every component
   --card-foreground: 24 100% 4%     /* Warm near-black */
   --popover: 0 0% 100%
   --popover-foreground: 0 0% 0%
-  --radius: 0.375rem
+  --radius: 0.75rem
 }
 ```
 
@@ -63,10 +68,10 @@ This document defines the visual design language for ProjectPay. Every component
 |-------|-----|-------|
 | `guild-cream` | `#F8F2E9` | Marketing page background, card headers (dashboard), section backgrounds |
 | `guild-taupe` | `#D7D1BD` | Sidebar background, footer background (marketing) |
-| `guild-peach` | `#F6CA9E` | Card top sections (How It Works), alert banners, warm accent cards in grids |
+| `guild-peach` | `#F6CA9E` | Accent strips on cards, warm accent cards in grids, nested card backgrounds |
 | `guild-mint` | `#2D4A34` | **Dark forest green** — feature cards (For Contractors), accent stat cards, KPI cells. Text on this bg must be white. Icons must be white. |
 | `guild-sky` | `#ACE5FD` | Light blue accent (use sparingly) |
-| `off-black` | `#170B01` | Card borders (`border-2 border-off-black`), dark pill buttons, body text |
+| `off-black` | `#170B01` | Pill button fills, ALL body text including subtitles and descriptions |
 | `primary-container` | `#1A1A1A` | Dark hero cards, metric cards, virtual card mockups |
 | `on-primary-container` | `#E7651C` | Orange text/icons on dark backgrounds |
 | `tertiary-fixed-dim` | `#E89B3F` | Amber warnings, pending states |
@@ -74,14 +79,14 @@ This document defines the visual design language for ProjectPay. Every component
 
 ### Color Usage Rules
 
-- **Primary (Guild orange #E7651C):** Pill button accents, icon color on light backgrounds, SVG decorative arcs, progress bar fills, eyebrow borders
+- **Primary (Guild orange #E7651C):** Pill button accents, icon color on light backgrounds, SVG decorative arcs, progress bar fills, card accent strips at top
 - **Guild-mint (dark green #2D4A34):** Feature cards, accent blocks. Always use white text and white icons on this background.
-- **Guild-peach (#F6CA9E):** Card top sections in "How It Works" style layouts, alert/pending banners, warm accent in card grids
-- **Guild-cream (#F8F2E9):** Marketing page background (uniform — no alternating), card headers in dashboard, sidebar active states
+- **Guild-peach (#F6CA9E):** Accent strips on card tops (Guild Grow style), nested card backgrounds, warm accent in card grids
+- **Guild-cream (#F8F2E9):** Marketing page background (uniform — no alternating), card body backgrounds, sidebar active states
 - **Secondary (forest green #3A6B4A):** Success states, funded amounts, progress bars under 80%, "Approve & Fund" buttons in mockups
-- **Off-black (#170B01):** Card borders (`border-2`), pill button fills, primary text color. This is the border color — not gray, not taupe.
-- **Shadows:** NONE. `shadow-soft` is set to `none`. Cards differentiate by border + background color only.
-- **Borders:** Always `border-2 border-off-black`. Thick and visible. Never thin gray borders.
+- **Off-black (#170B01):** Pill button fills, ALL text color including subtitles and secondary text. No grey text anywhere.
+- **Shadows:** NONE. `shadow-soft` is set to `none`. Cards differentiate by background color, accent strips, and layered internal elements.
+- **Text color rule:** Every piece of text — headings, body, subtitles, descriptions, labels, metadata — uses off-black (`text-foreground`). The ONLY exception is placeholder text in form inputs.
 
 ---
 
@@ -107,8 +112,9 @@ This document defines the visual design language for ProjectPay. Every component
 ### Typography Rules
 - All monetary amounts use `font-headline` regardless of size.
 - Table headers use Caption style: uppercase, wide tracking, small size.
-- Never use `font-bold` on body text for emphasis — use `font-medium` (500) or `font-semibold` (600).
-- Page titles are floating text (no card wrapper), using H1 with a Body Small subtitle in `text-muted-foreground`.
+- **Mixed weight text:** Combine `font-normal` and `font-bold` within the same line for visual interest. Example: `<span className="font-normal">Your Company's</span> <span className="font-bold">Leadership Academy</span>`. This pattern is used for card titles, section headers, and descriptive text.
+- **All text is black.** Subtitles, descriptions, and metadata use `text-foreground` — never `text-muted-foreground`. The only grey text in the app is input placeholder text.
+- Page titles are floating text (no card wrapper), using H1 with a Body Small subtitle in `text-foreground`.
 
 ---
 
@@ -119,15 +125,15 @@ This document defines the visual design language for ProjectPay. Every component
 - Background: `guild-taupe` (`#D7D1BD`)
 - Nav items: Icon (Material Symbols, 20px) + label, `py-3 px-4 rounded-lg`
 - Active state: `bg-white text-foreground font-semibold` (no shadow)
-- Inactive state: `text-muted-foreground hover:bg-white/50 hover:text-foreground`
+- Inactive state: `text-foreground hover:bg-white/50`
 - Bottom: Settings + Support links only. No upsell cards.
 - Collapsible: On `md` screens, collapse to icon-only mode (`w-16`)
 
 ### Breadcrumbs
 - Show on all pages deeper than top-level (e.g., `/projects/[id]`, `/projects/new`)
 - Format: `Dashboard > Projects > Project Name`
-- Separator: `>` or `/` in `text-muted-foreground/50`
-- Links: `text-muted-foreground hover:text-foreground`
+- Separator: `>` or `/` in `text-foreground/50`
+- Links: `text-foreground hover:underline`
 - Current page: `text-foreground font-semibold` (not a link)
 
 ### Top Nav
@@ -139,7 +145,7 @@ This document defines the visual design language for ProjectPay. Every component
 - Fixed bottom, white background, top border
 - 4 main nav items + center floating "+" button for quick project creation
 - Active: `text-primary`, icon filled (`FILL 1`)
-- Inactive: `text-muted-foreground`
+- Inactive: `text-foreground`
 
 ---
 
@@ -147,25 +153,50 @@ This document defines the visual design language for ProjectPay. Every component
 
 ### Card Style (Default)
 ```
-border-2 border-off-black bg-white p-6
+rounded-2xl bg-white p-6 border border-border/30
 ```
-- **Sharp corners** — `--radius: 0px`. NO border-radius on any card.
-- **Thick off-black border** — `border-2 border-off-black`. Not `border`, not `border-off-black/80`. Full thickness, full opacity.
-- This is the `<Card>` component default class.
+- **Rounded corners** — `rounded-2xl` on all cards for a soft, modern feel.
+- **Subtle border** — light border, not thick off-black. Cards differentiate via background color, accent strips, and layered interiors — not heavy borders.
+- **No shadows.** Cards are flat with color and layering for depth.
 
-### Split Cards (How It Works Pattern)
-Cards with a visual mockup on top and text content on bottom:
+### Accent Strip Cards (Guild Grow Pattern)
+Cards with a colored accent strip at the top and clean interior:
 ```
-Top:    bg-guild-peach (1/3 height, fixed 240px) — contains CSS mockup diagram
-Bottom: bg-guild-cream (2/3 height, flex-1) — contains step number, title, description
+Top strip:  h-2 bg-primary rounded-t-2xl (or bg-guild-peach, bg-guild-mint, bg-secondary)
+Card body:  bg-white rounded-2xl p-6 — NO internal borders or dividers
 ```
-- All split cards share the same peach/cream color scheme for consistency.
-- Mockup diagrams are CSS-only miniature UI representations (budget builders, donut charts, virtual cards, completion screens).
-- Inner mockup containers use `border-2 border-off-black bg-white max-w-[200px]`.
+- The accent strip is a thin color bar at the very top of the card — NOT a large colored section.
+- Card interior is clean: no inner outlines, no inner borders, no dividers between content sections.
+- Use spacing (`space-y-4`, `gap-4`) to separate content within the card, not lines.
+- Title text uses mixed weight: `<span className="font-normal">Project</span> <strong>Budget Overview</strong>`
+
+### Layered Cards (Guild Academy Pattern)
+Cards with a background and a nested card inside:
+```
+Outer card:  bg-guild-cream rounded-2xl p-6
+Inner card:  bg-white rounded-xl p-4 — nested inside with its own content
+```
+- Outer card provides the background color context.
+- Inner card contains the detailed content — text, progress bars, images, metrics.
+- Can include a bar/progress indicator and an image or icon to the right of the inner card.
+- Multiple geometric elements (tags, pills, small colored rectangles) create visual richness.
+- Example layout: Inner card with text on the left, image/illustration on the right, a colored progress bar spanning the bottom.
+
+### Geometric Shape Cards (Guild Navigator Pattern)
+Cards that contain geometric tag/pill shapes:
+```
+Card body:  bg-white rounded-2xl p-6
+Tags:       bg-guild-cream rounded-lg px-3 py-1.5 text-sm font-semibold text-foreground
+            — positioned in a scattered/offset layout, not a flat grid
+```
+- Tags and pill shapes are positioned with slight overlaps or offsets for visual interest.
+- Mix rounded pills (`rounded-full`) with rectangular tags (`rounded-lg`) for shape variety.
+- Some tags can have accent backgrounds (`bg-primary text-white`, `bg-guild-peach`).
+- Creates a dynamic, visually engaging card even without images.
 
 ### Dark Green Cards (Feature Cards)
 ```
-bg-guild-mint border-2 border-off-black p-5
+bg-guild-mint rounded-2xl p-5
 ```
 - Used for: Feature lists (For Contractors section), accent stat cells in KPI grids
 - `guild-mint` is dark forest green (`#2D4A34`) — NOT pastel.
@@ -185,6 +216,7 @@ When cards sit in a 2x2 or multi-card grid, alternate backgrounds:
 - On dark backgrounds (guild-mint, off-black): `text-white` always
 - Size: `text-2xl` default, `text-3xl` for feature list cards
 - Never wrap icons in `bg-*` divs or `rounded-*` containers.
+- Geometric icon placement: icons can be positioned at card corners or alongside accent shapes for visual composition.
 
 ### Eyebrow Label Pattern
 ```
@@ -213,19 +245,21 @@ Some content should NOT be wrapped in cards:
 
 | Variant | Classes | Usage |
 |---------|---------|-------|
-| Primary (pill) | `bg-off-black text-guild-cream px-8 py-3 rounded-full font-semibold hover:bg-transparent hover:text-off-black border border-off-black transition-colors` | Main CTAs — Guild's dark pill button |
+| Primary (pill) | `bg-off-black text-guild-cream px-8 py-3 rounded-full font-semibold hover:bg-transparent hover:text-off-black border border-off-black transition-colors` | Main CTAs — dark pill with arrow `→` |
 | Orange (pill) | `bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-transparent hover:text-primary border border-primary transition-colors` | Secondary CTAs |
 | Text CTA | `text-foreground font-semibold underline decoration-2 underline-offset-4 hover:decoration-primary` | Editorial CTAs, "View all →" |
-| Ghost | `text-muted-foreground font-semibold hover:text-foreground` | "Cancel", "Back" |
+| Ghost | `text-foreground font-semibold hover:underline` | "Cancel", "Back" |
 | Destructive | `border border-destructive text-destructive hover:bg-destructive hover:text-white px-5 py-2.5 rounded-full font-semibold` | "Reject", "Delete", "Sign Out" |
+
+**Button positioning:** Buttons sit at the **bottom-left** of cards, not centered. Include an arrow (`→` or `→` icon) in button text for directional CTAs. Example: `Explore Grow →`.
 
 ### Form Inputs
 ```
 bg-surface-container-low border-none rounded-lg px-4 py-3 text-foreground
-placeholder:text-muted-foreground/60 focus:ring-1 focus:ring-primary focus:bg-white
+placeholder:text-foreground/40 focus:ring-1 focus:ring-primary focus:bg-white
 ```
 - Labels: `text-sm font-semibold text-foreground mb-1.5` (DM Sans, not uppercase)
-- Help text: `text-xs text-muted-foreground mt-1`
+- Help text: `text-xs text-foreground mt-1`
 - Error state: `ring-1 ring-destructive` with red help text
 
 ---
@@ -285,18 +319,18 @@ Fill: h-full rounded-full transition-all duration-500
 ### Metric Displays
 - Large currency: `font-headline text-4xl font-bold tracking-tight`
 - Supporting metric: `font-headline text-lg font-bold`
-- Metric label: `text-[10px] uppercase tracking-wider text-muted-foreground font-bold`
+- Metric label: `text-[10px] uppercase tracking-wider text-foreground font-bold`
 - Delta indicator: Green arrow-up for positive, red arrow-down for negative
 
 ### Tables
 ```
-Header row: bg-surface-container-low/50 text-[11px] font-bold uppercase tracking-widest text-muted-foreground
+Header row: bg-surface-container-low/50 text-[11px] font-bold uppercase tracking-widest text-foreground
 Body rows: hover:bg-muted/30 transition-colors
 Dividers: divide-y divide-outline-variant/10
 ```
 - Vendor/merchant column: Show initials avatar (`w-8 h-8 rounded-lg bg-accent font-bold text-primary text-xs flex items-center justify-center`)
 - Amount column: Right-aligned, `font-headline font-bold`
-- Date column: `text-muted-foreground text-sm`
+- Date column: `text-foreground text-sm`
 - Hide non-essential columns on mobile: `hidden md:table-cell`
 
 ### Status Badges
@@ -307,9 +341,9 @@ px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
 | Status | Background | Text |
 |--------|-----------|------|
 | ACTIVE | `bg-secondary-container/30` | `text-secondary` |
-| DRAFT | `bg-muted` | `text-muted-foreground` |
+| DRAFT | `bg-muted` | `text-foreground` |
 | PENDING | `bg-tertiary-fixed-dim/20` | `text-on-tertiary-container` |
-| COMPLETE | `bg-surface-container` | `text-muted-foreground` |
+| COMPLETE | `bg-surface-container` | `text-foreground` |
 | REJECTED | `bg-destructive/10` | `text-destructive` |
 | FUNDED | `bg-secondary-container/30` | `text-secondary` |
 
@@ -319,26 +353,27 @@ px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
 
 ### Empty States
 Every list, table, and dashboard section must have a designed empty state:
-- Large muted icon (`text-muted-foreground/30`, 48px)
+- Large muted icon (`text-foreground/30`, 48px)
 - Primary message: Short, specific (e.g., "No projects yet")
 - Supporting text: Explain what will appear here (e.g., "Projects you create will appear here with live budget tracking")
 - CTA: Link or button to resolve the empty state (e.g., "Create your first project")
 - Center-aligned within the container
+- All text is black, not grey.
 
 ### Loading States
 - Use skeleton rectangles that match the shape of actual content
-- `animate-pulse` on `bg-surface-container rounded-lg`
+- `animate-pulse` on `bg-surface-container rounded-2xl`
 - Match the exact layout: if the loaded state has 3 cards in a bento grid, show 3 skeleton cards in the same grid
 - Never use a centered spinner for page-level content
 
 ### Error States
 - Inline error banner within the affected section (not a full-page error)
-- `bg-destructive/5 border border-destructive/20 rounded-xl p-4`
+- `bg-destructive/5 border border-destructive/20 rounded-2xl p-4`
 - Icon + title + description + retry button
 - For form validation: inline error text below the field in `text-destructive text-xs`
 
 ### First-Time User
-- Dashboard: Onboarding card (Card Variant 2) with welcome message and "Create your first project" CTA
+- Dashboard: Onboarding card (layered card pattern) with welcome message and "Create your first project →" CTA
 - Project list: Illustrated empty state with setup guidance
 - Never show raw "0" metrics — show "—" or a contextual message instead
 
@@ -408,6 +443,7 @@ For every screen:
 - Nav items always have icons. Form labels do not.
 - Status badges do not need icons. Alert banners do.
 - Do NOT use lucide-react or any other icon library.
+- Icons can be positioned geometrically within cards alongside accent shapes for compositional interest.
 
 ### Common Icons
 | Context | Icon Name |
@@ -435,11 +471,13 @@ For every screen:
 ## 12. Do NOT
 
 **Border & Shape Rules:**
-- Use `border` (1px) on cards — always use `border-2` (thick)
-- Use `border-off-black/80` or any opacity — always full `border-off-black`
-- Use `rounded-xl`, `rounded-lg`, or any border-radius on cards — cards are sharp rectangles (`--radius: 0px`)
 - Use box shadows on anything — `shadow-soft` is `none`
-- Use thin gray borders — borders are always thick off-black
+- Use thin gray borders as the primary card border style
+- Add internal borders/outlines/dividers inside cards — use spacing instead
+
+**Text Rules:**
+- Use grey text (`text-muted-foreground`) for subtitles, descriptions, or secondary text — ALL text is black (`text-foreground`)
+- Use uniform font weight in titles — mix bold and normal weight within the same line for visual interest
 
 **Icon Rules:**
 - Put icons inside colored circles/squares (`bg-primary/10 rounded-md` etc.) — icons float freely
@@ -453,8 +491,9 @@ For every screen:
 
 **Layout Rules:**
 - Create uniform card grids where all cards look identical — mix backgrounds (peach, white, mint, cream)
-- Use `gap-0` with shared borders between cards — use `gap-3` or `gap-4` with individual `border-2` on each card
+- Use `gap-0` with shared borders between cards — use `gap-3` or `gap-4`
 - Alternate section backgrounds on marketing pages — all sections share the same cream background
+- Center buttons in cards — buttons sit at the bottom-left
 
 **Pattern Rules:**
 - Hardcode button styles inline — use `<Button variant="pill|pill-orange|pill-destructive">` variants
@@ -462,6 +501,7 @@ For every screen:
 - Use diagonal stripe patterns for backgrounds — use flowing SVG curve arcs if decorative background needed
 - Create floating metric overlays on images
 - Use check-circle trust badges or "Powered by" icon grids
+- Make flat, boring cards — cards should be layered and intricate with accent strips, nested elements, geometric shapes
 - Make the UI look "AI-generated" — no generic hero sections, no vague subheadings
 - Duplicate long className strings — extract to CSS modules or component variants
 - Skip semantic HTML landmarks or `sizes` attribute on `next/image`

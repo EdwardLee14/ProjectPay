@@ -34,7 +34,7 @@ export default async function PaymentModePage({
       recentTransactions={project.transactions.map((tx) => ({
         id: tx.id,
         merchantName: tx.merchantName,
-        amount: tx.amount,
+        amount: Number(tx.amount),
         categoryCode: tx.categoryCode,
         stripeTransactionId: tx.stripeTransactionId,
       }))}

@@ -24,7 +24,7 @@ const statusColor: Record<string, "default" | "secondary" | "outline"> = {
 
 export function ProjectCard({ project }: { project: ProjectWithRelations }) {
   const totalSpent = project.budgetCategories.reduce(
-    (sum, cat) => sum + cat.spentAmount,
+    (sum, cat) => sum + Number(cat.spentAmount),
     0
   );
 
@@ -39,19 +39,19 @@ export function ProjectCard({ project }: { project: ProjectWithRelations }) {
             </Badge>
           </div>
           <CardDescription>
-            Budget: {formatCurrency(project.totalBudget)}
+            Budget: {formatCurrency(Number(project.totalBudget))}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Funded: {formatCurrency(project.fundedAmount)}</span>
+            <span>Funded: {formatCurrency(Number(project.fundedAmount))}</span>
             <span>Spent: {formatCurrency(totalSpent)}</span>
           </div>
           <div className="mt-2 h-2 rounded-full bg-secondary overflow-hidden">
             <div
               className="h-full bg-primary rounded-full transition-all"
               style={{
-                width: `${Math.min((totalSpent / project.totalBudget) * 100, 100)}%`,
+                width: `${Math.min((totalSpent / Number(project.totalBudget)) * 100, 100)}%`,
               }}
             />
           </div>

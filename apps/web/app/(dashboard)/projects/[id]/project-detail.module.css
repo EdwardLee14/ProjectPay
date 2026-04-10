@@ -22,7 +22,7 @@
 
 /* Budget overview */
 .budgetBar {
-  @apply bg-primary-container border border-off-black p-6 text-white;
+  @apply bg-primary-container border-2 border-off-black p-6 text-white;
 }
 
 .budgetBarInner {
@@ -55,7 +55,7 @@
 
 /* Budget categories */
 .budgetPanel {
-  @apply bg-card border border-off-black/80 p-8;
+  @apply bg-card border-2 border-off-black p-8;
 }
 
 .budgetPanelTitle {

@@ -80,7 +80,7 @@ model Project {
   stripePaymentIntentId String?
   closedAt             DateTime?
   createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
+  updatedAt            DateTime      @default(now()) @updatedAt
 
   contractor       User               @relation("ContractorProjects", fields: [contractorId], references: [id])
   client           User?              @relation("ClientProjects", fields: [clientId], references: [id])
