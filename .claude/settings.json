@@ -27,7 +27,9 @@
       "Bash(mkdir -p /Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/projects/\\\\[id\\\\]/share/\\\\[tokenId\\\\])",
       "Bash(mkdir -p /Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/projects/\\\\[id\\\\]/payment-mode)",
       "Bash(mkdir -p /Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/projects/\\\\[id\\\\]/fund)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(git worktree:*)",
+      "Bash(git branch:*)"
     ],
     "additionalDirectories": [
       "/Users/nam/Documents/Projects/ProjectPay/.claude/skills",
