@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
-import type { User } from "@prisma/client";
+import type { User } from "@projectpay/db";
 
 export async function getSupabaseUser() {
   const supabase = createClient();

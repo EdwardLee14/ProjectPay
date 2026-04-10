@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@projectpay/shared", "@projectpay/db"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "img.clerk.com" },

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Project, BudgetCategory, User } from "@prisma/client";
+import type { Project, BudgetCategory, User } from "@projectpay/db";
 import {
   Card,
   CardContent,
