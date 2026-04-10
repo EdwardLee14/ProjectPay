@@ -2,6 +2,7 @@
   "name": "projectpay",
   "private": true,
   "scripts": {
+    "postinstall": "test -f .env && ln -sf ../../.env packages/db/.env || true",
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",

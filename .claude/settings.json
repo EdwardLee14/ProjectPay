@@ -29,7 +29,15 @@
       "Bash(mkdir -p /Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/projects/\\\\[id\\\\]/fund)",
       "Bash(git merge:*)",
       "Bash(git worktree:*)",
-      "Bash(git branch:*)"
+      "Bash(git branch:*)",
+      "Bash(gh repo:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create --title 'Dashboard, backend APIs, CI setup' --body ':*)",
+      "Bash(gh pr:*)",
+      "Bash(git stash:*)",
+      "Bash(git rm:*)"
     ],
     "additionalDirectories": [
       "/Users/nam/Documents/Projects/ProjectPay/.claude/skills",
