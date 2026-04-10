@@ -1,0 +1,79 @@
+/* Settings page styles */
+
+.container {
+  @apply max-w-2xl space-y-8;
+}
+
+/* Section card */
+.sectionCard {
+  @apply rounded-2xl bg-white border border-border/30 overflow-hidden;
+}
+
+.accentPrimary {
+  @apply h-1.5 rounded-t-2xl bg-primary;
+}
+
+.accentMint {
+  @apply h-1.5 rounded-t-2xl bg-guild-mint;
+}
+
+.accentDestructive {
+  @apply h-1.5 rounded-t-2xl bg-destructive;
+}
+
+.sectionBody {
+  @apply p-6;
+}
+
+.sectionTitle {
+  @apply font-headline text-lg font-bold text-off-black mb-6;
+}
+
+/* Form fields */
+.fieldGrid {
+  @apply space-y-5;
+}
+
+.fieldGroup {
+  @apply space-y-1.5;
+}
+
+.fieldLabel {
+  @apply text-sm font-semibold text-off-black;
+}
+
+/* Read-only fields */
+.readOnlyField {
+  @apply flex items-center justify-between py-3;
+}
+
+.readOnlyFieldBorder {
+  composes: readOnlyField;
+  @apply border-b border-border/30;
+}
+
+.readOnlyLabel {
+  @apply flex items-center gap-2 text-sm font-semibold text-off-black;
+}
+
+.readOnlyValue {
+  @apply text-sm text-off-black;
+}
+
+.roleBadge {
+  @apply px-3 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider bg-primary/10 text-primary border border-primary/30;
+}
+
+/* Session */
+.sessionDescription {
+  @apply text-sm text-off-black leading-relaxed mb-6;
+}
+
+/* Messages */
+.successMessage {
+  @apply text-sm font-medium text-secondary mt-4;
+}
+
+.errorMessage {
+  @apply text-sm font-medium text-destructive mt-4;
+}

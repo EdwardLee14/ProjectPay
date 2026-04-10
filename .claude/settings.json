@@ -3,6 +3,7 @@
     "allow": [
       "WebFetch(domain:raw.githubusercontent.com)",
       "Edit(/.claude/skills/frontend-design/**)",
+      "Edit(/.claude/skills/backend/**)",
       "Bash(npm run:*)",
       "WebFetch(domain:guild.com)",
       "Bash(curl -s https://guild.com/)",
@@ -11,10 +12,26 @@
       "Bash(curl -s \"https://guild.com/_next/static/css/77e9875c9793726b.css?dpl=dpl_C4ZHNWndY7oXebq2nwCsgu33Su16\")",
       "Bash(npx tsc:*)",
       "Bash(npx next:*)",
-      "Bash(xargs -I {} dirname {})"
+      "Bash(xargs -I {} dirname {})",
+      "Bash(npx turbo:*)",
+      "Bash(pnpm install:*)",
+      "Bash(corepack enable:*)",
+      "Bash(corepack prepare:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm dev:web)",
+      "Bash(pnpm db:push)",
+      "Bash(ln -s ../../.env /Users/nam/Documents/Projects/ProjectPay/packages/db/.env)",
+      "Bash(npx prisma:*)",
+      "Bash(pnpm ls:*)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(mkdir -p /Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/projects/\\\\[id\\\\]/share/\\\\[tokenId\\\\])",
+      "Bash(mkdir -p /Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/projects/\\\\[id\\\\]/payment-mode)",
+      "Bash(mkdir -p /Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/projects/\\\\[id\\\\]/fund)",
+      "Bash(git merge:*)"
     ],
     "additionalDirectories": [
-      "/Users/nam/Documents/Projects/ProjectPay/.claude/skills"
+      "/Users/nam/Documents/Projects/ProjectPay/.claude/skills",
+      "/Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/budget-alerts/[id]"
     ]
   }
 }

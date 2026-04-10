@@ -24,7 +24,11 @@ Activate when creating, modifying, or reviewing any React component, page, layou
 - **Professional but approachable** — not sterile, not playful.
 - **Confident and editorial** — Guild.com influence: large confident typography, eyebrow labels with wide tracking, text-link CTAs with arrows.
 - **Warm and grounded** — Guild palette: orange `#E7651C`, cream `#F8F2E9`, dark forest green `#2D4A34`, peach `#F6CA9E`, off-black `#170B01`.
-- **Thick borders, sharp corners** — All cards use `border-2 border-off-black`. Radius is `0px`. NO shadows anywhere.
+- **Mixed corner radii** — Cards use `rounded-2xl` for a soft, modern feel. Buttons use `rounded-full` (pill shape). Geometric accent shapes (tags, strips) can be sharp for contrast. The interplay of rounded and sharp forms creates visual depth.
+- **Layered, intricate cards** — Cards are NOT flat rectangles with text. They should contain nested elements: accent strips at the top, nested inner cards, geometric shapes, progress bars. Think Guild Grow (accent strip, clean interior with no inner borders) and Guild Academy (outer card with nested card + bar + image).
+- **No internal card borders** — Inside a card, use spacing and background color shifts to create hierarchy — never inner outlines or dividers.
+- **All text is black** — Every piece of text uses off-black (`text-foreground`). Subtitles, descriptions, metadata — all black. No grey text anywhere except input placeholders.
+- **Mixed font weights inline** — Combine bold and normal weight within the same text line. Example: "Your Company's **Leadership Academy**". Use `<span>` and `<strong>` to vary weight mid-sentence.
 - **Dark green as signature** — `guild-mint` (`#2D4A34`) is a dark forest green used for feature cards and accent blocks. Text and icons on it are always white.
 - **Uniform marketing backgrounds** — All sections on marketing/landing pages share the same `bg-guild-cream`. No alternating section colors.
 - The UI should feel like a tool built by people who understand construction finance — not a generic SaaS template.
@@ -36,17 +40,20 @@ Activate when creating, modifying, or reviewing any React component, page, layou
 - Strong size contrast between hierarchy levels (minimum 1.5x ratio between adjacent levels).
 - Micro-labels (category tags, status indicators): 10-11px, uppercase, wide tracking (`tracking-wider`).
 - Currency/number displays: Always use `font-headline` with tight tracking (`tracking-tight`).
+- **All text is black.** Never use grey for subtitles or descriptions. `text-foreground` everywhere.
+- **Mix bold and normal weight** within the same line for card titles and descriptive text.
 
 ### Color Application
 - Refer to `FRONTEND-DESIGN.md` for exact token values.
 - **NEVER use raw hex/rgb values** — always use CSS variable tokens or Tailwind tokens.
-- **Buttons:** `<Button variant="pill">` (dark off-black) for primary CTAs. `variant="pill-orange"` for secondary. Never hardcode button styles.
-- **Feature cards:** `bg-guild-mint` with `text-white` text and `text-white text-3xl` icons. Always `border-2 border-off-black`.
+- **Buttons:** `<Button variant="pill">` (dark off-black) for primary CTAs. `variant="pill-orange"` for secondary. Never hardcode button styles. Include arrow `→` in button text.
+- **Feature cards:** `bg-guild-mint` with `text-white` text and `text-white text-3xl` icons. `rounded-2xl`.
 - **Card grids:** Mix `bg-white`, `bg-guild-peach`, `bg-guild-mint`, `bg-guild-cream` — never all the same color.
 - **Icons on dark backgrounds:** Always `text-white`. Never `text-guild-peach`.
 - **Progress bars/success:** Use `secondary` (forest green).
 - **Warnings/alerts:** Use `tertiary-fixed-dim` (amber) or `bg-guild-peach`.
 - **Destructive:** Use `destructive` sparingly — only for irreversible actions. Pill style with hover fill.
+- **All text is off-black** — no grey text for subtitles, descriptions, or metadata.
 
 ### Spatial Composition
 - **Asymmetric grid layouts** — not all cards the same size.
@@ -58,17 +65,20 @@ Activate when creating, modifying, or reviewing any React component, page, layou
 - Guild-inspired: **Mixed rectangle sizes**, some tall, some wide, creating visual variety.
 
 ### Card & Container Patterns
-1. **Thick off-black borders** — Always `border-2 border-off-black`. Not `border`, not `border-off-black/80`. Full thickness, full opacity.
-2. **Sharp corners** — NO `rounded-*` on cards. `--radius: 0px`. Only buttons get `rounded-full`.
-3. **Mixed backgrounds in grids** — Alternate `bg-white`, `bg-guild-peach`, `bg-guild-mint` (dark green), `bg-guild-cream` within the same grid.
-4. **Dark green feature cards** — `bg-guild-mint border-2 border-off-black` with `text-white` text and `text-white text-3xl` icons. Stacked vertically with `space-y-3`.
-5. **Split cards** — Top third `bg-guild-peach` with visual mockup, bottom two-thirds `bg-guild-cream` with text. Fixed `height: 240px` on top for consistency.
-6. **Card grids** — Use `gap-3` or `gap-4` between cards. Each card has its own `border-2`. Never `gap-0` with shared borders.
 
-**Icons in cards:** Float freely. NO `bg-*` wrappers. On light bg: `text-off-black` or `text-primary`. On dark bg: `text-white` always.
-**Buttons:** Use `<Button variant="pill">` component. Never hardcode button classes.
+1. **Rounded corners on cards** — All cards use `rounded-2xl`. Buttons use `rounded-full`. Geometric accents (tags, strips) can use sharp corners for contrast.
+2. **Accent strip cards (Guild Grow)** — Thin color strip (`h-2`) at the top of the card in `bg-primary`, `bg-guild-peach`, or `bg-guild-mint`. Card interior is clean with NO inner borders or dividers. Use spacing to separate content.
+3. **Layered cards (Guild Academy)** — Outer card (`bg-guild-cream rounded-2xl p-6`) contains a nested inner card (`bg-white rounded-xl p-4`) with its own content. Include geometric elements: progress bars, images, colored tags.
+4. **Geometric shape cards (Guild Navigator)** — Cards containing scattered/offset tag shapes (`bg-guild-cream rounded-lg px-3 py-1.5`). Mix rounded pills with rectangular tags. Some tags have accent backgrounds (`bg-primary text-white`).
+5. **Mixed backgrounds in grids** — Alternate `bg-white`, `bg-guild-peach`, `bg-guild-mint` (dark green), `bg-guild-cream` within the same grid.
+6. **Dark green feature cards** — `bg-guild-mint rounded-2xl` with `text-white` text and `text-white text-3xl` icons. Stacked vertically with `space-y-3`.
+7. **No internal outlines** — Inside cards, separate content with spacing (`space-y-4`, `gap-4`), not borders or dividers. Card interiors are clean.
+8. **Card grids** — Use `gap-3` or `gap-4` between cards. Never `gap-0` with shared borders.
+
+**Icons in cards:** Float freely. NO `bg-*` wrappers. On light bg: `text-off-black` or `text-primary`. On dark bg: `text-white` always. Can be positioned geometrically at card corners or alongside accent shapes.
+**Buttons:** Use `<Button variant="pill">` component. Never hardcode button classes. Position buttons at bottom-left of cards, not centered. Include `→` arrow in button text.
 **Decorative backgrounds:** Flowing SVG `<path>` arcs in primary orange at low opacity. Never blurs, gradients, or diagonal stripes.
-**AVOID:** Rounded card corners, thin borders, gray borders, icon backgrounds, shadows, uniform card colors, diagonal stripe patterns.
+**AVOID:** Thin borders, grey text on subtitles, icon backgrounds, shadows, uniform card colors, flat/boring cards without layered elements, centered buttons in cards.
 
 ### Motion & Micro-interactions
 - Hover on buttons: `hover:bg-transparent hover:text-off-black transition-colors`.
@@ -91,34 +101,34 @@ Activate when creating, modifying, or reviewing any React component, page, layou
 **Empty state:**
 ```tsx
 <div className="text-center py-12">
-  <Icon name="[contextual_icon]" className="text-muted-foreground/30 mb-3" size={48} />
-  <p className="text-sm font-medium text-muted-foreground mb-1">[Primary message]</p>
-  <p className="text-xs text-muted-foreground/70 mb-4">[Supporting context]</p>
+  <Icon name="[contextual_icon]" className="text-foreground/30 mb-3" size={48} />
+  <p className="text-sm font-medium text-foreground mb-1">[Primary message]</p>
+  <p className="text-xs text-foreground mb-4">[Supporting context]</p>
   <Link href="[action_path]" className="text-sm font-semibold text-primary hover:underline">
-    [CTA text]
+    [CTA text] →
   </Link>
 </div>
 ```
 
 **Loading state:**
 - Skeleton placeholders that match the actual content layout shape.
-- Use `animate-pulse` on `bg-surface-container` rectangles.
+- Use `animate-pulse` on `bg-surface-container rounded-2xl` rectangles.
 - Never show a generic spinner for page-level loading.
 
 **Error state:**
 ```tsx
-<div className="bg-destructive/5 border border-destructive/20 rounded-xl p-6 flex items-center gap-4">
+<div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-6 flex items-center gap-4">
   <Icon name="error" className="text-destructive" />
   <div>
     <p className="text-sm font-bold text-destructive">[Error title]</p>
-    <p className="text-xs text-muted-foreground">[Recovery instruction]</p>
+    <p className="text-xs text-foreground">[Recovery instruction]</p>
   </div>
   <Button variant="outline" size="sm" className="ml-auto">Retry</Button>
 </div>
 ```
 
 **First-time user vs returning user:**
-- Dashboard with 0 projects: Show an onboarding card (NOT a modal) with illustration and "Create your first project" CTA.
+- Dashboard with 0 projects: Show an onboarding card (layered card pattern with accent strip) with illustration and "Create your first project →" CTA.
 - Dashboard with 1+ projects: Show standard metrics + recent transactions.
 - Never show "No data" as the only content — always provide a forward path.
 
@@ -201,11 +211,14 @@ import { cn } from "@/lib/utils";
 ## Anti-Patterns — NEVER Do These
 
 **Borders & Shapes:**
-- `border` (1px) on cards — always `border-2`
-- `border-off-black/80` or any opacity on card borders — always full `border-off-black`
-- `rounded-xl`, `rounded-lg`, or any border-radius on cards — sharp rectangles only
 - Box shadows on anything — `shadow-soft` is `none`
-- Thin gray borders — always thick off-black
+- Thin gray borders as the primary differentiator — use background color, accent strips, and layered interiors
+- Internal borders/dividers inside cards — use spacing to separate content
+
+**Text:**
+- Grey text on subtitles or descriptions — ALL text is black (`text-foreground`)
+- Uniform font weight in headings — mix bold and normal weight within the same line
+- `text-muted-foreground` for any visible text — only for input placeholders
 
 **Icons:**
 - Icons inside colored circles/squares (`bg-primary/10 rounded-md`) — icons float freely
@@ -215,8 +228,12 @@ import { cn } from "@/lib/utils";
 **Colors & Backgrounds:**
 - Alternating section background colors on marketing pages — all sections use uniform `bg-guild-cream`
 - Using light/pastel green — `guild-mint` is dark forest green `#2D4A34`
-- Using `gap-0` with shared borders — use `gap-3`/`gap-4` with individual borders per card
+- Using `gap-0` with shared borders — use `gap-3`/`gap-4` with individual cards
 - Hardcoded hex/rgb values in JSX — use design tokens
+
+**Cards:**
+- Flat, boring cards with just text — cards should be layered with accent strips, nested elements, geometric shapes
+- Centering buttons in cards — buttons sit at bottom-left with `→` arrows
 
 **Patterns:**
 - Diagonal stripe patterns for decorative backgrounds — use flowing SVG curve arcs instead
@@ -234,3 +251,4 @@ Use **Material Symbols Outlined** exclusively via the `<Icon />` component from 
 - Active/selected states: `FILL 1`
 - Do NOT use lucide-react or other icon libraries — keep the system unified.
 - Icons should be minimal but intentional — every icon must add clarity, not decoration.
+- Icons can be positioned geometrically within cards for compositional interest.

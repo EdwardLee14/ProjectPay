@@ -8,5 +8,6 @@ export const createChangeOrderSchema = z.object({
 });
 
 export const approveRejectSchema = z.object({
+  id: z.string().min(1, "Change order ID is required"),
   status: z.enum(["APPROVED", "REJECTED"]),
 });

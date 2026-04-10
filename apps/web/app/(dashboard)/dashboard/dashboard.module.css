@@ -5,7 +5,7 @@
 }
 
 .headerMeta {
-  @apply text-sm text-off-black/50;
+  @apply text-sm font-semibold text-off-black;
 }
 
 /* KPI grid */
@@ -13,38 +13,189 @@
   @apply grid grid-cols-2 lg:grid-cols-4 gap-4;
 }
 
-.kpiCell {
-  @apply p-5 lg:p-6 border-2 border-off-black;
+.kpiCard {
+  @apply relative bg-white border-2 border-off-black rounded-2xl overflow-hidden flex flex-col;
 }
 
-/* Utilization bar */
-.utilization {
-  @apply border-2 border-off-black p-5;
+.kpiAccent {
+  @apply px-5 py-3.5 w-full flex items-center justify-between;
 }
 
-.utilizationHeader {
-  @apply flex items-center justify-between mb-3;
+.kpiAccentLabel {
+  @apply text-xs font-semibold text-white/90;
 }
 
-.utilizationLabel {
-  @apply text-xs font-semibold text-off-black;
+.kpiAccentLabelDark {
+  @apply text-xs font-semibold text-off-black/70;
 }
 
-.utilizationPct {
-  @apply text-xs font-bold;
+.kpiAccentIcon {
+  @apply text-xl text-white/50;
 }
 
-/* Content grid */
-.contentGrid {
+.kpiAccentIconDark {
+  @apply text-xl text-off-black/30;
+}
+
+.kpiBody {
+  @apply px-5 py-5 flex-1 flex flex-col justify-center;
+}
+
+.kpiValue {
+  @apply font-headline text-2xl lg:text-3xl font-bold tracking-tight text-off-black;
+}
+
+.kpiValueLight {
+  @apply font-headline text-2xl lg:text-3xl font-bold tracking-tight text-white;
+}
+
+.kpiSub {
+  @apply text-[11px] font-medium text-off-black/50 mt-1.5 flex items-center gap-1;
+}
+
+.kpiSubLight {
+  @apply text-[11px] font-medium text-white/50 mt-1.5 flex items-center gap-1;
+}
+
+.kpiDeltaUp {
+  @apply text-secondary font-bold;
+}
+
+.kpiDeltaDown {
+  @apply text-destructive font-bold;
+}
+
+/* Row layout helpers */
+.row2col {
   @apply grid grid-cols-1 lg:grid-cols-12 gap-6;
 }
 
-.projectsPanel {
-  @apply lg:col-span-7 border-2 border-off-black;
+.col7 {
+  @apply lg:col-span-7;
 }
 
-.sidebar {
-  @apply lg:col-span-5 space-y-6;
+.col5 {
+  @apply lg:col-span-5;
+}
+
+/* Utilization banner — compact, Guild Academy style */
+.utilBanner {
+  @apply bg-guild-peach border-2 border-off-black rounded-2xl overflow-hidden p-5;
+}
+
+.utilHeader {
+  @apply flex items-start justify-between mb-4;
+}
+
+.utilTitle {
+  @apply font-headline text-base font-bold text-off-black;
+}
+
+.utilSubtitle {
+  @apply text-[10px] text-off-black mt-0.5;
+}
+
+.utilCard {
+  @apply bg-white border-2 border-off-black rounded-xl p-4 space-y-3;
+}
+
+.utilCardRow {
+  @apply flex items-center justify-between;
+}
+
+.utilCardLabel {
+  @apply text-xs font-semibold text-off-black;
+}
+
+.utilCardPct {
+  @apply font-headline text-xl font-bold tracking-tight;
+}
+
+.utilCardMeta {
+  @apply flex justify-between text-[10px] text-off-black mt-1;
+}
+
+.utilProgressTrack {
+  @apply h-2.5 w-full bg-guild-taupe/30 rounded-full overflow-hidden;
+}
+
+/* Activity / recent items card */
+.activityCard {
+  @apply bg-white border-2 border-off-black rounded-2xl overflow-hidden;
+}
+
+.activityHeader {
+  @apply flex items-center justify-between px-5 py-4 border-b-2 border-off-black;
+}
+
+.activityHeaderTitle {
+  @apply text-sm font-bold text-off-black flex items-center gap-2;
+}
+
+.activityRow {
+  @apply flex items-start gap-3 px-5 py-3.5 hover:bg-guild-cream/40 transition-colors;
+}
+
+.activityDot {
+  @apply w-2 h-2 rounded-full mt-1.5 flex-shrink-0;
+}
+
+.activityTitle {
+  @apply text-sm font-medium text-off-black;
+}
+
+.activityMeta {
+  @apply text-[10px] text-off-black mt-0.5;
+}
+
+/* Navigate grid — solid color action cards */
+.navGrid {
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-4;
+}
+
+.navCard {
+  @apply relative rounded-2xl p-5 min-h-[100px] transition-all hover:opacity-90;
+}
+
+.navCardTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.navCardTitleLight {
+  @apply text-sm font-bold text-white;
+}
+
+.navCardDesc {
+  @apply text-xs text-off-black/70 mt-1;
+}
+
+.navCardDescLight {
+  @apply text-xs text-white/70 mt-1;
+}
+
+.navCardArrow {
+  @apply absolute bottom-4 right-4 text-off-black/30 text-base;
+}
+
+.navCardArrowLight {
+  @apply absolute bottom-4 right-4 text-white/50 text-base;
+}
+
+/* Plain white card with border — for projects, summary, transactions */
+.plainCard {
+  @apply bg-white border-2 border-off-black rounded-2xl overflow-hidden;
+}
+
+.plainHeader {
+  @apply flex items-center justify-between px-5 py-4 border-b-2 border-off-black;
+}
+
+.plainHeaderTitle {
+  @apply text-sm font-bold text-off-black flex items-center gap-2;
+}
+
+.plainHeaderAction {
+  @apply text-xs font-semibold text-primary hover:underline transition-colors;
 }
 
 /* Project row */
@@ -66,20 +217,7 @@
 }
 
 .projectMeta {
-  @apply flex justify-between mt-1.5 text-[10px] text-off-black/60;
-}
-
-/* Quick action row */
-.actionRow {
-  @apply flex items-center gap-3 px-5 py-4 hover:bg-guild-cream/50 transition-colors;
-}
-
-.actionTitle {
-  @apply text-sm font-semibold text-off-black;
-}
-
-.actionDesc {
-  @apply text-[10px] text-off-black/60;
+  @apply flex justify-between mt-1.5 text-[10px] text-off-black;
 }
 
 /* Summary row */
@@ -88,7 +226,7 @@
 }
 
 .summaryLabel {
-  @apply text-xs text-off-black/70;
+  @apply text-xs text-off-black;
 }
 
 .summaryValue {
@@ -96,10 +234,6 @@
 }
 
 /* Transactions table */
-.transactionsPanel {
-  @apply border-2 border-off-black;
-}
-
 .txToolbar {
   @apply flex gap-1;
 }
@@ -109,7 +243,7 @@
 }
 
 .txDate {
-  @apply text-[10px] text-off-black/60;
+  @apply text-[10px] text-off-black;
 }
 
 .txProject {
@@ -117,7 +251,7 @@
 }
 
 .txCategory {
-  @apply text-[10px] font-bold text-off-black/60 uppercase tracking-wide;
+  @apply text-[10px] font-bold text-off-black uppercase tracking-wide;
 }
 
 .txAmount {
@@ -126,7 +260,7 @@
 
 /* Empty state */
 .emptyGrid {
-  @apply grid grid-cols-1 lg:grid-cols-2 gap-0 border-2 border-off-black;
+  @apply grid grid-cols-1 lg:grid-cols-2 rounded-2xl overflow-hidden border-2 border-off-black;
 }
 
 .emptyHero {
@@ -138,11 +272,11 @@
 }
 
 .emptyHeroDesc {
-  @apply text-sm text-white/60 leading-relaxed max-w-sm;
+  @apply text-sm text-white leading-relaxed max-w-sm;
 }
 
 .emptySteps {
-  @apply bg-white border-l-2 border-off-black;
+  @apply bg-white;
 }
 
 .emptyStep {
@@ -159,5 +293,5 @@
 }
 
 .emptyStepDesc {
-  @apply text-xs text-off-black/50 mt-0.5;
+  @apply text-xs text-off-black mt-0.5;
 }

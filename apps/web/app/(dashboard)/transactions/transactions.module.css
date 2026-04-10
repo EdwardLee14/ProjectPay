@@ -1,0 +1,74 @@
+/* Transactions listing page styles */
+
+.header {
+  @apply flex flex-col md:flex-row md:items-end justify-between gap-4;
+}
+
+.txCount {
+  @apply text-sm text-off-black;
+}
+
+/* Filters */
+.filterRow {
+  @apply flex items-center gap-4;
+}
+
+.selectWrap {
+  @apply relative;
+}
+
+.projectSelect {
+  @apply appearance-none bg-white border border-border/30 rounded-xl px-4 py-2 pr-8 text-sm font-medium text-off-black cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20;
+}
+
+/* Table wrapper */
+.tableWrap {
+  @apply bg-white border border-border/30 rounded-2xl overflow-hidden;
+}
+
+.tableAccent {
+  @apply h-1.5 rounded-t-2xl bg-guild-taupe;
+}
+
+/* Table cells */
+.vendor {
+  @apply text-sm font-medium text-off-black;
+}
+
+.vendorDate {
+  @apply text-[10px] text-off-black mt-0.5;
+}
+
+.projectName {
+  @apply text-sm text-off-black hover:text-primary transition-colors;
+}
+
+.category {
+  @apply text-[10px] font-bold text-off-black uppercase tracking-wide;
+}
+
+.amount {
+  @apply font-headline text-sm font-bold text-off-black;
+}
+
+/* Load more */
+.loadMoreWrap {
+  @apply flex justify-center pt-4;
+}
+
+.loadMoreBtn {
+  @apply px-6 py-2.5 text-sm font-semibold text-off-black border border-border/30 rounded-full hover:bg-guild-cream/50 transition-colors;
+}
+
+/* Empty state */
+.emptyWrap {
+  @apply flex flex-col items-center justify-center py-20 text-center;
+}
+
+.emptyTitle {
+  @apply text-lg font-bold text-off-black mt-4;
+}
+
+.emptyDesc {
+  @apply text-sm text-off-black mt-2;
+}

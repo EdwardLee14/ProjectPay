@@ -12,7 +12,7 @@ export default function DashboardLayout({
       <Sidebar />
       <TopNav />
       <main className="md:ml-64 min-h-screen flex flex-col">
-        <div className="mt-16 flex-1 pb-20 md:pb-0">{children}</div>
+        <div className="mt-14 flex-1 pb-20 md:pb-0">{children}</div>
       </main>
       <BottomNav />
     </div>

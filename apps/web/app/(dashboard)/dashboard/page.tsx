@@ -2,12 +2,11 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getSupabaseUser, getCurrentUser } from "@/lib/auth";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import s from "./dashboard.module.css";
 import shared from "@/styles/shared.module.css";
-import { cn } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const supabaseUser = await getSupabaseUser();
@@ -29,10 +28,10 @@ export default async function DashboardPage() {
           orderBy: { createdAt: "desc" },
         });
 
-  const totalBudget = projects.reduce((s, p) => s + p.totalBudget, 0);
-  const totalFunded = projects.reduce((s, p) => s + p.fundedAmount, 0);
+  const totalBudget = projects.reduce((s, p) => s + Number(p.totalBudget), 0);
+  const totalFunded = projects.reduce((s, p) => s + Number(p.fundedAmount), 0);
   const totalSpent = projects.reduce(
-    (s, p) => s + p.budgetCategories.reduce((cs, c) => cs + c.spentAmount, 0),
+    (s, p) => s + p.budgetCategories.reduce((cs, c) => cs + Number(c.spentAmount), 0),
     0
   );
   const remaining = totalBudget - totalSpent;
@@ -81,7 +80,7 @@ export default async function DashboardPage() {
 
       {/* Pending alert */}
       {pendingOrders > 0 && (
-        <Link href="/projects" className={shared.alertBanner}>
+        <Link href="/projects" className="block bg-guild-peach border-2 border-off-black rounded-2xl p-4 hover:bg-guild-peach/80 transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Icon name="pending_actions" className="text-xl text-off-black" />
@@ -89,68 +88,208 @@ export default async function DashboardPage() {
                 {pendingOrders} change order{pendingOrders !== 1 ? "s" : ""} pending review
               </span>
             </div>
-            <Icon name="arrow_forward" className={shared.iconArrow} />
+            <Icon name="arrow_forward" className="text-off-black text-sm" />
           </div>
         </Link>
       )}
 
       {hasProjects ? (
         <>
-          {/* KPI Row */}
+          {/* 1. KPI Row */}
           <section className={s.kpiGrid}>
-            {[
-              { label: "Total Budget", value: formatCurrency(totalBudget), bg: "bg-white", dark: false },
-              { label: "Spent", value: formatCurrency(totalSpent), bg: "bg-guild-peach", dark: false },
-              { label: "Remaining", value: formatCurrency(remaining), bg: "bg-white", dark: false },
-              { label: "Funded", value: formatCurrency(totalFunded), bg: "bg-guild-mint", dark: true },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className={cn(s.kpiCell, item.bg)}
-              >
-                <p className={item.dark ? shared.metricLabelLight : shared.metricLabelDark}>
-                  {item.label}
-                </p>
-                <p className={item.dark ? shared.metricValueLight : shared.metricValue}>
-                  {item.value}
-                </p>
+            {(() => {
+              const fundedPct = totalBudget > 0 ? Math.round((totalFunded / totalBudget) * 100) : 0;
+              const remainPct = totalBudget > 0 ? Math.round((remaining / totalBudget) * 100) : 0;
+              const spentPct = Math.round(usagePct);
+
+              return [
+                {
+                  label: "Total Budget",
+                  value: formatCurrency(totalBudget),
+                  sub: `across ${projects.length} project${projects.length !== 1 ? "s" : ""}`,
+                  accent: "bg-primary", accentLight: true,
+                  icon: "account_balance_wallet",
+                  dark: false,
+                },
+                {
+                  label: "Total Spent",
+                  value: formatCurrency(totalSpent),
+                  sub: `${spentPct}% of budget`,
+                  delta: spentPct > 80 ? "up" : undefined,
+                  accent: "bg-guild-peach", accentLight: false,
+                  icon: "trending_down",
+                  dark: false,
+                },
+                {
+                  label: "Budget Remaining",
+                  value: formatCurrency(remaining),
+                  sub: `${remainPct}% available`,
+                  delta: remainPct > 20 ? "up" : remainPct > 0 ? undefined : "down",
+                  accent: "bg-secondary", accentLight: true,
+                  icon: "savings",
+                  dark: false,
+                },
+                {
+                  label: "Total Funded",
+                  value: formatCurrency(totalFunded),
+                  sub: totalFunded > 0 ? `${fundedPct}% funded` : "awaiting funding",
+                  delta: totalFunded > 0 && fundedPct >= 100 ? "up" : undefined,
+                  accent: "bg-guild-mint", accentLight: true,
+                  icon: "payments",
+                  dark: false,
+                },
+              ].map((item) => (
+                <div key={item.label} className={s.kpiCard}>
+                  <div className={cn(s.kpiAccent, item.accent)}>
+                    <p className={item.accentLight ? s.kpiAccentLabel : s.kpiAccentLabelDark}>
+                      <span className="font-normal">{item.label.split(" ")[0]}</span>{" "}
+                      <strong>{item.label.split(" ").slice(1).join(" ")}</strong>
+                    </p>
+                    <Icon name={item.icon} className={item.accentLight ? s.kpiAccentIcon : s.kpiAccentIconDark} />
+                  </div>
+                  <div className={s.kpiBody}>
+                    <p className={s.kpiValue}>{item.value}</p>
+                    <p className={s.kpiSub}>
+                      {item.sub}
+                      {item.delta === "up" && <span className={s.kpiDeltaUp}>&uarr;</span>}
+                      {item.delta === "down" && <span className={s.kpiDeltaDown}>&darr;</span>}
+                    </p>
+                  </div>
+                </div>
+              ));
+            })()}
+          </section>
+
+          {/* 2. Budget Utilization (5-col) + Activity (7-col) */}
+          <section className={s.row2col}>
+            <div className={cn(s.utilBanner, s.col5)}>
+              {/* Header with shapes next to title */}
+              <div className={s.utilHeader}>
+                <div>
+                  <p className={s.utilTitle}>
+                    <span className="font-normal">Budget</span>{" "}
+                    <strong>Utilization</strong>
+                  </p>
+                  <p className={s.utilSubtitle}>
+                    {projects.length} project{projects.length !== 1 ? "s" : ""} &middot; {activeCount} active
+                  </p>
+                </div>
+                {/* Geometric shapes next to header */}
+                <svg width="80" height="45" viewBox="0 0 80 45" fill="none" className="flex-shrink-0 opacity-35">
+                  <rect x="0" y="5" width="28" height="28" rx="6" fill="#E7651C" />
+                  <circle cx="40" cy="19" r="14" fill="#2D4A34" />
+                  <rect x="52" y="0" width="28" height="45" rx="14" fill="#170B01" opacity="0.6" />
+                </svg>
               </div>
+
+              {/* Inner card with border */}
+              <div className={s.utilCard}>
+                <div className={s.utilCardRow}>
+                  <p className={s.utilCardLabel}>Overall Spend</p>
+                  <p className={cn(s.utilCardPct, pctColor(usagePct))}>{Math.round(usagePct)}%</p>
+                </div>
+                <div className={s.utilProgressTrack}>
+                  <div
+                    className={cn(barColor(usagePct), "h-full rounded-full transition-all duration-500")}
+                    style={{ width: `${Math.min(usagePct, 100)}%` }}
+                  />
+                </div>
+                <div className={s.utilCardMeta}>
+                  <span>{formatCurrency(totalSpent)} spent</span>
+                  <span>{formatCurrency(totalBudget)} budget</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Activity feed */}
+            <div className={cn(s.activityCard, s.col7)}>
+              <div className={s.activityHeader}>
+                <h3 className={s.activityHeaderTitle}>
+                  <Icon name="notifications" className="text-lg text-primary" />
+                  Activity
+                </h3>
+              </div>
+              <div>
+                {recentTransactions.length > 0 ? (
+                  recentTransactions.slice(0, 4).map((tx) => (
+                    <div key={tx.id} className={s.activityRow}>
+                      <span className={cn(s.activityDot, "bg-primary")} />
+                      <div>
+                        <p className={s.activityTitle}>
+                          {tx.merchantName} &mdash; {formatCurrency(Number(tx.amount))}
+                        </p>
+                        <p className={s.activityMeta}>
+                          {tx.project.name} &middot;{" "}
+                          {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className={s.activityRow}>
+                      <span className={cn(s.activityDot, "bg-secondary")} />
+                      <div>
+                        <p className={s.activityTitle}>Project created</p>
+                        <p className={s.activityMeta}>Your first project is ready to fund</p>
+                      </div>
+                    </div>
+                    <div className={s.activityRow}>
+                      <span className={cn(s.activityDot, "bg-guild-peach")} />
+                      <div>
+                        <p className={s.activityTitle}>No transactions yet</p>
+                        <p className={s.activityMeta}>Spending will appear here once the project is funded</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+                {pendingOrders > 0 && (
+                  <div className={s.activityRow}>
+                    <span className={cn(s.activityDot, "bg-tertiary-fixed-dim")} />
+                    <div>
+                      <p className={s.activityTitle}>
+                        {pendingOrders} change order{pendingOrders !== 1 ? "s" : ""} pending
+                      </p>
+                      <p className={s.activityMeta}>Awaiting review</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* 3. Navigate Quick Links */}
+          <section className={s.navGrid}>
+            {[
+              { href: "/projects/new", title: "New Project", desc: "Create and define budget", bg: "bg-primary", dark: true },
+              { href: "/projects", title: "All Projects", desc: "Manage active and drafts", bg: "bg-guild-cream", dark: false },
+              { href: "/projects", title: "Change Orders", desc: "Review pending requests", bg: "bg-guild-mint", dark: true },
+              { href: "/transactions", title: "Transactions", desc: "View recent activity", bg: "bg-secondary", dark: true },
+            ].map((nav) => (
+              <Link key={nav.title} href={nav.href} className={cn(s.navCard, nav.bg, "group")}>
+                <p className={nav.dark ? s.navCardTitleLight : s.navCardTitle}>{nav.title}</p>
+                <p className={nav.dark ? s.navCardDescLight : s.navCardDesc}>{nav.desc}</p>
+                <Icon name="arrow_forward" className={nav.dark ? s.navCardArrowLight : s.navCardArrow} />
+              </Link>
             ))}
           </section>
 
-          {/* Utilization */}
-          <section className={s.utilization}>
-            <div className={s.utilizationHeader}>
-              <p className={s.utilizationLabel}>Budget Utilization</p>
-              <span className={cn(s.utilizationPct, pctColor(usagePct))}>
-                {Math.round(usagePct)}%
-              </span>
-            </div>
-            <div className={shared.progressTrack}>
-              <div
-                className={barColor(usagePct)}
-                style={{ width: `${Math.min(usagePct, 100)}%` }}
-              />
-            </div>
-          </section>
-
-          {/* Content Grid */}
-          <section className={s.contentGrid}>
-            {/* Projects */}
-            <div className={s.projectsPanel}>
-              <div className={shared.cardHeader}>
-                <h3 className={shared.cardHeaderTitle}>
-                  <Icon name="folder_open" className={shared.iconMuted} />
+          {/* 4. Projects + Summary */}
+          <section className={s.row2col}>
+            <div className={cn(s.plainCard, s.col7)}>
+              <div className={s.plainHeader}>
+                <h3 className={s.plainHeaderTitle}>
+                  <Icon name="folder_open" className="text-lg text-primary" />
                   Projects
                 </h3>
-                <Link href="/projects" className={shared.viewAllLink}>
+                <Link href="/projects" className={s.plainHeaderAction}>
                   View all &rarr;
                 </Link>
               </div>
               <div>
                 {projects.slice(0, 5).map((project, i) => {
-                  const spent = project.budgetCategories.reduce((s, c) => s + c.spentAmount, 0);
-                  const pct = project.totalBudget > 0 ? (spent / project.totalBudget) * 100 : 0;
+                  const spent = project.budgetCategories.reduce((s, c) => s + Number(c.spentAmount), 0);
+                  const pct = Number(project.totalBudget) > 0 ? (spent / Number(project.totalBudget)) * 100 : 0;
                   return (
                     <Link
                       key={project.id}
@@ -173,7 +312,7 @@ export default async function DashboardPage() {
                       </div>
                       <div className={s.projectMeta}>
                         <span>{formatCurrency(spent)} spent</span>
-                        <span>{formatCurrency(project.totalBudget)} budget</span>
+                        <span>{formatCurrency(Number(project.totalBudget))} budget</span>
                       </div>
                     </Link>
                   );
@@ -181,66 +320,34 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div className={s.sidebar}>
-              {/* Quick Actions */}
-              <div className={shared.card}>
-                <div className={shared.cardHeader}>
-                  <h3 className={shared.cardHeaderTitle}>
-                    <Icon name="bolt" className={shared.iconMuted} />
-                    Quick Actions
-                  </h3>
-                </div>
-                <div className={shared.listDivided}>
-                  <Link href="/projects/new" className={cn(s.actionRow, "group")}>
-                    <Icon name="add_circle" className="text-xl text-primary" />
-                    <div className="flex-1">
-                      <p className={s.actionTitle}>New Project</p>
-                      <p className={s.actionDesc}>Create and define budget</p>
-                    </div>
-                    <Icon name="arrow_forward" className={shared.iconArrow} />
-                  </Link>
-                  <Link href="/projects" className={cn(s.actionRow, "group")}>
-                    <Icon name="folder_open" className="text-xl text-secondary" />
-                    <div className="flex-1">
-                      <p className={s.actionTitle}>All Projects</p>
-                      <p className={s.actionDesc}>Manage active and drafts</p>
-                    </div>
-                    <Icon name="arrow_forward" className={shared.iconArrow} />
-                  </Link>
-                </div>
+            <div className={cn(s.plainCard, s.col5)}>
+              <div className={s.plainHeader}>
+                <h3 className={s.plainHeaderTitle}>
+                  <Icon name="monitoring" className="text-lg text-primary" />
+                  Summary
+                </h3>
               </div>
-
-              {/* Summary */}
-              <div className={shared.card}>
-                <div className={shared.cardHeader}>
-                  <h3 className={shared.cardHeaderTitle}>
-                    <Icon name="monitoring" className={shared.iconMuted} />
-                    Summary
-                  </h3>
-                </div>
-                <div className={shared.listDivided}>
-                  {[
-                    { label: "Active Projects", value: activeCount },
-                    { label: "Pending Orders", value: pendingOrders },
-                    { label: "Funding Rate", value: `${totalBudget > 0 ? Math.round((totalFunded / totalBudget) * 100) : 0}%` },
-                    { label: "Total Projects", value: projects.length },
-                  ].map((row) => (
-                    <div key={row.label} className={s.summaryRow}>
-                      <span className={s.summaryLabel}>{row.label}</span>
-                      <span className={s.summaryValue}>{row.value}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="space-y-0">
+                {[
+                  { label: "Active Projects", value: activeCount },
+                  { label: "Pending Orders", value: pendingOrders },
+                  { label: "Funding Rate", value: `${totalBudget > 0 ? Math.round((totalFunded / totalBudget) * 100) : 0}%` },
+                  { label: "Total Projects", value: projects.length },
+                ].map((row) => (
+                  <div key={row.label} className={s.summaryRow}>
+                    <span className={s.summaryLabel}>{row.label}</span>
+                    <span className={s.summaryValue}>{row.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
 
-          {/* Transactions */}
-          <section className={s.transactionsPanel}>
-            <div className={shared.cardHeader}>
-              <h3 className={shared.cardHeaderTitle}>
-                <Icon name="receipt_long" className={shared.iconMuted} />
+          {/* 5. Recent Transactions — full width */}
+          <section className={s.plainCard}>
+            <div className={s.plainHeader}>
+              <h3 className={s.plainHeaderTitle}>
+                <Icon name="receipt_long" className="text-lg text-primary" />
                 Recent Transactions
               </h3>
               <div className={s.txToolbar}>
@@ -279,16 +386,16 @@ export default async function DashboardPage() {
                         <span className={s.txCategory}>{tx.categoryCode}</span>
                       </td>
                       <td className={cn(shared.tableCell, "text-right")}>
-                        <p className={s.txAmount}>{formatCurrency(tx.amount)}</p>
+                        <p className={s.txAmount}>{formatCurrency(Number(tx.amount))}</p>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
-              <div className={shared.emptyState}>
-                <Icon name="receipt_long" className={shared.emptyIcon} size={40} />
-                <p className="text-sm text-off-black/40">No transactions yet</p>
+              <div className="text-center py-12">
+                <Icon name="receipt_long" className="text-off-black/10 mb-2" size={40} />
+                <p className="text-sm text-off-black">No transactions yet</p>
               </div>
             )}
           </section>
@@ -297,14 +404,18 @@ export default async function DashboardPage() {
         /* Empty State */
         <section className={s.emptyGrid}>
           <div className={s.emptyHero}>
-            <p className={shared.eyebrowLight}>Get Started</p>
+            <p className="text-xs font-bold uppercase tracking-[0.15em] text-white">Get Started</p>
             <h2 className={s.emptyHeroTitle}>Create your first project.</h2>
             <p className={s.emptyHeroDesc}>
               Set up a structured budget, share it with your client, and start tracking every dollar in real time.
             </p>
-            <Button variant="pill" asChild className="bg-white text-off-black border-white hover:bg-transparent hover:text-white">
-              <Link href="/projects/new">New Project &rarr;</Link>
-            </Button>
+            <div className="pt-2">
+              <Button variant="pill" asChild>
+                <Link href="/projects/new">
+                  New Project &rarr;
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div className={s.emptySteps}>

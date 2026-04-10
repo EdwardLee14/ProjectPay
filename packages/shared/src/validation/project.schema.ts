@@ -30,3 +30,13 @@ export const fundProjectSchema = z.object({
 export const shareProjectSchema = z.object({
   expiresInDays: z.number().int().positive().max(365).optional().default(30),
 });
+
+export const updateProjectSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  description: z.string().max(500).optional().nullable(),
+  clientEmail: z.string().email().optional().nullable().or(z.literal("")),
+});
+
+export const paymentModeSchema = z.object({
+  mode: z.enum(["WALLET", "AUTOPAY"]),
+});
