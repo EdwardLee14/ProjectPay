@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSupabaseUser, getCurrentUser } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
 import s from "./dashboard.module.css";
 import shared from "@/styles/shared.module.css";
 import { cn } from "@/lib/utils";
@@ -102,15 +103,10 @@ export default async function DashboardPage() {
               { label: "Spent", value: formatCurrency(totalSpent), bg: "bg-guild-peach", dark: false },
               { label: "Remaining", value: formatCurrency(remaining), bg: "bg-white", dark: false },
               { label: "Funded", value: formatCurrency(totalFunded), bg: "bg-guild-mint", dark: true },
-            ].map((item, i) => (
+            ].map((item) => (
               <div
                 key={item.label}
-                className={cn(
-                  s.kpiCell,
-                  item.bg,
-                  i < 3 && s.kpiCellBorderRight,
-                  i < 2 && s.kpiCellBorderBottom,
-                )}
+                className={cn(s.kpiCell, item.bg)}
               >
                 <p className={item.dark ? shared.metricLabelLight : shared.metricLabelDark}>
                   {item.label}
@@ -306,12 +302,9 @@ export default async function DashboardPage() {
             <p className={s.emptyHeroDesc}>
               Set up a structured budget, share it with your client, and start tracking every dollar in real time.
             </p>
-            <Link
-              href="/projects/new"
-              className="inline-block bg-white text-off-black px-8 py-3 rounded-full text-sm font-semibold border border-white hover:bg-transparent hover:text-white transition-colors"
-            >
-              New Project &rarr;
-            </Link>
+            <Button variant="pill" asChild className="bg-white text-off-black border-white hover:bg-transparent hover:text-white">
+              <Link href="/projects/new">New Project &rarr;</Link>
+            </Button>
           </div>
 
           <div className={s.emptySteps}>

@@ -10,7 +10,8 @@
       "Bash(curl -s \"https://guild.com/_next/static/css/77e9875c9793726b.css\")",
       "Bash(curl -s \"https://guild.com/_next/static/css/77e9875c9793726b.css?dpl=dpl_C4ZHNWndY7oXebq2nwCsgu33Su16\")",
       "Bash(npx tsc:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(xargs -I {} dirname {})"
     ],
     "additionalDirectories": [
       "/Users/nam/Documents/Projects/ProjectPay/.claude/skills"

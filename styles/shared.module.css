@@ -92,7 +92,7 @@
 
 /* Cards & Panels */
 .card {
-  @apply border border-off-black/80;
+  @apply border-2 border-off-black;
 }
 
 .cardDark {
@@ -216,7 +216,7 @@
 
 /* Alert banner */
 .alertBanner {
-  @apply block bg-guild-peach border border-off-black/80 p-4 hover:bg-guild-peach/80 transition-colors;
+  @apply block bg-guild-peach border-2 border-off-black p-4 hover:bg-guild-peach/80 transition-colors;
 }
 
 /* Error inline */

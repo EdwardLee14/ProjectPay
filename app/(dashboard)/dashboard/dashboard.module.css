@@ -10,24 +10,16 @@
 
 /* KPI grid */
 .kpiGrid {
-  @apply grid grid-cols-2 lg:grid-cols-4 gap-0 border border-off-black/80;
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-4;
 }
 
 .kpiCell {
-  @apply p-5 lg:p-6 border-off-black/80;
-}
-
-.kpiCellBorderRight {
-  @apply lg:border-r;
-}
-
-.kpiCellBorderBottom {
-  @apply border-b lg:border-b-0;
+  @apply p-5 lg:p-6 border-2 border-off-black;
 }
 
 /* Utilization bar */
 .utilization {
-  @apply border border-off-black/80 p-5;
+  @apply border-2 border-off-black p-5;
 }
 
 .utilizationHeader {
@@ -48,7 +40,7 @@
 }
 
 .projectsPanel {
-  @apply lg:col-span-7 border border-off-black/80;
+  @apply lg:col-span-7 border-2 border-off-black;
 }
 
 .sidebar {
@@ -105,7 +97,7 @@
 
 /* Transactions table */
 .transactionsPanel {
-  @apply border border-off-black/80;
+  @apply border-2 border-off-black;
 }
 
 .txToolbar {
@@ -134,7 +126,7 @@
 
 /* Empty state */
 .emptyGrid {
-  @apply grid grid-cols-1 lg:grid-cols-2 gap-0 border border-off-black/80;
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-0 border-2 border-off-black;
 }
 
 .emptyHero {
@@ -150,7 +142,7 @@
 }
 
 .emptySteps {
-  @apply bg-white border-l border-off-black/80;
+  @apply bg-white border-l-2 border-off-black;
 }
 
 .emptyStep {
