@@ -37,14 +37,15 @@ export default async function ProjectsPage() {
     );
     const total = Number(p.totalBudget);
     const pct = total > 0 ? (spent / total) * 100 : 0;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const otherUser = isContractor ? (p as any).client : (p as any).contractor;
+    const otherUser = isContractor
+      ? ("client" in p ? p.client : null)
+      : ("contractor" in p ? p.contractor : null);
 
     return {
       id: p.id,
       name: p.name,
       status: p.status,
-      otherName: otherUser?.name ?? p.clientEmail ?? "No client",
+      otherName: otherUser?.name ?? p.clientEmail ?? "Unassigned",
       spent,
       total,
       pct,
@@ -53,37 +54,28 @@ export default async function ProjectsPage() {
 
   return (
     <main className={shared.dashboardPage}>
-      {/* Header */}
       <div className={s.header}>
         <div>
-          <p className={shared.eyebrow}>Projects</p>
-          <h1 className={shared.pageTitle}>
-            <span className="font-normal">Your</span> <strong>Projects</strong>
-          </h1>
-          <p className={s.projectCount}>
+          <h1 className={shared.pageTitle}>Projects</h1>
+          <p className={s.headerMeta}>
             {projects.length} project{projects.length !== 1 ? "s" : ""} total
           </p>
         </div>
         {isContractor && (
-          <Button variant="pill" asChild>
-            <Link href="/projects/new">New Project &rarr;</Link>
+          <Button variant="pill-orange" size="sm" className="h-8 px-4 text-xs" asChild>
+            <Link href="/projects/new">
+              <Icon name="add" className="text-xs" />
+              New Project
+            </Link>
           </Button>
         )}
       </div>
 
       {projects.length > 0 ? (
-        <ProjectFilterTabs
-          projects={serialized}
-          isContractor={isContractor}
-        />
+        <ProjectFilterTabs projects={serialized} isContractor={isContractor} />
       ) : (
-        /* Empty state */
-        <div className={s.emptyWrap}>
-          <Icon
-            name="folder_open"
-            className="text-off-black/10"
-            size={56}
-          />
+        <div className={s.emptyCard}>
+          <Icon name="folder_open" className="text-off-black/10" size={48} />
           <p className={s.emptyTitle}>No projects yet</p>
           <p className={s.emptyDesc}>
             {isContractor
@@ -91,8 +83,11 @@ export default async function ProjectsPage() {
               : "You haven't been added to any projects yet."}
           </p>
           {isContractor && (
-            <Button variant="pill" asChild className="mt-6">
-              <Link href="/projects/new">New Project &rarr;</Link>
+            <Button variant="pill-orange" size="sm" className="h-8 px-4 text-xs mt-4" asChild>
+              <Link href="/projects/new">
+                <Icon name="add" className="text-xs" />
+                New Project
+              </Link>
             </Button>
           )}
         </div>

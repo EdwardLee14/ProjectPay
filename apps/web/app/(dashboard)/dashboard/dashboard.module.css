@@ -1,73 +1,243 @@
-/* Dashboard page styles */
+/* Dashboard page styles — Salesforce Cosmos: grey bg, white elevated cards, floating headers */
 
 .header {
-  @apply flex flex-col md:flex-row md:items-end justify-between gap-4;
+  @apply flex flex-col md:flex-row md:items-end justify-between gap-2;
 }
 
 .headerMeta {
-  @apply text-sm font-semibold text-off-black;
+  @apply text-xs text-off-black/50;
 }
 
-/* KPI grid */
+/* Floating section header — no card, just text */
+.sectionHeader {
+  @apply flex items-center justify-between;
+}
+
+.sectionHeaderTitle {
+  @apply text-xs lg:text-sm font-bold text-off-black flex items-center gap-2;
+}
+
+.sectionHeaderAction {
+  @apply text-[10px] lg:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
+}
+
+/* Pending alert bar */
+.alertBar {
+  @apply flex items-center justify-between rounded-2xl p-3 lg:p-4 bg-white shadow-elevation-1 hover:shadow-elevation-2 transition-all;
+}
+
+.alertBarContent {
+  @apply flex items-center gap-3;
+}
+
+.alertBarText {
+  @apply text-sm font-medium text-off-black;
+}
+
+.alertBarIcon {
+  @apply text-lg lg:text-xl text-primary;
+}
+
+.alertBarArrow {
+  @apply text-off-black/30 text-sm;
+}
+
+/* KPI grid — elevated white cards */
 .kpiGrid {
-  @apply grid grid-cols-2 lg:grid-cols-4 gap-4;
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4;
 }
 
 .kpiCard {
-  @apply relative bg-white border-2 border-off-black rounded-2xl overflow-hidden flex flex-col;
+  @apply bg-white rounded-2xl p-5 lg:p-6 shadow-elevation-1;
 }
 
-.kpiAccent {
-  @apply px-5 py-3.5 w-full flex items-center justify-between;
+.kpiLabel {
+  @apply mb-1.5;
 }
 
-.kpiAccentLabel {
-  @apply text-xs font-semibold text-white/90;
-}
-
-.kpiAccentLabelDark {
-  @apply text-xs font-semibold text-off-black/70;
-}
-
-.kpiAccentIcon {
-  @apply text-xl text-white/50;
-}
-
-.kpiAccentIconDark {
-  @apply text-xl text-off-black/30;
-}
-
-.kpiBody {
-  @apply px-5 py-5 flex-1 flex flex-col justify-center;
+.kpiLabelText {
+  @apply text-xs lg:text-sm font-medium text-off-black;
 }
 
 .kpiValue {
-  @apply font-headline text-2xl lg:text-3xl font-bold tracking-tight text-off-black;
-}
-
-.kpiValueLight {
-  @apply font-headline text-2xl lg:text-3xl font-bold tracking-tight text-white;
+  @apply font-headline text-xl lg:text-3xl font-bold tracking-tight text-off-black;
 }
 
 .kpiSub {
-  @apply text-[11px] font-medium text-off-black/50 mt-1.5 flex items-center gap-1;
+  @apply text-[10px] lg:text-[11px] font-medium text-off-black/40 mt-1 lg:mt-1.5 flex items-center gap-1;
 }
 
-.kpiSubLight {
-  @apply text-[11px] font-medium text-white/50 mt-1.5 flex items-center gap-1;
-}
-
-.kpiDeltaUp {
-  @apply text-secondary font-bold;
+.kpiDelta {
+  @apply text-primary font-bold;
 }
 
 .kpiDeltaDown {
-  @apply text-destructive font-bold;
+  @apply text-peach-800 font-bold;
+}
+
+/* 3D Project Card Stack */
+.cardStackSection {
+  @apply bg-white rounded-2xl shadow-elevation-1 overflow-hidden;
+}
+
+.cardStackSectionHeader {
+  @apply flex items-center justify-between px-4 pt-4 pb-0 lg:px-6 lg:pt-5;
+}
+
+.cardStackSectionTitle {
+  @apply text-xs lg:text-sm font-bold text-off-black;
+}
+
+.cardStackSectionAction {
+  @apply text-[10px] lg:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
+}
+
+.cardStackHeader {
+  @apply flex items-center justify-between mb-4 lg:mb-5;
+}
+
+.cardStackTitle {
+  @apply text-xs lg:text-sm font-bold text-off-black flex items-center gap-2;
+}
+
+.cardStackAction {
+  @apply text-[10px] lg:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
+}
+
+.cardStackTrack {
+  @apply flex py-3 px-4 lg:px-6 overflow-x-auto;
+  perspective: 1200px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.cardStackTrack::-webkit-scrollbar {
+  display: none;
+}
+
+/* Outer card — the project container */
+.stackCard {
+  @apply relative flex-shrink-0 cursor-pointer transition-all duration-300;
+  width: 240px;
+  transform-style: preserve-3d;
+}
+
+.stackCard:not(:first-child) {
+  margin-left: -32px;
+}
+
+.stackCard:hover {
+  transform: translateY(-4px);
+  z-index: 10;
+}
+
+/* Virtual card graphic — reference-style layout */
+.virtualCard {
+  @apply relative w-full rounded-xl overflow-hidden flex flex-col;
+  height: 150px;
+  background: linear-gradient(145deg, #242424 0%, #1a1a1a 40%, #2a2a2a 100%);
+}
+
+.virtualCard::after {
+  content: "";
+  @apply absolute inset-0 pointer-events-none;
+  background: radial-gradient(ellipse at 80% 20%, rgba(231, 101, 28, 0.12) 0%, transparent 60%);
+}
+
+/* Top row: project name + VISA */
+.virtualCardTop {
+  @apply flex items-start justify-between px-4 pt-4 relative z-10;
+}
+
+.virtualCardName {
+  @apply text-[11px] font-bold text-white/90;
+}
+
+.virtualCardVisa {
+  @apply text-[15px] font-extrabold tracking-wide italic;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Chip row — sits below the top row */
+.virtualCardChipRow {
+  @apply px-4 mt-3 relative z-10;
+}
+
+.virtualCardChip {
+  @apply w-7 h-5 rounded relative;
+  background: linear-gradient(135deg, #D4A853 0%, #C4963F 50%, #E8C068 100%);
+}
+
+.virtualCardChipLines {
+  @apply absolute inset-px rounded-sm;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: linear-gradient(90deg, transparent 30%, rgba(0, 0, 0, 0.05) 31%, rgba(0, 0, 0, 0.05) 32%, transparent 33%,
+    transparent 48%, rgba(0, 0, 0, 0.05) 49%, rgba(0, 0, 0, 0.05) 50%, transparent 51%,
+    transparent 68%, rgba(0, 0, 0, 0.05) 69%, rgba(0, 0, 0, 0.05) 70%, transparent 71%);
+}
+
+/* Card number row — single line after chip */
+.virtualCardNumber {
+  @apply text-[11px] font-mono text-white/40 tracking-[0.18em] px-4 mt-2 whitespace-nowrap relative z-10;
+}
+
+/* Bottom row: card holder + expiry — flush to bottom */
+.virtualCardBottom {
+  @apply flex items-end justify-between px-4 pb-3 mt-auto relative z-10;
+}
+
+.virtualCardHolder {
+  @apply text-left;
+}
+
+.virtualCardHolderLabel {
+  @apply text-[6px] text-white/25 uppercase tracking-wider;
+}
+
+.virtualCardHolderName {
+  @apply text-[8px] font-semibold text-white/60 uppercase tracking-wider;
+}
+
+.virtualCardExpiry {
+  @apply text-right;
+}
+
+.virtualCardExpiryLabel {
+  @apply text-[6px] text-white/25 uppercase tracking-wider;
+}
+
+.virtualCardExpiryValue {
+  @apply text-[8px] font-semibold text-white/60;
+}
+
+/* Card info below the virtual card */
+.stackCardInfo {
+  @apply pt-2.5 px-0.5;
+}
+
+.stackCardName {
+  @apply text-xs lg:text-sm font-bold text-off-black truncate;
+}
+
+.stackCardBudget {
+  @apply font-headline text-[11px] lg:text-xs text-off-black/50 mt-0.5;
+}
+
+.stackCardRow {
+  @apply flex items-center justify-between mt-1;
+}
+
+.stackCardMeta {
+  @apply text-[10px] text-off-black/40;
+}
+
+.stackCardProgress {
+  @apply mt-2.5;
 }
 
 /* Row layout helpers */
 .row2col {
-  @apply grid grid-cols-1 lg:grid-cols-12 gap-6;
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4;
 }
 
 .col7 {
@@ -78,201 +248,226 @@
   @apply lg:col-span-5;
 }
 
-/* Utilization banner — compact, Guild Academy style */
+/* Utilization banner — reference card style */
 .utilBanner {
-  @apply bg-guild-peach border-2 border-off-black rounded-2xl overflow-hidden p-5;
+  @apply rounded-2xl shadow-elevation-1 relative border border-off-black;
+  background-color: #F6CA9E;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+.utilOuterContent {
+  @apply p-5 lg:p-7;
 }
 
 .utilHeader {
-  @apply flex items-start justify-between mb-4;
+  @apply flex items-start justify-between;
+}
+
+.utilHeaderText {
+  @apply flex-1 relative z-10;
+}
+
+.utilEyebrow {
+  @apply font-headline text-sm lg:text-base font-normal text-off-black;
 }
 
 .utilTitle {
-  @apply font-headline text-base font-bold text-off-black;
+  @apply font-headline text-sm lg:text-base font-bold text-off-black;
 }
 
-.utilSubtitle {
-  @apply text-[10px] text-off-black mt-0.5;
+/* Geometric visualization — top-right of card */
+.utilViz {
+  @apply absolute top-0 right-0 pointer-events-none;
+  width: 65%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.utilCard {
-  @apply bg-white border-2 border-off-black rounded-xl p-4 space-y-3;
+.utilDivider {
+  @apply w-full h-px bg-off-black my-3 lg:my-4 relative z-10;
 }
 
-.utilCardRow {
-  @apply flex items-center justify-between;
+/* Inner white card */
+.utilInnerCard {
+  @apply bg-white rounded-xl p-4 lg:p-5 flex gap-0 items-stretch relative z-10 border border-off-black;
 }
 
-.utilCardLabel {
-  @apply text-xs font-semibold text-off-black;
+.utilInnerLeft {
+  @apply flex-1 min-w-0 pr-4 lg:pr-5;
 }
 
-.utilCardPct {
-  @apply font-headline text-xl font-bold tracking-tight;
+.utilInnerDivider {
+  @apply w-px self-stretch bg-off-black flex-shrink-0;
 }
 
-.utilCardMeta {
-  @apply flex justify-between text-[10px] text-off-black mt-1;
+.utilInnerRight {
+  @apply flex-shrink-0 flex items-center justify-center pl-4 lg:pl-5;
+}
+
+.utilInnerTitle {
+  @apply text-xs lg:text-sm font-bold text-off-black mb-2;
+}
+
+.utilProgressRow {
+  @apply flex items-center gap-3;
 }
 
 .utilProgressTrack {
-  @apply h-2.5 w-full bg-guild-taupe/30 rounded-full overflow-hidden;
+  @apply h-2 lg:h-2.5 flex-1 bg-off-black/10 rounded-full overflow-hidden;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-/* Activity / recent items card */
+.utilProgressPct {
+  @apply text-[10px] font-bold text-off-black whitespace-nowrap;
+}
+
+.utilCardMeta {
+  @apply flex items-center gap-2 text-[9px] text-off-black/50 mt-2;
+}
+
+.utilMetaDot {
+  @apply w-0.5 h-0.5 rounded-full bg-off-black/30;
+}
+
+.utilSubSection {
+  @apply mt-3 pt-3 border-t border-off-black/10;
+}
+
+.utilSubLabel {
+  @apply text-[10px] font-semibold text-off-black mb-1;
+}
+
+.utilSubDesc {
+  @apply text-[10px] text-off-black/40;
+}
+
+/* Donut chart */
+.utilDonut {
+  @apply relative;
+  width: 90px;
+  height: 90px;
+}
+
+.utilDonutCenter {
+  @apply absolute inset-0 flex items-center justify-center;
+}
+
+.utilDonutPct {
+  @apply font-headline text-sm font-bold text-off-black;
+}
+
+/* Activity / recent items card — elevated */
 .activityCard {
-  @apply bg-white border-2 border-off-black rounded-2xl overflow-hidden;
+  @apply bg-white rounded-2xl overflow-hidden shadow-elevation-1;
 }
 
 .activityHeader {
-  @apply flex items-center justify-between px-5 py-4 border-b-2 border-off-black;
+  @apply flex items-center justify-between px-5 py-3.5 lg:px-6 lg:py-4 border-b border-off-black/5;
 }
 
 .activityHeaderTitle {
-  @apply text-sm font-bold text-off-black flex items-center gap-2;
+  @apply text-sm lg:text-base font-bold text-off-black;
+}
+
+.activityHeaderCount {
+  @apply text-[11px] text-off-black/40 font-medium;
 }
 
 .activityRow {
-  @apply flex items-start gap-3 px-5 py-3.5 hover:bg-guild-cream/40 transition-colors;
+  @apply flex items-start gap-2.5 px-5 py-2.5 lg:px-6 lg:py-3 hover:bg-off-black/[0.02] transition-colors;
 }
 
 .activityDot {
-  @apply w-2 h-2 rounded-full mt-1.5 flex-shrink-0;
+  @apply w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 bg-primary/30;
 }
 
 .activityTitle {
-  @apply text-sm font-medium text-off-black;
+  @apply text-[11px] lg:text-xs font-medium text-off-black;
 }
 
 .activityMeta {
-  @apply text-[10px] text-off-black mt-0.5;
+  @apply text-[10px] text-off-black/35 mt-0.5;
 }
 
-/* Navigate grid — solid color action cards */
-.navGrid {
-  @apply grid grid-cols-2 lg:grid-cols-4 gap-4;
-}
-
-.navCard {
-  @apply relative rounded-2xl p-5 min-h-[100px] transition-all hover:opacity-90;
-}
-
-.navCardTitle {
-  @apply text-sm font-bold text-off-black;
-}
-
-.navCardTitleLight {
-  @apply text-sm font-bold text-white;
-}
-
-.navCardDesc {
-  @apply text-xs text-off-black/70 mt-1;
-}
-
-.navCardDescLight {
-  @apply text-xs text-white/70 mt-1;
-}
-
-.navCardArrow {
-  @apply absolute bottom-4 right-4 text-off-black/30 text-base;
-}
-
-.navCardArrowLight {
-  @apply absolute bottom-4 right-4 text-white/50 text-base;
-}
-
-/* Plain white card with border — for projects, summary, transactions */
+/* Plain white card — elevated */
 .plainCard {
-  @apply bg-white border-2 border-off-black rounded-2xl overflow-hidden;
+  @apply bg-white rounded-2xl overflow-hidden shadow-elevation-1;
 }
 
 .plainHeader {
-  @apply flex items-center justify-between px-5 py-4 border-b-2 border-off-black;
+  @apply flex items-center justify-between px-5 py-3.5 lg:px-6 lg:py-4 border-b border-off-black/5;
 }
 
 .plainHeaderTitle {
-  @apply text-sm font-bold text-off-black flex items-center gap-2;
+  @apply text-sm lg:text-base font-bold text-off-black;
 }
 
 .plainHeaderAction {
-  @apply text-xs font-semibold text-primary hover:underline transition-colors;
+  @apply text-[9px] lg:text-[10px] font-semibold text-off-black/40 hover:text-off-black transition-colors;
 }
 
-/* Project row */
-.projectRow {
-  @apply block px-5 py-4 hover:bg-guild-cream/50 transition-colors;
-}
-
-.projectRowBorder {
-  composes: projectRow;
-  @apply border-b border-off-black/20;
-}
-
-.projectName {
-  @apply text-sm font-semibold text-off-black truncate transition-colors;
-}
-
-:global(.group):hover .projectName {
-  @apply text-primary;
-}
-
-.projectMeta {
-  @apply flex justify-between mt-1.5 text-[10px] text-off-black;
-}
-
-/* Summary row */
-.summaryRow {
-  @apply px-5 py-3.5 flex items-center justify-between;
-}
-
-.summaryLabel {
-  @apply text-xs text-off-black;
-}
-
-.summaryValue {
-  @apply text-sm font-bold text-off-black;
-}
-
-/* Transactions table */
+/* Transactions table — Salesforce style */
 .txToolbar {
   @apply flex gap-1;
 }
 
+.txTabs {
+  @apply flex items-center gap-0 px-5 lg:px-6 border-b border-off-black/5;
+}
+
+.txTab {
+  @apply px-4 py-2.5 text-[11px] lg:text-xs font-semibold text-off-black/35 border-b-2 border-transparent hover:text-off-black transition-colors cursor-pointer;
+}
+
+.txTabActive {
+  composes: txTab;
+  @apply text-off-black border-b-2 border-primary;
+}
+
+.txRecordCount {
+  @apply px-5 lg:px-6 py-2 text-[10px] text-off-black/35;
+}
+
+.txSortHeader {
+  @apply flex items-center gap-1;
+}
+
 .txVendor {
-  @apply text-sm font-medium text-off-black;
+  @apply text-[11px] lg:text-xs font-medium text-off-black;
 }
 
 .txDate {
-  @apply text-[10px] text-off-black;
+  @apply text-[10px] text-off-black/35;
 }
 
 .txProject {
-  @apply text-sm text-off-black;
+  @apply text-[11px] lg:text-xs text-off-black;
 }
 
 .txCategory {
-  @apply text-[10px] font-bold text-off-black uppercase tracking-wide;
+  @apply text-[8px] lg:text-[9px] font-bold text-off-black/40 uppercase tracking-wide;
 }
 
 .txAmount {
-  @apply font-headline text-sm font-bold text-off-black;
+  @apply font-headline text-[11px] lg:text-xs font-bold text-off-black tabular-nums;
 }
 
-/* Empty state */
+/* Empty state — elevated */
 .emptyGrid {
-  @apply grid grid-cols-1 lg:grid-cols-2 rounded-2xl overflow-hidden border-2 border-off-black;
+  @apply grid grid-cols-1 lg:grid-cols-2 rounded-2xl overflow-hidden shadow-elevation-2;
 }
 
 .emptyHero {
-  @apply bg-guild-mint p-8 lg:p-12 space-y-5;
+  @apply bg-primary p-5 lg:p-8 space-y-3 lg:space-y-4;
 }
 
 .emptyHeroTitle {
-  @apply font-headline text-3xl font-bold text-white;
+  @apply font-headline text-xl lg:text-2xl font-bold text-white;
 }
 
 .emptyHeroDesc {
-  @apply text-sm text-white leading-relaxed max-w-sm;
+  @apply text-[11px] lg:text-xs text-white leading-relaxed max-w-sm;
 }
 
 .emptySteps {
@@ -280,18 +475,18 @@
 }
 
 .emptyStep {
-  @apply flex items-start gap-4 px-6 py-5;
+  @apply flex items-start gap-2.5 lg:gap-3 px-3 py-3 lg:px-4 lg:py-3.5;
 }
 
 .emptyStepBorder {
   composes: emptyStep;
-  @apply border-b border-off-black/20;
+  @apply border-b border-off-black/5;
 }
 
 .emptyStepTitle {
-  @apply text-sm font-bold text-off-black;
+  @apply text-[11px] lg:text-xs font-bold text-off-black;
 }
 
 .emptyStepDesc {
-  @apply text-xs text-off-black mt-0.5;
+  @apply text-[9px] lg:text-[10px] text-off-black/35 mt-0.5;
 }

@@ -5,12 +5,12 @@
 
 /* Layout */
 .pageContainer {
-  @apply max-w-[1440px] mx-auto w-full;
+  @apply max-w-[1200px] mx-auto w-full;
 }
 
 .dashboardPage {
   composes: pageContainer;
-  @apply p-6 lg:p-8 space-y-6;
+  @apply px-5 py-4 lg:px-10 lg:py-6 xl:px-16 xl:py-8 space-y-5 lg:space-y-6;
 }
 
 .detailPage {
@@ -33,19 +33,19 @@
 
 /* Typography */
 .eyebrow {
-  @apply text-xs font-bold uppercase tracking-[0.15em] text-off-black/40 mb-1;
+  @apply text-[9px] lg:text-[10px] font-bold uppercase tracking-[0.15em] text-off-black/40 mb-0.5;
 }
 
 .eyebrowLight {
-  @apply text-xs font-bold uppercase tracking-[0.15em] text-white/40;
+  @apply text-[10px] font-bold uppercase tracking-[0.15em] text-white/40;
 }
 
 .eyebrowAccent {
-  @apply text-sm font-bold uppercase tracking-[0.15em] text-off-black/50 mb-4;
+  @apply text-xs font-bold uppercase tracking-[0.15em] text-off-black/50 mb-3;
 }
 
 .pageTitle {
-  @apply font-headline text-2xl font-bold text-off-black;
+  @apply font-headline text-lg lg:text-xl font-bold text-off-black;
 }
 
 .sectionTitle {
@@ -122,15 +122,15 @@
 
 /* Table */
 .tableHeader {
-  @apply px-5 py-3 text-[10px] font-bold text-off-black/40 uppercase tracking-widest;
+  @apply px-2.5 py-1.5 lg:px-3.5 lg:py-2 text-[9px] font-bold text-off-black/40 uppercase tracking-widest;
 }
 
 .tableCell {
-  @apply px-5 py-3.5;
+  @apply px-2.5 py-2 lg:px-3.5 lg:py-2.5;
 }
 
 .tableRow {
-  @apply hover:bg-guild-cream/30 transition-colors;
+  @apply hover:bg-peach-50 transition-colors;
 }
 
 .tableRowBorder {
@@ -155,32 +155,32 @@
   @apply h-full rounded-full transition-all duration-500;
 }
 
-.progressGreen {
+.progressNormal {
   composes: progressFill;
-  @apply bg-secondary;
+  @apply bg-primary/50;
 }
 
-.progressAmber {
+.progressWarning {
   composes: progressFill;
-  @apply bg-tertiary-fixed-dim;
+  @apply bg-primary;
 }
 
-.progressRed {
+.progressCritical {
   composes: progressFill;
-  @apply bg-destructive;
+  @apply bg-peach-800;
 }
 
 /* Status colors */
-.statusGreen {
-  @apply text-secondary;
+.statusNormal {
+  @apply text-primary;
 }
 
-.statusAmber {
-  @apply text-on-tertiary-container;
+.statusWarning {
+  @apply text-peach-600;
 }
 
-.statusRed {
-  @apply text-destructive;
+.statusCritical {
+  @apply text-peach-800;
 }
 
 /* Links / Actions */
@@ -216,7 +216,7 @@
 
 /* Alert banner */
 .alertBanner {
-  @apply block bg-guild-peach border-2 border-off-black p-4 hover:bg-guild-peach/80 transition-colors;
+  @apply block bg-peach-100 border border-off-black/10 p-4 hover:bg-peach-100/80 transition-colors;
 }
 
 /* Error inline */
@@ -231,7 +231,7 @@
 
 .badgeActive {
   composes: badge;
-  @apply border border-secondary/40 text-secondary bg-secondary/10;
+  @apply border border-primary/30 text-primary bg-primary/5;
 }
 
 .badgeDefault {

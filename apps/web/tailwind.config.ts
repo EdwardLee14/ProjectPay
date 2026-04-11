@@ -52,6 +52,11 @@ const config: Config = {
         "guild-blush": "#ECBDFB",
         "guild-yellow": "#FDF18B",
         "off-black": "#170B01",
+        /* Peach scale */
+        "peach-50": "#FFF8F2",
+        "peach-100": "#FFEAD6",
+        "peach-600": "#D4792A",
+        "peach-800": "#8B4513",
         /* Extended tokens */
         "primary-container": "#1A1A1A",
         "on-primary-container": "#E7651C",
@@ -90,6 +95,10 @@ const config: Config = {
       },
       boxShadow: {
         soft: "none",
+        "elevation-1": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+        "elevation-2": "0 4px 12px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)",
+        "elevation-3": "0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)",
+        "elevation-nav": "0 1px 4px rgba(0,0,0,0.06)",
       },
     },
   },

@@ -73,32 +73,24 @@ export default async function TeamPage() {
       {/* Header */}
       <div className={s.header}>
         <div>
-          <p className={shared.eyebrow}>Team</p>
-          <h1 className={shared.pageTitle}>
-            <span className="font-normal">Your</span> <strong>Team</strong>
-          </h1>
+          <h1 className={shared.pageTitle}>Team</h1>
+          {collaborators.length > 0 && (
+            <p className={s.headerMeta}>
+              {collaborators.length} collaborator
+              {collaborators.length !== 1 ? "s" : ""}
+            </p>
+          )}
         </div>
-        {collaborators.length > 0 && (
-          <p className={s.headerMeta}>
-            {collaborators.length} collaborator
-            {collaborators.length !== 1 ? "s" : ""}
-          </p>
-        )}
+        <Button variant="pill">
+          <Icon name="person_add" size={16} />
+          Add Member
+        </Button>
       </div>
 
       {collaborators.length > 0 ? (
         <section className={s.collaboratorGrid}>
           {collaborators.map((collab) => (
             <div key={collab.id} className={s.collaboratorCard}>
-              {/* Accent strip */}
-              <div
-                className={
-                  collab.role === "CLIENT"
-                    ? s.accentStripPeach
-                    : s.accentStripGreen
-                }
-              />
-
               <div className={s.cardBody}>
                 {/* Avatar + name */}
                 <div className={s.cardTop}>

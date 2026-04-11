@@ -1,0 +1,51 @@
+.header {
+  @apply flex flex-col md:flex-row md:items-end justify-between gap-2;
+}
+
+.headerMeta {
+  @apply text-sm text-off-black/40 mt-1;
+}
+
+.messagesLayout {
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[500px];
+}
+
+.conversationList {
+  @apply lg:col-span-4 bg-white rounded-2xl shadow-elevation-1 overflow-hidden flex flex-col;
+}
+
+.conversationListHeader {
+  @apply px-5 py-4 border-b border-off-black/5;
+}
+
+.conversationListTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.emptyConversations {
+  @apply flex-1 flex flex-col items-center justify-center p-6 text-center;
+}
+
+.emptyTitle {
+  @apply text-sm font-semibold text-off-black mt-3;
+}
+
+.emptyDesc {
+  @apply text-[11px] text-off-black/40 mt-1 max-w-[200px];
+}
+
+.messageContent {
+  @apply lg:col-span-8 bg-white rounded-2xl shadow-elevation-1 overflow-hidden flex flex-col;
+}
+
+.messageEmptyState {
+  @apply flex-1 flex flex-col items-center justify-center p-8 text-center;
+}
+
+.messageEmptyTitle {
+  @apply text-base font-bold text-off-black mt-4;
+}
+
+.messageEmptyDesc {
+  @apply text-sm text-off-black/40 mt-1 max-w-[280px];
+}

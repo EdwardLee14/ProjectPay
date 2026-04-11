@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
+import { ProgressBar } from "@/components/ui/progress-bar";
 import s from "./projects.module.css";
 import shared from "@/styles/shared.module.css";
 
@@ -36,24 +37,6 @@ const STATUS_MAP: Record<string, string[]> = {
   Cancelled: ["CANCELLED"],
 };
 
-function accentClass(status: string) {
-  switch (status) {
-    case "ACTIVE":
-      return s.accentActive;
-    case "DRAFT":
-      return s.accentDraft;
-    case "PENDING_APPROVAL":
-    case "PENDING_FUNDING":
-      return s.accentPending;
-    case "COMPLETE":
-      return s.accentComplete;
-    case "CANCELLED":
-      return s.accentCancelled;
-    default:
-      return s.accentDraft;
-  }
-}
-
 function statusLabel(status: string) {
   switch (status) {
     case "PENDING_APPROVAL":
@@ -67,17 +50,10 @@ function statusLabel(status: string) {
 
 const pctColor = (pct: number) =>
   pct > 100
-    ? shared.statusRed
+    ? shared.statusCritical
     : pct >= 80
-      ? shared.statusAmber
-      : shared.statusGreen;
-
-const barColor = (pct: number) =>
-  pct > 100
-    ? shared.progressRed
-    : pct >= 80
-      ? shared.progressAmber
-      : shared.progressGreen;
+      ? shared.statusWarning
+      : shared.statusNormal;
 
 export function ProjectFilterTabs({
   projects,
@@ -117,7 +93,6 @@ export function ProjectFilterTabs({
               href={`/projects/${project.id}`}
               className={s.card}
             >
-              <div className={accentClass(project.status)} />
               <div className={s.cardBody}>
                 <div className={s.cardTitleRow}>
                   <div>
@@ -148,17 +123,9 @@ export function ProjectFilterTabs({
                       {Math.round(project.pct)}%
                     </span>
                   </div>
-                  <div className={cn(shared.progressTrack, "mt-2")}>
-                    <div
-                      className={barColor(project.pct)}
-                      style={{
-                        width: `${Math.min(project.pct, 100)}%`,
-                      }}
-                    />
+                  <div className="mt-2">
+                    <ProgressBar value={project.pct} className="h-1.5" />
                   </div>
-                  <p className={cn(s.budgetRow, "mt-1.5")}>
-                    <span>{formatCurrency(project.total)} budget</span>
-                  </p>
                 </div>
 
                 {/* Footer */}

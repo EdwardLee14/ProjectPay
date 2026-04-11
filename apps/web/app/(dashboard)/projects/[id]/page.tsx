@@ -5,6 +5,7 @@ import { getSupabaseUser, getCurrentUser } from "@/lib/auth";
 import { formatCurrency } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProgressBar } from "@/components/ui/progress-bar";
 import { TransactionFeed } from "@/components/transactions/transaction-feed";
 import { ChangeOrderList } from "@/components/change-orders/change-order-list";
 import { ChangeOrderForm } from "@/components/change-orders/change-order-form";
@@ -50,11 +51,7 @@ export default async function ProjectDetailPage({
   const usagePct =
     Number(project.totalBudget) > 0 ? (totalSpent / Number(project.totalBudget)) * 100 : 0;
 
-  const statusStyle: Record<string, string> = {
-    DRAFT: "bg-muted text-muted-foreground",
-    ACTIVE: "bg-secondary-container/30 text-secondary",
-    COMPLETE: "bg-surface-container text-muted-foreground",
-  };
+  const statusClass = project.status === "ACTIVE" ? shared.badgeActive : shared.badgeDefault;
 
   return (
     <main className={shared.detailPage}>
@@ -72,7 +69,7 @@ export default async function ProjectDetailPage({
           <div className="space-y-2">
             <div className={s.titleRow}>
               <h1 className={s.title}>{project.name}</h1>
-              <span className={cn(shared.badgePill, statusStyle[project.status])}>
+              <span className={cn(shared.badgePill, statusClass)}>
                 {project.status}
               </span>
             </div>
@@ -83,11 +80,15 @@ export default async function ProjectDetailPage({
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className={s.actionRow}>
             <Link href={`/projects/${project.id}/payment-mode`} className={s.actionBtn}>
-              <Icon name="settings" className="text-lg" />
+              <Icon name="tune" className="text-base" />
               Payment Mode
             </Link>
+            <button className={s.actionBtn}>
+              <Icon name="edit" className="text-base" />
+              Edit Project
+            </button>
           </div>
         </div>
       </div>
@@ -114,12 +115,7 @@ export default async function ProjectDetailPage({
                 </span>
               </div>
             </div>
-            <div className={shared.progressTrackDark}>
-              <div
-                className="h-full bg-secondary-fixed rounded-full transition-all"
-                style={{ width: `${Math.min(usagePct, 100)}%` }}
-              />
-            </div>
+            <ProgressBar value={usagePct} />
             <p className={s.budgetUsageText}>
               {Math.round(usagePct)}% of budget used
             </p>
@@ -129,7 +125,7 @@ export default async function ProjectDetailPage({
 
       {/* Tabs */}
       <Tabs defaultValue="budget" className="space-y-6">
-        <TabsList className="bg-surface-container-low p-1">
+        <TabsList className={s.tabList}>
           <TabsTrigger value="budget">Budget Categories</TabsTrigger>
           <TabsTrigger value="transactions">Transactions</TabsTrigger>
           <TabsTrigger value="change-orders">Change Orders</TabsTrigger>
@@ -156,21 +152,13 @@ export default async function ProjectDetailPage({
                         <span
                           className={cn(
                             s.categoryPct,
-                            pct > 100 ? shared.statusRed : shared.statusGreen,
+                            pct > 100 ? shared.statusCritical : shared.statusNormal,
                           )}
                         >
                           {Math.round(pct)}%
                         </span>
                       </div>
-                      <div className="h-1.5 w-full bg-accent rounded-full overflow-hidden">
-                        <div
-                          className={cn(
-                            shared.progressFill,
-                            pct > 100 ? "bg-destructive" : "bg-secondary",
-                          )}
-                          style={{ width: `${Math.min(pct, 100)}%` }}
-                        />
-                      </div>
+                      <ProgressBar value={pct} className="h-1.5" />
                       <div className={s.categoryMeta}>
                         <span>Spent: {formatCurrency(Number(cat.spentAmount))}</span>
                         <span>Budget: {formatCurrency(Number(cat.allocatedAmount))}</span>

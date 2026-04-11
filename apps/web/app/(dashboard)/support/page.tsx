@@ -6,19 +6,16 @@ import shared from "@/styles/shared.module.css";
 
 const gettingStartedSteps = [
   {
-    icon: "add_circle",
     title: "Create a Project",
     description:
       "Define your project budget with categories, set spending limits, and organize everything before work begins.",
   },
   {
-    icon: "share",
     title: "Share with Client",
     description:
       "Invite your client to review the budget breakdown. They can approve and fund the project directly.",
   },
   {
-    icon: "visibility",
     title: "Track Spending",
     description:
       "Every transaction is tracked in real time. Both you and your client can see exactly where every dollar goes.",
@@ -70,11 +67,7 @@ export default async function SupportPage() {
       {/* Header */}
       <div className={s.header}>
         <div>
-          <p className={shared.eyebrow}>Support</p>
-          <h1 className={shared.pageTitle}>
-            <span className="font-normal">Help &amp;</span>{" "}
-            <strong>Support</strong>
-          </h1>
+          <h1 className={shared.pageTitle}>Help &amp; Support</h1>
         </div>
       </div>
 
@@ -86,13 +79,7 @@ export default async function SupportPage() {
             <div key={step.title} className={s.stepCard}>
               <div className={s.stepInner}>
                 <p className={s.stepNumber}>Step {i + 1}</p>
-                <div className="flex items-center gap-2">
-                  <Icon
-                    name={step.icon}
-                    className="text-xl text-primary flex-shrink-0"
-                  />
-                  <p className={s.stepTitle}>{step.title}</p>
-                </div>
+                <p className={s.stepTitle}>{step.title}</p>
                 <p className={s.stepDesc}>{step.description}</p>
               </div>
             </div>
@@ -106,7 +93,6 @@ export default async function SupportPage() {
         <div className={s.faqGrid}>
           {faqs.map((faq) => (
             <div key={faq.question} className={s.faqCard}>
-              <div className={s.faqAccent} />
               <div className={s.faqBody}>
                 <p className={s.faqQuestion}>{faq.question}</p>
                 <p className={s.faqAnswer}>{faq.answer}</p>

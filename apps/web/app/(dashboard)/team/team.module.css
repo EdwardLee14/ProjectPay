@@ -1,41 +1,31 @@
-/* Team page styles */
+/* Team page — Cosmos style */
 
 .header {
-  @apply flex flex-col md:flex-row md:items-end justify-between gap-4;
+  @apply flex flex-col md:flex-row md:items-end justify-between gap-3;
 }
 
 .headerMeta {
-  @apply text-sm text-off-black;
+  @apply text-sm text-off-black/40;
 }
 
-/* Collaborator grid */
 .collaboratorGrid {
-  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6;
+  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4;
 }
 
-/* Collaborator card */
 .collaboratorCard {
-  @apply rounded-2xl bg-white border border-border/30 overflow-hidden;
-}
-
-.accentStripPeach {
-  @apply h-1.5 rounded-t-2xl bg-guild-peach;
-}
-
-.accentStripGreen {
-  @apply h-1.5 rounded-t-2xl bg-secondary;
+  @apply bg-white rounded-2xl shadow-elevation-1 overflow-hidden transition-all hover:shadow-elevation-2;
 }
 
 .cardBody {
-  @apply p-6 space-y-4;
+  @apply p-5 space-y-3;
 }
 
 .cardTop {
-  @apply flex items-center gap-4;
+  @apply flex items-start gap-3;
 }
 
 .avatar {
-  @apply w-12 h-12 rounded-full bg-guild-cream flex items-center justify-center font-headline font-bold text-off-black flex-shrink-0;
+  @apply w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0;
 }
 
 .nameBlock {
@@ -43,30 +33,23 @@
 }
 
 .name {
-  @apply text-sm font-bold text-off-black truncate;
+  @apply text-sm font-bold text-off-black;
 }
 
 .email {
-  @apply text-xs text-off-black truncate mt-0.5;
+  @apply text-[11px] text-off-black/40 truncate;
 }
 
 .company {
-  @apply text-xs text-off-black mt-0.5;
-}
-
-/* Role badge */
-.roleBadge {
-  @apply inline-block px-3 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider;
+  @apply text-[11px] text-off-black/40;
 }
 
 .roleBadgeContractor {
-  composes: roleBadge;
-  @apply bg-secondary/10 text-secondary border border-secondary/30;
+  @apply px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-primary/30 text-primary bg-primary/5;
 }
 
 .roleBadgeClient {
-  composes: roleBadge;
-  @apply bg-guild-peach text-off-black border border-guild-peach;
+  @apply px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-off-black/20 text-off-black/40;
 }
 
 .sharedCount {
@@ -74,26 +57,25 @@
 }
 
 .projectList {
-  @apply mt-1 space-y-1;
+  @apply mt-1 space-y-0.5;
 }
 
 .projectName {
-  @apply text-xs text-off-black;
+  @apply text-[11px] text-off-black/40;
 }
 
-/* Empty state */
 .emptyContainer {
-  @apply flex flex-col items-center justify-center text-center py-20;
+  @apply bg-white rounded-2xl shadow-elevation-1 p-12 text-center flex flex-col items-center;
 }
 
 .emptyIcon {
-  @apply text-off-black/10 mb-4;
+  @apply text-off-black/10;
 }
 
 .emptyTitle {
-  @apply text-lg font-bold text-off-black mb-1;
+  @apply text-base font-bold text-off-black mt-4;
 }
 
 .emptyDesc {
-  @apply text-sm text-off-black mb-6 max-w-sm;
+  @apply text-sm text-off-black/40 mt-1 max-w-sm;
 }

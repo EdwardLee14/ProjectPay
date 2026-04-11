@@ -22,21 +22,14 @@ export default async function SettingsPage() {
     <main className={shared.dashboardPage}>
       {/* Page Header */}
       <div>
-        <p className={shared.eyebrow}>Account</p>
-        <h1 className={shared.pageTitle}>
-          <span className="font-normal">Account</span>{" "}
-          <strong>Settings</strong>
-        </h1>
+        <h1 className={shared.pageTitle}>Settings</h1>
       </div>
 
       <div className={s.container}>
         {/* Profile Section */}
         <section className={s.sectionCard}>
-          <div className={s.accentPrimary} />
           <div className={s.sectionBody}>
-            <h2 className={s.sectionTitle}>
-              <span className="font-normal">Your</span> <strong>Profile</strong>
-            </h2>
+            <h2 className={s.sectionTitle}>Your Profile</h2>
             <ProfileForm
               initialName={user.name}
               initialCompanyName={user.companyName}
@@ -47,12 +40,8 @@ export default async function SettingsPage() {
 
         {/* Account Details Section */}
         <section className={s.sectionCard}>
-          <div className={s.accentMint} />
           <div className={s.sectionBody}>
-            <h2 className={s.sectionTitle}>
-              <span className="font-normal">Account</span>{" "}
-              <strong>Details</strong>
-            </h2>
+            <h2 className={s.sectionTitle}>Account Details</h2>
 
             <div>
               {/* Email */}
@@ -81,12 +70,8 @@ export default async function SettingsPage() {
 
         {/* Session Section */}
         <section className={s.sectionCard}>
-          <div className={s.accentDestructive} />
           <div className={s.sectionBody}>
-            <h2 className={s.sectionTitle}>
-              <span className="font-normal">Active</span>{" "}
-              <strong>Session</strong>
-            </h2>
+            <h2 className={s.sectionTitle}>Active Session</h2>
             <p className={s.sessionDescription}>
               Sign out of your account on this device. You will need to sign in
               again to access your projects and settings.

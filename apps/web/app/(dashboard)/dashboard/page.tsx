@@ -5,6 +5,7 @@ import { getSupabaseUser, getCurrentUser } from "@/lib/auth";
 import { formatCurrency, cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
+import { ProgressBar } from "@/components/ui/progress-bar";
 import s from "./dashboard.module.css";
 import shared from "@/styles/shared.module.css";
 
@@ -55,18 +56,11 @@ export default async function DashboardPage() {
 
   const hasProjects = projects.length > 0;
 
-  const pctColor = (pct: number) =>
-    pct > 100 ? shared.statusRed : pct >= 80 ? shared.statusAmber : shared.statusGreen;
-
-  const barColor = (pct: number) =>
-    pct > 100 ? shared.progressRed : pct >= 80 ? shared.progressAmber : shared.progressGreen;
-
   return (
     <main className={shared.dashboardPage}>
       {/* Header */}
       <div className={s.header}>
         <div>
-          <p className={shared.eyebrow}>Dashboard</p>
           <h1 className={shared.pageTitle}>
             Welcome back, {user.name?.split(" ")[0] ?? "there"}.
           </h1>
@@ -80,22 +74,20 @@ export default async function DashboardPage() {
 
       {/* Pending alert */}
       {pendingOrders > 0 && (
-        <Link href="/projects" className="block bg-guild-peach border-2 border-off-black rounded-2xl p-4 hover:bg-guild-peach/80 transition-colors">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Icon name="pending_actions" className="text-xl text-off-black" />
-              <span className="text-sm font-semibold text-off-black">
-                {pendingOrders} change order{pendingOrders !== 1 ? "s" : ""} pending review
-              </span>
-            </div>
-            <Icon name="arrow_forward" className="text-off-black text-sm" />
+        <Link href="/projects" className={s.alertBar}>
+          <div className={s.alertBarContent}>
+            <Icon name="pending_actions" className={s.alertBarIcon} />
+            <span className={s.alertBarText}>
+              {pendingOrders} change order{pendingOrders !== 1 ? "s" : ""} pending review
+            </span>
           </div>
+          <Icon name="arrow_forward" className={s.alertBarArrow} />
         </Link>
       )}
 
       {hasProjects ? (
         <>
-          {/* 1. KPI Row */}
+          {/* 1. KPI Row — flat minimal cards */}
           <section className={s.kpiGrid}>
             {(() => {
               const fundedPct = totalBudget > 0 ? Math.round((totalFunded / totalBudget) * 100) : 0;
@@ -107,96 +99,228 @@ export default async function DashboardPage() {
                   label: "Total Budget",
                   value: formatCurrency(totalBudget),
                   sub: `across ${projects.length} project${projects.length !== 1 ? "s" : ""}`,
-                  accent: "bg-primary", accentLight: true,
-                  icon: "account_balance_wallet",
-                  dark: false,
                 },
                 {
                   label: "Total Spent",
                   value: formatCurrency(totalSpent),
                   sub: `${spentPct}% of budget`,
                   delta: spentPct > 80 ? "up" : undefined,
-                  accent: "bg-guild-peach", accentLight: false,
-                  icon: "trending_down",
-                  dark: false,
                 },
                 {
                   label: "Budget Remaining",
                   value: formatCurrency(remaining),
                   sub: `${remainPct}% available`,
                   delta: remainPct > 20 ? "up" : remainPct > 0 ? undefined : "down",
-                  accent: "bg-secondary", accentLight: true,
-                  icon: "savings",
-                  dark: false,
                 },
                 {
                   label: "Total Funded",
                   value: formatCurrency(totalFunded),
                   sub: totalFunded > 0 ? `${fundedPct}% funded` : "awaiting funding",
                   delta: totalFunded > 0 && fundedPct >= 100 ? "up" : undefined,
-                  accent: "bg-guild-mint", accentLight: true,
-                  icon: "payments",
-                  dark: false,
                 },
               ].map((item) => (
                 <div key={item.label} className={s.kpiCard}>
-                  <div className={cn(s.kpiAccent, item.accent)}>
-                    <p className={item.accentLight ? s.kpiAccentLabel : s.kpiAccentLabelDark}>
-                      <span className="font-normal">{item.label.split(" ")[0]}</span>{" "}
-                      <strong>{item.label.split(" ").slice(1).join(" ")}</strong>
-                    </p>
-                    <Icon name={item.icon} className={item.accentLight ? s.kpiAccentIcon : s.kpiAccentIconDark} />
+                  <div className={s.kpiLabel}>
+                    <span className={s.kpiLabelText}>{item.label}</span>
                   </div>
-                  <div className={s.kpiBody}>
-                    <p className={s.kpiValue}>{item.value}</p>
-                    <p className={s.kpiSub}>
-                      {item.sub}
-                      {item.delta === "up" && <span className={s.kpiDeltaUp}>&uarr;</span>}
-                      {item.delta === "down" && <span className={s.kpiDeltaDown}>&darr;</span>}
-                    </p>
-                  </div>
+                  <p className={s.kpiValue}>{item.value}</p>
+                  <p className={s.kpiSub}>
+                    {item.sub}
+                    {item.delta === "up" && <span className={s.kpiDelta}>&uarr;</span>}
+                    {item.delta === "down" && <span className={s.kpiDeltaDown}>&darr;</span>}
+                  </p>
                 </div>
               ));
             })()}
           </section>
 
-          {/* 2. Budget Utilization (5-col) + Activity (7-col) */}
+          {/* 2. Project Cards */}
+          <section className={s.cardStackSection}>
+            <div className={s.cardStackSectionHeader}>
+              <h3 className={s.cardStackSectionTitle}>Project Cards</h3>
+              <Link href="/projects" className={s.cardStackSectionAction}>
+                View all &rarr;
+              </Link>
+            </div>
+            <div className={s.cardStackTrack}>
+              {projects.slice(0, 5).map((project, idx) => {
+                const spent = project.budgetCategories.reduce((s, c) => s + Number(c.spentAmount), 0);
+                const pct = Number(project.totalBudget) > 0 ? (spent / Number(project.totalBudget)) * 100 : 0;
+                const last4 = String(idx + 1).padStart(4, "0");
+                const clientName = user.role === "CONTRACTOR"
+                  ? ("client" in project ? project.client?.name : null) ?? "Client"
+                  : ("contractor" in project ? project.contractor?.name : null) ?? "Contractor";
+                return (
+                  <Link
+                    key={project.id}
+                    href={`/projects/${project.id}`}
+                    className={s.stackCard}
+                  >
+                    {/* Virtual card */}
+                    <div className={s.virtualCard}>
+                      <div className={s.virtualCardTop}>
+                        <span className={s.virtualCardName}>VisiBill</span>
+                        <span className={s.virtualCardVisa}>VISA</span>
+                      </div>
+                      <div className={s.virtualCardChipRow}>
+                        <div className={s.virtualCardChip}>
+                          <div className={s.virtualCardChipLines} />
+                        </div>
+                      </div>
+                      <p className={s.virtualCardNumber}>
+                        **** &nbsp; **** &nbsp; **** &nbsp; {last4}
+                      </p>
+                      <div className={s.virtualCardBottom}>
+                        <div className={s.virtualCardHolder}>
+                          <p className={s.virtualCardHolderLabel}>Card Holder</p>
+                          <p className={s.virtualCardHolderName}>{clientName}</p>
+                        </div>
+                        <div className={s.virtualCardExpiry}>
+                          <p className={s.virtualCardExpiryLabel}>Expiry</p>
+                          <p className={s.virtualCardExpiryValue}>12/28</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Project info below card */}
+                    <div className={s.stackCardInfo}>
+                      <p className={s.stackCardName}>{project.name}</p>
+                      <p className={s.stackCardBudget}>{formatCurrency(Number(project.totalBudget))}</p>
+                      <div className={s.stackCardRow}>
+                        <span className={project.status === "ACTIVE" ? shared.badgeActive : shared.badgeDefault}>
+                          {project.status}
+                        </span>
+                        <span className={s.stackCardMeta}>{Math.round(pct)}% spent</span>
+                      </div>
+                      <div className={s.stackCardProgress}>
+                        <ProgressBar value={pct} className="h-1.5" trackClassName="bg-peach-100" borderClassName="border border-off-black" />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* 3. Budget Utilization (5-col) + Activity (7-col) */}
           <section className={s.row2col}>
             <div className={cn(s.utilBanner, s.col5)}>
-              {/* Header with shapes next to title */}
-              <div className={s.utilHeader}>
-                <div>
-                  <p className={s.utilTitle}>
-                    <span className="font-normal">Budget</span>{" "}
-                    <strong>Utilization</strong>
-                  </p>
-                  <p className={s.utilSubtitle}>
-                    {projects.length} project{projects.length !== 1 ? "s" : ""} &middot; {activeCount} active
-                  </p>
-                </div>
-                {/* Geometric shapes next to header */}
-                <svg width="80" height="45" viewBox="0 0 80 45" fill="none" className="flex-shrink-0 opacity-35">
-                  <rect x="0" y="5" width="28" height="28" rx="6" fill="#E7651C" />
-                  <circle cx="40" cy="19" r="14" fill="#2D4A34" />
-                  <rect x="52" y="0" width="28" height="45" rx="14" fill="#170B01" opacity="0.6" />
+              {/* Geometric visualization — right side background */}
+              <div className={s.utilViz}>
+                <svg viewBox="0 0 240 260" preserveAspectRatio="xMaxYMin slice">
+                  <defs>
+                    {/* Diagonal hatching pattern */}
+                    <pattern id="utilHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(135)">
+                      <line x1="0" y1="0" x2="0" y2="6" stroke="#1a1a1a" strokeWidth="0.7" />
+                    </pattern>
+                    <linearGradient id="utilFadeL" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#F6CA9E" />
+                      <stop offset="100%" stopColor="#F6CA9E" stopOpacity="0" />
+                    </linearGradient>
+                    <linearGradient id="utilFadeB" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#F6CA9E" stopOpacity="0" />
+                      <stop offset="100%" stopColor="#F6CA9E" />
+                    </linearGradient>
+                    {/* Clip for hatching */}
+                    <clipPath id="utilShapeClip">
+                      <path d="M0,260 L40,200 L70,120 L110,40 L135,80 L160,15 L195,70 L230,0 L240,0 L240,260 Z" />
+                    </clipPath>
+                    {/* Blur filter for shadow */}
+                    <filter id="utilShadow">
+                      <feGaussianBlur stdDeviation="10" />
+                    </filter>
+                  </defs>
+
+                  {/* Warped geometric shadow */}
+                  <g transform="translate(8, 3)">
+                    <path
+                      d="M60,260 L90,140 L120,55 L148,95 L174,22 L212,85 L250,8 L260,15 L260,260 Z"
+                      fill="#1a1a1a"
+                      opacity="0.1"
+                    />
+                  </g>
+
+                  {/* Main shape — gradual slope, tight dip between peaks 1 & 2 */}
+                  <path
+                    d="M0,260 L40,200 L70,120 L110,40 L135,80 L160,15 L195,70 L230,0 L240,0 L240,260 Z"
+                    fill="#D65A0A"
+                    opacity="0.75"
+                  />
+
+                  {/* Hatching overlay */}
+                  <rect
+                    x="0" y="0" width="240" height="260"
+                    fill="url(#utilHatch)"
+                    opacity="0.35"
+                    clipPath="url(#utilShapeClip)"
+                  />
                 </svg>
               </div>
 
-              {/* Inner card with border */}
-              <div className={s.utilCard}>
-                <div className={s.utilCardRow}>
-                  <p className={s.utilCardLabel}>Overall Spend</p>
-                  <p className={cn(s.utilCardPct, pctColor(usagePct))}>{Math.round(usagePct)}%</p>
+              <div className={s.utilOuterContent}>
+                {/* Header text */}
+                <div className={s.utilHeader}>
+                  <div className={s.utilHeaderText}>
+                    <p className={s.utilEyebrow}>Your Company&apos;s</p>
+                    <p className={s.utilTitle}>Budget Utilization</p>
+                  </div>
                 </div>
-                <div className={s.utilProgressTrack}>
-                  <div
-                    className={cn(barColor(usagePct), "h-full rounded-full transition-all duration-500")}
-                    style={{ width: `${Math.min(usagePct, 100)}%` }}
-                  />
-                </div>
-                <div className={s.utilCardMeta}>
-                  <span>{formatCurrency(totalSpent)} spent</span>
-                  <span>{formatCurrency(totalBudget)} budget</span>
+
+                {/* Black divider */}
+                <div className={s.utilDivider} />
+
+                {/* Inner white card */}
+                <div className={s.utilInnerCard}>
+                  <div className={s.utilInnerLeft}>
+                    <p className={s.utilInnerTitle}>Overall Spend</p>
+                    <div className={s.utilProgressRow}>
+                      <ProgressBar value={usagePct} className="flex-1" trackClassName="bg-peach-100" borderClassName="border border-off-black" />
+                      <span className={s.utilProgressPct}>{Math.round(usagePct)}%</span>
+                    </div>
+                    <div className={s.utilCardMeta}>
+                      <span>{formatCurrency(totalSpent)} spent</span>
+                      <span className={s.utilMetaDot} />
+                      <span>{formatCurrency(totalBudget)} budget</span>
+                    </div>
+
+                    {/* Sub section */}
+                    <div className={s.utilSubSection}>
+                      <p className={s.utilSubLabel}>
+                        {projects.length} project{projects.length !== 1 ? "s" : ""} &middot; {activeCount} active
+                      </p>
+                      <p className={s.utilSubDesc}>
+                        {formatCurrency(remaining)} remaining across all projects
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Vertical divider */}
+                  <div className={s.utilInnerDivider} />
+
+                  {/* Donut chart */}
+                  <div className={s.utilInnerRight}>
+                    <div className={s.utilDonut}>
+                      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                        <circle
+                          cx="18" cy="18" r="15.5"
+                          fill="none"
+                          stroke="hsl(0 0% 0% / 0.08)"
+                          strokeWidth="3"
+                        />
+                        <circle
+                          cx="18" cy="18" r="15.5"
+                          fill="none"
+                          stroke="hsl(22 82% 51%)"
+                          strokeWidth="3"
+                          strokeDasharray={`${Math.min(usagePct, 100)} ${100 - Math.min(usagePct, 100)}`}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className={s.utilDonutCenter}>
+                        <span className={s.utilDonutPct}>{Math.round(usagePct)}%</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -204,16 +328,18 @@ export default async function DashboardPage() {
             {/* Activity feed */}
             <div className={cn(s.activityCard, s.col7)}>
               <div className={s.activityHeader}>
-                <h3 className={s.activityHeaderTitle}>
-                  <Icon name="notifications" className="text-lg text-primary" />
-                  Activity
-                </h3>
+                <h3 className={s.activityHeaderTitle}>Activity</h3>
+                <span className={s.activityHeaderCount}>
+                  {recentTransactions.length > 0
+                    ? `${Math.min(recentTransactions.length, 4)} recent`
+                    : "No activity"}
+                </span>
               </div>
               <div>
                 {recentTransactions.length > 0 ? (
                   recentTransactions.slice(0, 4).map((tx) => (
                     <div key={tx.id} className={s.activityRow}>
-                      <span className={cn(s.activityDot, "bg-primary")} />
+                      <span className={s.activityDot} />
                       <div>
                         <p className={s.activityTitle}>
                           {tx.merchantName} &mdash; {formatCurrency(Number(tx.amount))}
@@ -228,14 +354,14 @@ export default async function DashboardPage() {
                 ) : (
                   <>
                     <div className={s.activityRow}>
-                      <span className={cn(s.activityDot, "bg-secondary")} />
+                      <span className={s.activityDot} />
                       <div>
                         <p className={s.activityTitle}>Project created</p>
                         <p className={s.activityMeta}>Your first project is ready to fund</p>
                       </div>
                     </div>
                     <div className={s.activityRow}>
-                      <span className={cn(s.activityDot, "bg-guild-peach")} />
+                      <span className={s.activityDot} />
                       <div>
                         <p className={s.activityTitle}>No transactions yet</p>
                         <p className={s.activityMeta}>Spending will appear here once the project is funded</p>
@@ -245,7 +371,7 @@ export default async function DashboardPage() {
                 )}
                 {pendingOrders > 0 && (
                   <div className={s.activityRow}>
-                    <span className={cn(s.activityDot, "bg-tertiary-fixed-dim")} />
+                    <span className={s.activityDot} />
                     <div>
                       <p className={s.activityTitle}>
                         {pendingOrders} change order{pendingOrders !== 1 ? "s" : ""} pending
@@ -258,98 +384,10 @@ export default async function DashboardPage() {
             </div>
           </section>
 
-          {/* 3. Navigate Quick Links */}
-          <section className={s.navGrid}>
-            {[
-              { href: "/projects/new", title: "New Project", desc: "Create and define budget", bg: "bg-primary", dark: true },
-              { href: "/projects", title: "All Projects", desc: "Manage active and drafts", bg: "bg-guild-cream", dark: false },
-              { href: "/projects", title: "Change Orders", desc: "Review pending requests", bg: "bg-guild-mint", dark: true },
-              { href: "/transactions", title: "Transactions", desc: "View recent activity", bg: "bg-secondary", dark: true },
-            ].map((nav) => (
-              <Link key={nav.title} href={nav.href} className={cn(s.navCard, nav.bg, "group")}>
-                <p className={nav.dark ? s.navCardTitleLight : s.navCardTitle}>{nav.title}</p>
-                <p className={nav.dark ? s.navCardDescLight : s.navCardDesc}>{nav.desc}</p>
-                <Icon name="arrow_forward" className={nav.dark ? s.navCardArrowLight : s.navCardArrow} />
-              </Link>
-            ))}
-          </section>
-
-          {/* 4. Projects + Summary */}
-          <section className={s.row2col}>
-            <div className={cn(s.plainCard, s.col7)}>
-              <div className={s.plainHeader}>
-                <h3 className={s.plainHeaderTitle}>
-                  <Icon name="folder_open" className="text-lg text-primary" />
-                  Projects
-                </h3>
-                <Link href="/projects" className={s.plainHeaderAction}>
-                  View all &rarr;
-                </Link>
-              </div>
-              <div>
-                {projects.slice(0, 5).map((project, i) => {
-                  const spent = project.budgetCategories.reduce((s, c) => s + Number(c.spentAmount), 0);
-                  const pct = Number(project.totalBudget) > 0 ? (spent / Number(project.totalBudget)) * 100 : 0;
-                  return (
-                    <Link
-                      key={project.id}
-                      href={`/projects/${project.id}`}
-                      className={cn("group", i < Math.min(projects.length, 5) - 1 ? s.projectRowBorder : s.projectRow)}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className={s.projectName}>{project.name}</span>
-                          <span className={project.status === "ACTIVE" ? shared.badgeActive : shared.badgeDefault}>
-                            {project.status}
-                          </span>
-                        </div>
-                        <span className={cn("text-xs font-bold", pctColor(pct))}>
-                          {Math.round(pct)}%
-                        </span>
-                      </div>
-                      <div className={shared.progressTrackSmall}>
-                        <div className={barColor(pct)} style={{ width: `${Math.min(pct, 100)}%` }} />
-                      </div>
-                      <div className={s.projectMeta}>
-                        <span>{formatCurrency(spent)} spent</span>
-                        <span>{formatCurrency(Number(project.totalBudget))} budget</span>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className={cn(s.plainCard, s.col5)}>
-              <div className={s.plainHeader}>
-                <h3 className={s.plainHeaderTitle}>
-                  <Icon name="monitoring" className="text-lg text-primary" />
-                  Summary
-                </h3>
-              </div>
-              <div className="space-y-0">
-                {[
-                  { label: "Active Projects", value: activeCount },
-                  { label: "Pending Orders", value: pendingOrders },
-                  { label: "Funding Rate", value: `${totalBudget > 0 ? Math.round((totalFunded / totalBudget) * 100) : 0}%` },
-                  { label: "Total Projects", value: projects.length },
-                ].map((row) => (
-                  <div key={row.label} className={s.summaryRow}>
-                    <span className={s.summaryLabel}>{row.label}</span>
-                    <span className={s.summaryValue}>{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* 5. Recent Transactions — full width */}
+          {/* 4. Recent Transactions — Salesforce-style full width */}
           <section className={s.plainCard}>
             <div className={s.plainHeader}>
-              <h3 className={s.plainHeaderTitle}>
-                <Icon name="receipt_long" className="text-lg text-primary" />
-                Recent Transactions
-              </h3>
+              <h3 className={s.plainHeaderTitle}>Recent Transactions</h3>
               <div className={s.txToolbar}>
                 <button className={shared.toolbarBtn}>
                   <Icon name="filter_list" className="text-off-black/40 text-lg" />
@@ -360,40 +398,70 @@ export default async function DashboardPage() {
               </div>
             </div>
 
+            {/* Tab strip */}
+            <div className={s.txTabs}>
+              <span className={s.txTabActive}>All</span>
+              <span className={s.txTab}>Pending</span>
+              <span className={s.txTab}>Completed</span>
+            </div>
+
             {recentTransactions.length > 0 ? (
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-off-black/20">
-                    <th className={shared.tableHeader}>Vendor</th>
-                    <th className={cn(shared.tableHeader, "hidden md:table-cell")}>Project</th>
-                    <th className={cn(shared.tableHeader, "hidden lg:table-cell")}>Category</th>
-                    <th className={cn(shared.tableHeader, "text-right")}>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentTransactions.map((tx, i) => (
-                    <tr key={tx.id} className={i < recentTransactions.length - 1 ? shared.tableRowBorder : shared.tableRow}>
-                      <td className={shared.tableCell}>
-                        <p className={s.txVendor}>{tx.merchantName}</p>
-                        <p className={s.txDate}>
-                          {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                        </p>
-                      </td>
-                      <td className={cn(shared.tableCell, "hidden md:table-cell")}>
-                        <p className={s.txProject}>{tx.project.name}</p>
-                      </td>
-                      <td className={cn(shared.tableCell, "hidden lg:table-cell")}>
-                        <span className={s.txCategory}>{tx.categoryCode}</span>
-                      </td>
-                      <td className={cn(shared.tableCell, "text-right")}>
-                        <p className={s.txAmount}>{formatCurrency(Number(tx.amount))}</p>
-                      </td>
+              <>
+                <p className={s.txRecordCount}>
+                  Showing {recentTransactions.length} transaction{recentTransactions.length !== 1 ? "s" : ""}
+                </p>
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="border-b border-off-black/5">
+                      <th className={shared.tableHeader}>
+                        <span className={s.txSortHeader}>
+                          Vendor <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                        </span>
+                      </th>
+                      <th className={cn(shared.tableHeader, "hidden md:table-cell")}>
+                        <span className={s.txSortHeader}>
+                          Project <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                        </span>
+                      </th>
+                      <th className={cn(shared.tableHeader, "hidden lg:table-cell")}>Category</th>
+                      <th className={cn(shared.tableHeader, "text-right")}>
+                        <span className={cn(s.txSortHeader, "justify-end")}>
+                          Amount <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                        </span>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {recentTransactions.map((tx, i) => (
+                      <tr
+                        key={tx.id}
+                        className={cn(
+                          i < recentTransactions.length - 1 ? shared.tableRowBorder : shared.tableRow,
+                          i % 2 === 1 && "bg-peach-50/30"
+                        )}
+                      >
+                        <td className={shared.tableCell}>
+                          <p className={s.txVendor}>{tx.merchantName}</p>
+                          <p className={s.txDate}>
+                            {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          </p>
+                        </td>
+                        <td className={cn(shared.tableCell, "hidden md:table-cell")}>
+                          <p className={s.txProject}>{tx.project.name}</p>
+                        </td>
+                        <td className={cn(shared.tableCell, "hidden lg:table-cell")}>
+                          <span className={s.txCategory}>{tx.categoryCode}</span>
+                        </td>
+                        <td className={cn(shared.tableCell, "text-right")}>
+                          <p className={s.txAmount}>{formatCurrency(Number(tx.amount))}</p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
             ) : (
-              <div className="text-center py-12">
+              <div className="text-center py-8 lg:py-12">
                 <Icon name="receipt_long" className="text-off-black/10 mb-2" size={40} />
                 <p className="text-sm text-off-black">No transactions yet</p>
               </div>
@@ -404,7 +472,7 @@ export default async function DashboardPage() {
         /* Empty State */
         <section className={s.emptyGrid}>
           <div className={s.emptyHero}>
-            <p className="text-xs font-bold uppercase tracking-[0.15em] text-white">Get Started</p>
+            <p className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] text-white">Get Started</p>
             <h2 className={s.emptyHeroTitle}>Create your first project.</h2>
             <p className={s.emptyHeroDesc}>
               Set up a structured budget, share it with your client, and start tracking every dollar in real time.
@@ -425,7 +493,7 @@ export default async function DashboardPage() {
               { icon: "credit_card", title: "Spend transparently", desc: "Every dollar tracked and visible." },
             ].map((item, i) => (
               <div key={item.title} className={i < 2 ? s.emptyStepBorder : s.emptyStep}>
-                <Icon name={item.icon} className="text-xl text-primary flex-shrink-0 mt-0.5" />
+                <Icon name={item.icon} className="text-lg lg:text-xl text-primary flex-shrink-0 mt-0.5" />
                 <div>
                   <p className={s.emptyStepTitle}>{item.title}</p>
                   <p className={s.emptyStepDesc}>{item.desc}</p>

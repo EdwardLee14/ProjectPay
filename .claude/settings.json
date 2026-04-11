@@ -37,7 +37,15 @@
       "Bash(gh pr create --title 'Dashboard, backend APIs, CI setup' --body ':*)",
       "Bash(gh pr:*)",
       "Bash(git stash:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "WebFetch(domain:www.salesforce.com)",
+      "WebFetch(domain:www.absyz.com)",
+      "WebFetch(domain:astreait.com)",
+      "WebFetch(domain:www.salesforceben.com)",
+      "WebFetch(domain:trailhead.salesforce.com)",
+      "WebFetch(domain:www.lightningdesignsystem.com)",
+      "WebFetch(domain:developer.salesforce.com)",
+      "WebFetch(domain:www.winfomi.com)"
     ],
     "additionalDirectories": [
       "/Users/nam/Documents/Projects/ProjectPay/.claude/skills",

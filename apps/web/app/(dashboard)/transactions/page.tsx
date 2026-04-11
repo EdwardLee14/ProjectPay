@@ -67,12 +67,8 @@ export default async function TransactionsPage() {
       {/* Header */}
       <div className={s.header}>
         <div>
-          <p className={shared.eyebrow}>Transactions</p>
-          <h1 className={shared.pageTitle}>
-            <span className="font-normal">All</span>{" "}
-            <strong>Transactions</strong>
-          </h1>
-          <p className={s.txCount}>
+          <h1 className={shared.pageTitle}>All Transactions</h1>
+          <p className={s.headerMeta}>
             {totalCount} transaction{totalCount !== 1 ? "s" : ""} total
           </p>
         </div>

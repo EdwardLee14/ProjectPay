@@ -9,7 +9,7 @@ const items = [
   { label: "Dash", icon: "dashboard", href: "/dashboard" },
   { label: "Projects", icon: "account_tree", href: "/projects" },
   { label: "Pay", icon: "receipt_long", href: "/transactions" },
-  { label: "Profile", icon: "person", href: "/settings" },
+  { label: "Messages", icon: "chat", href: "/messages" },
 ];
 
 export function BottomNav() {
