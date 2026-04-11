@@ -11,7 +11,7 @@ export type ProjectStatus =
   | "COMPLETE"
   | "CANCELLED";
 
-export type ChangeOrderStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type ChangeOrderStatus = "PENDING" | "APPROVED" | "REJECTED" | "COUNTERED";
 export type TopUpRequestStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
 export type AlertType = "CATEGORY_90_PCT" | "CATEGORY_100_PCT" | "PROJECT_90_PCT";
 
@@ -78,6 +78,8 @@ export interface ChangeOrder {
   amount: number;
   reason: string;
   status: ChangeOrderStatus;
+  counterAmount: number | null;
+  counterReason: string | null;
   createdAt: string;
   resolvedAt: string | null;
 }

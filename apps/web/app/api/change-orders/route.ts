@@ -125,6 +125,13 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    if (changeOrder.status === "COUNTERED") {
+      return NextResponse.json(
+        { error: "This change order has a counter offer — use /accept-counter or /reject-counter" },
+        { status: 409 }
+      );
+    }
+
     if (changeOrder.status !== "PENDING") {
       return NextResponse.json(
         { error: "Only pending change orders can be approved or rejected" },

@@ -27,6 +27,7 @@ enum ChangeOrderStatus {
   PENDING
   APPROVED
   REJECTED
+  COUNTERED
 }
 
 enum TopUpRequestStatus {
@@ -146,6 +147,8 @@ model ChangeOrder {
   amount           Decimal           @db.Decimal(12, 2)
   reason           String
   status           ChangeOrderStatus @default(PENDING)
+  counterAmount    Decimal?          @db.Decimal(12, 2)
+  counterReason    String?
   createdAt        DateTime          @default(now())
   resolvedAt       DateTime?
 

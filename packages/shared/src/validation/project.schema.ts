@@ -40,3 +40,7 @@ export const updateProjectSchema = z.object({
 export const paymentModeSchema = z.object({
   mode: z.enum(["WALLET", "AUTOPAY"]),
 });
+
+export const rejectProjectSchema = z.object({
+  reason: z.string().max(500).optional(),
+});

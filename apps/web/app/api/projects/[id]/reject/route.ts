@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z, ZodError } from "zod";
-import { prisma } from "@/lib/prisma";
+import { ZodError } from "zod";
 import { requireUser } from "@/lib/auth";
-
-const fundProjectSchema = z.object({
-  paymentMethodId: z.string().optional(),
-});
+import { getProjectStripeInfo, updateProjectStatus } from "@/lib/dal/projects";
+import { rejectProjectSchema } from "@projectpay/shared";
 
 export async function POST(
   req: NextRequest,
@@ -14,35 +11,24 @@ export async function POST(
   try {
     const user = await requireUser();
     const { id } = await params;
-    const body = await req.json();
-    fundProjectSchema.parse(body);
+    const body = rejectProjectSchema.parse(await req.json());
 
-    // Verify contractor owns this project
-    const project = await prisma.project.findUnique({
-      where: { id },
-      select: { contractorId: true, status: true },
-    });
-
+    const project = await getProjectStripeInfo(id);
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
-
-    if (project.contractorId !== user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (project.clientId !== user.id) {
+      return NextResponse.json({ error: "Only the client can reject the project" }, { status: 403 });
     }
-
-    if (project.status !== "PENDING_FUNDING") {
+    if (project.status !== "PENDING_APPROVAL") {
       return NextResponse.json(
-        { error: `Project status must be PENDING_FUNDING, got ${project.status}` },
+        { error: `Cannot reject a project with status ${project.status}` },
         { status: 409 }
       );
     }
 
-    // Card issuance is handled by POST /api/projects/[id]/card
-    return NextResponse.json(
-      { error: "Use POST /api/projects/[id]/card to issue the virtual card" },
-      { status: 410 }
-    );
+    const updated = await updateProjectStatus(id, { status: "DRAFT" });
+    return NextResponse.json({ ...updated, reason: body.reason ?? null });
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -53,7 +39,7 @@ export async function POST(
     if (error instanceof Error && error.message === "Unauthorized: no user found") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.error("[POST /api/projects/[id]/fund]", error);
+    console.error("[POST /api/projects/[id]/reject]", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
