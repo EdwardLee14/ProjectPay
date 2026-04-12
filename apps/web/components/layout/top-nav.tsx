@@ -8,7 +8,7 @@ import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import type { User } from "@supabase/supabase-js";
 
-export function TopNav() {
+export function TopNav({ role }: { role: "CONTRACTOR" | "CLIENT" }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -47,34 +47,32 @@ export function TopNav() {
 
       {/* Right actions */}
       <div className="flex items-center gap-2.5 ml-auto md:ml-0">
-        <Button variant="pill-orange" size="sm" className="h-7 px-3 text-[11px]" asChild>
-          <Link href="/projects/new">
-            <Icon name="add" className="text-xs" />
-            New Project
-          </Link>
-        </Button>
+        {role === "CONTRACTOR" && (
+          <Button variant="pill-orange" size="sm" className="h-7 px-3 text-[11px]" asChild>
+            <Link href="/projects/new">
+              <Icon name="add" className="text-xs" />
+              New Project
+            </Link>
+          </Button>
+        )}
         <button className="flex items-center justify-center w-9 h-9 text-off-black/35 hover:text-off-black hover:bg-off-black/[0.03] rounded-full transition-all">
           <Icon name="notifications" className="text-xl" />
         </button>
-        <Link
-          href="/settings"
-          className="flex items-center justify-center w-9 h-9 text-off-black/35 hover:text-off-black hover:bg-off-black/[0.03] rounded-full transition-all"
-        >
-          <Icon name="settings" className="text-xl" />
+        <Link href="/settings" className="flex-shrink-0">
+          {avatarUrl ? (
+            <Image
+              alt="User avatar"
+              className="w-8 h-8 rounded-full object-cover hover:ring-2 hover:ring-primary/40 transition-all"
+              src={avatarUrl}
+              width={32}
+              height={32}
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold hover:ring-2 hover:ring-primary/40 transition-all cursor-pointer">
+              {displayName.charAt(0).toUpperCase()}
+            </div>
+          )}
         </Link>
-        {avatarUrl ? (
-          <Image
-            alt="User avatar"
-            className="w-8 h-8 rounded-full object-cover"
-            src={avatarUrl}
-            width={32}
-            height={32}
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
-            {displayName.charAt(0).toUpperCase()}
-          </div>
-        )}
       </div>
     </header>
   );

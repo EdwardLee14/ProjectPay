@@ -18,6 +18,14 @@ export async function getCurrentUser(): Promise<User | null> {
     where: { supabaseId: supabaseUser.id },
   });
 
+  // Link any projects created with this client's email that haven't been linked yet
+  if (user?.role === "CLIENT") {
+    await prisma.project.updateMany({
+      where: { clientEmail: user.email, clientId: null },
+      data: { clientId: user.id },
+    });
+  }
+
   return user;
 }
 

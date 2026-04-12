@@ -32,6 +32,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Link any projects the contractor created with this client's email
+    if (body.role === "CLIENT") {
+      await prisma.project.updateMany({
+        where: { clientEmail: supabaseUser.email, clientId: null },
+        data: { clientId: user.id },
+      });
+    }
+
     return NextResponse.json(user, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {

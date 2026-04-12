@@ -57,6 +57,8 @@ export async function POST(req: NextRequest) {
         clientEmail: body.clientEmail || undefined,
         totalBudget: body.totalBudget,
         contractorId: user.id,
+        // If a client email is provided, go straight to PENDING_APPROVAL
+        status: body.clientEmail ? "PENDING_APPROVAL" : "DRAFT",
         budgetCategories: {
           create: body.categories.map((cat) => ({
             name: cat.name,

@@ -6,6 +6,7 @@ import { formatCurrency, cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { ClientDashboard } from "./client-view";
 import s from "./dashboard.module.css";
 import shared from "@/styles/shared.module.css";
 
@@ -16,18 +17,124 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/onboarding");
 
-  const projects =
-    user.role === "CONTRACTOR"
-      ? await prisma.project.findMany({
-          where: { contractorId: user.id },
-          include: { budgetCategories: true, client: true },
-          orderBy: { createdAt: "desc" },
-        })
-      : await prisma.project.findMany({
-          where: { clientId: user.id },
-          include: { budgetCategories: true, contractor: true },
-          orderBy: { createdAt: "desc" },
-        });
+  // ── Client dashboard ─────────────────────────────────────────────────────
+  if (user.role === "CLIENT") {
+    const projectIds: string[] = [];
+
+    const clientProjects = await prisma.project.findMany({
+      where: {
+        clientId: user.id,
+        status: { notIn: ["DRAFT", "CANCELLED"] },
+      },
+      include: { budgetCategories: true, contractor: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    clientProjects.forEach((p) => projectIds.push(p.id));
+
+    const [pendingChangeOrders, pendingTopUps] = await Promise.all([
+      prisma.changeOrder.findMany({
+        where: { projectId: { in: projectIds }, status: "PENDING" },
+        include: { project: { select: { name: true } }, budgetCategory: { select: { name: true } }, requester: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.topUpRequest.findMany({
+        where: { projectId: { in: projectIds }, status: "PENDING" },
+        include: { project: { select: { name: true } }, budgetCategory: { select: { name: true } }, requester: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+
+    const pendingRequests = [
+      ...pendingChangeOrders.map((co) => ({
+        id: co.id,
+        type: "change_order" as const,
+        projectName: co.project.name,
+        projectId: co.projectId,
+        amount: Number(co.amount),
+        reason: co.reason,
+        categoryName: co.budgetCategory?.name ?? null,
+        requesterName: co.requester.name,
+        createdAt: co.createdAt.toISOString(),
+      })),
+      ...pendingTopUps.map((t) => ({
+        id: t.id,
+        type: "top_up" as const,
+        projectName: t.project.name,
+        projectId: t.projectId,
+        amount: Number(t.requestedAmount),
+        reason: t.reason,
+        categoryName: t.budgetCategory?.name ?? null,
+        requesterName: t.requester.name,
+        createdAt: t.createdAt.toISOString(),
+      })),
+    ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    const REVIEW_STATUSES = new Set(["PENDING_APPROVAL", "COUNTER_PROPOSED"]);
+
+    const projectRequests = clientProjects
+      .filter((p) => REVIEW_STATUSES.has(p.status))
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        status: p.status as "PENDING_APPROVAL" | "COUNTER_PROPOSED",
+        totalBudget: Number(p.totalBudget),
+        counterBudget: p.counterBudget ? Number(p.counterBudget) : null,
+        contractorName: p.contractor.name,
+        createdAt: p.createdAt.toISOString(),
+        description: p.description ?? null,
+        categories: p.budgetCategories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          allocatedAmount: Number(c.allocatedAmount),
+        })),
+      }));
+
+    const mappedProjects = clientProjects
+      .filter((p) => !REVIEW_STATUSES.has(p.status))
+      .map((p) => {
+        const totalSpent = p.budgetCategories.reduce((s, c) => s + Number(c.spentAmount), 0);
+        return {
+          id: p.id,
+          name: p.name,
+          status: p.status,
+          totalBudget: Number(p.totalBudget),
+          fundedAmount: Number(p.fundedAmount),
+          stripeCardId: p.stripeCardId,
+          contractorName: p.contractor.name,
+          totalSpent,
+          categories: p.budgetCategories.map((c) => ({
+            id: c.id,
+            name: c.name,
+            allocatedAmount: Number(c.allocatedAmount),
+            spentAmount: Number(c.spentAmount),
+          })),
+        };
+      });
+
+    const totalBudget = mappedProjects.reduce((s, p) => s + p.totalBudget, 0);
+    const totalSpent = mappedProjects.reduce((s, p) => s + p.totalSpent, 0);
+    const activeCount = mappedProjects.filter((p) => p.status === "ACTIVE").length;
+
+    return (
+      <ClientDashboard
+        userName={user.name}
+        projects={mappedProjects}
+        projectRequests={projectRequests}
+        pendingRequests={pendingRequests}
+        totalBudget={totalBudget}
+        totalSpent={totalSpent}
+        activeCount={activeCount}
+      />
+    );
+  }
+
+  // ── Contractor dashboard ──────────────────────────────────────────────────
+  const projects = await prisma.project.findMany({
+    where: { contractorId: user.id },
+    include: { budgetCategories: true, client: true },
+    orderBy: { createdAt: "desc" },
+  });
 
   const totalBudget = projects.reduce((s, p) => s + Number(p.totalBudget), 0);
   const totalFunded = projects.reduce((s, p) => s + Number(p.fundedAmount), 0);
@@ -39,6 +146,18 @@ export default async function DashboardPage() {
   const usagePct = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
   const activeCount = projects.filter((p) => p.status === "ACTIVE").length;
+
+  const awaitingApproval = projects
+    .filter((p) => p.status === "PENDING_APPROVAL" || p.status === "COUNTER_PROPOSED")
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      status: p.status as "PENDING_APPROVAL" | "COUNTER_PROPOSED",
+      totalBudget: Number(p.totalBudget),
+      counterBudget: p.counterBudget ? Number(p.counterBudget) : null,
+      clientName: p.client?.name ?? p.clientEmail ?? "Client",
+      createdAt: p.createdAt.toISOString(),
+    }));
 
   const recentTransactions = await prisma.transaction.findMany({
     where: { projectId: { in: projects.map((p) => p.id) } },
@@ -53,6 +172,15 @@ export default async function DashboardPage() {
       status: "PENDING",
     },
   });
+
+  const pendingTopUps = await prisma.topUpRequest.count({
+    where: {
+      projectId: { in: projects.map((p) => p.id) },
+      status: "PENDING",
+    },
+  });
+
+  const pendingTotal = pendingOrders + pendingTopUps;
 
   const hasProjects = projects.length > 0;
 
@@ -73,16 +201,70 @@ export default async function DashboardPage() {
       </div>
 
       {/* Pending alert */}
-      {pendingOrders > 0 && (
+      {pendingTotal > 0 && (
         <Link href="/projects" className={s.alertBar}>
           <div className={s.alertBarContent}>
             <Icon name="pending_actions" className={s.alertBarIcon} />
             <span className={s.alertBarText}>
-              {pendingOrders} change order{pendingOrders !== 1 ? "s" : ""} pending review
+              {pendingTotal} request{pendingTotal !== 1 ? "s" : ""} pending your review
             </span>
           </div>
           <Icon name="arrow_forward" className={s.alertBarArrow} />
         </Link>
+      )}
+
+      {/* Awaiting approval / counter-proposed */}
+      {awaitingApproval.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden">
+          <div className="flex items-center gap-2 px-5 py-4 border-b border-off-black/5">
+            <Icon name="pending_actions" className="text-primary text-lg" />
+            <h2 className="text-sm font-bold text-off-black">Awaiting Client Approval</h2>
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold">
+              {awaitingApproval.length}
+            </span>
+          </div>
+          <div className="divide-y divide-off-black/5">
+            {awaitingApproval.map((p) => (
+              <Link
+                key={p.id}
+                href={`/projects/${p.id}`}
+                className="flex items-center gap-4 px-5 py-4 hover:bg-off-black/[0.01] transition-colors"
+              >
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Icon
+                    name={p.status === "COUNTER_PROPOSED" ? "swap_horiz" : "hourglass_top"}
+                    className="text-base text-primary"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-off-black truncate">{p.name}</p>
+                  <p className="text-xs text-off-black/40">
+                    {p.clientName} &middot;{" "}
+                    {new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-semibold text-off-black">{formatCurrency(p.totalBudget)}</p>
+                  {p.status === "COUNTER_PROPOSED" && p.counterBudget ? (
+                    <p className="text-xs text-amber-600 font-medium">
+                      Counter: {formatCurrency(p.counterBudget)}
+                    </p>
+                  ) : (
+                    <p className="text-[10px] text-off-black/30">waiting on client</p>
+                  )}
+                </div>
+                <span className={cn(
+                  "shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-full border",
+                  p.status === "COUNTER_PROPOSED"
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-blue-50 text-blue-600 border-blue-200"
+                )}>
+                  {p.status === "COUNTER_PROPOSED" ? "Counter Received" : "Pending Approval"}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
 
       {hasProjects ? (
@@ -134,22 +316,21 @@ export default async function DashboardPage() {
             })()}
           </section>
 
-          {/* 2. Project Cards */}
+          {/* 2. Project Cards — active only */}
+          {projects.filter((p) => p.status === "ACTIVE" && p.stripeCardId).length > 0 && (
           <section className={s.cardStackSection}>
             <div className={s.cardStackSectionHeader}>
-              <h3 className={s.cardStackSectionTitle}>Project Cards</h3>
+              <h3 className={s.cardStackSectionTitle}>Active Cards</h3>
               <Link href="/projects" className={s.cardStackSectionAction}>
                 View all &rarr;
               </Link>
             </div>
             <div className={s.cardStackTrack}>
-              {projects.slice(0, 5).map((project, idx) => {
+              {projects.filter((p) => p.status === "ACTIVE" && p.stripeCardId).slice(0, 5).map((project, idx) => {
                 const spent = project.budgetCategories.reduce((s, c) => s + Number(c.spentAmount), 0);
                 const pct = Number(project.totalBudget) > 0 ? (spent / Number(project.totalBudget)) * 100 : 0;
                 const last4 = String(idx + 1).padStart(4, "0");
-                const clientName = user.role === "CONTRACTOR"
-                  ? ("client" in project ? project.client?.name : null) ?? "Client"
-                  : ("contractor" in project ? project.contractor?.name : null) ?? "Contractor";
+                const clientName = project.client?.name ?? "Client";
                 return (
                   <Link
                     key={project.id}
@@ -201,6 +382,7 @@ export default async function DashboardPage() {
               })}
             </div>
           </section>
+          )}
 
           {/* 3. Budget Utilization (5-col) + Activity (7-col) */}
           <section className={s.row2col}>
@@ -356,15 +538,12 @@ export default async function DashboardPage() {
                     <div className={s.activityRow}>
                       <span className={s.activityDot} />
                       <div>
-                        <p className={s.activityTitle}>Project created</p>
-                        <p className={s.activityMeta}>Your first project is ready to fund</p>
-                      </div>
-                    </div>
-                    <div className={s.activityRow}>
-                      <span className={s.activityDot} />
-                      <div>
                         <p className={s.activityTitle}>No transactions yet</p>
-                        <p className={s.activityMeta}>Spending will appear here once the project is funded</p>
+                        <p className={s.activityMeta}>
+                          {user.role === "CONTRACTOR"
+                            ? "Spending will appear here once the project is funded"
+                            : "Spending will appear here once a project is active"}
+                        </p>
                       </div>
                     </div>
                   </>
@@ -479,13 +658,10 @@ export default async function DashboardPage() {
             </p>
             <div className="pt-2">
               <Button variant="pill" asChild>
-                <Link href="/projects/new">
-                  New Project &rarr;
-                </Link>
+                <Link href="/projects/new">New Project &rarr;</Link>
               </Button>
             </div>
           </div>
-
           <div className={s.emptySteps}>
             {[
               { icon: "edit_note", title: "Define your budget", desc: "2-8 categories, each with a dollar cap." },

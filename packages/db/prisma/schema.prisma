@@ -17,6 +17,7 @@ enum Role {
 enum ProjectStatus {
   DRAFT
   PENDING_APPROVAL
+  COUNTER_PROPOSED
   PENDING_FUNDING
   ACTIVE
   COMPLETE
@@ -27,6 +28,7 @@ enum ChangeOrderStatus {
   PENDING
   APPROVED
   REJECTED
+  COUNTERED
 }
 
 enum TopUpRequestStatus {
@@ -62,6 +64,7 @@ model User {
   topUpRequests      TopUpRequest[]
   receipts           Receipt[]
   deviceTokens       DeviceToken[]
+  sentProjectMessages ProjectMessage[]
 
   @@map("users")
 }
@@ -78,6 +81,7 @@ model Project {
   fundedAmount         Decimal       @default(0) @db.Decimal(12, 2)
   stripeCardId         String?
   stripePaymentIntentId String?
+  counterBudget        Decimal?  @db.Decimal(12, 2)
   closedAt             DateTime?
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @default(now()) @updatedAt
@@ -91,6 +95,7 @@ model Project {
   topUpRequests    TopUpRequest[]
   budgetAlerts     BudgetAlert[]
   summary          ProjectSummary?
+  messages         ProjectMessage[]
 
   @@index([contractorId])
   @@index([clientId])
@@ -249,4 +254,18 @@ model DeviceToken {
 
   @@index([userId])
   @@map("device_tokens")
+}
+
+model ProjectMessage {
+  id        String   @id @default(cuid())
+  projectId String
+  senderId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sender  User    @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
+  @@map("project_messages")
 }

@@ -2,40 +2,114 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import { cn, formatCurrency } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { formatCurrency, cn } from "@/lib/utils";
+import shared from "@/styles/shared.module.css";
 
-const VENDOR_CATEGORIES = [
-  "Ad Spend",
-  "SaaS",
-  "Travel",
-  "Hardware",
+const SUGGESTED_CATEGORIES = [
   "Materials",
   "Labor",
-  "Consulting",
-  "Insurance",
+  "Subcontractors",
+  "Equipment",
+  "Permits & Inspections",
+  "Design & Plans",
+  "Contingency",
 ];
 
-type BudgetType = "total" | "monthly";
+interface CategoryRow {
+  id: string;
+  name: string;
+  amount: string;
+}
+
+function uid() {
+  return Math.random().toString(36).slice(2, 9);
+}
 
 export function ProjectSetupForm() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [name, setName] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [budgetType, setBudgetType] = useState<BudgetType>("total");
-  const [totalBudget, setTotalBudget] = useState("");
-  const [threshold, setThreshold] = useState("500");
-  const [contractorSearch, setContractorSearch] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function toggleCategory(cat: string) {
-    setSelectedCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [totalBudget, setTotalBudget] = useState("");
+  const [categories, setCategories] = useState<CategoryRow[]>([
+    { id: uid(), name: "Materials", amount: "" },
+    { id: uid(), name: "Labor", amount: "" },
+  ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Round to 2 decimal places to avoid floating point drift
+  function r2(n: number) {
+    return Math.round(n * 100) / 100;
+  }
+
+  const totalBudgetNum = r2(Math.max(0, parseFloat(totalBudget) || 0));
+  const allocatedTotal = r2(
+    categories.reduce((sum, c) => sum + Math.max(0, parseFloat(c.amount) || 0), 0)
+  );
+  const unallocated = r2(totalBudgetNum - allocatedTotal);
+  // Treat as balanced within 1 cent
+  const isBalanced = totalBudgetNum > 0 && Math.abs(unallocated) < 0.005;
+
+  function addCategory(name = "") {
+    setCategories((prev) => [...prev, { id: uid(), name, amount: "" }]);
+  }
+
+  function removeCategory(id: string) {
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+  }
+
+  function updateCategory(id: string, field: "name" | "amount", value: string) {
+    if (field === "amount") {
+      // Strip leading minus, allow only digits and one decimal point
+      value = value.replace(/-/g, "");
+      const parts = value.split(".");
+      if (parts.length > 2) value = parts[0] + "." + parts.slice(1).join("");
+      // Cap to 2 decimal places while typing
+      if (parts[1]?.length > 2) value = parts[0] + "." + parts[1].slice(0, 2);
+    }
+    setCategories((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, [field]: value } : c))
     );
   }
 
-  async function handleSubmit() {
+  function distributeEvenly() {
+    if (!totalBudgetNum || categories.length === 0) return;
+    const base = r2(Math.floor((totalBudgetNum / categories.length) * 100) / 100);
+    const remainder = r2(totalBudgetNum - base * categories.length);
+    // Give the remainder (a few cents) to the last category
+    setCategories((prev) =>
+      prev.map((c, i) => ({
+        ...c,
+        amount:
+          i === prev.length - 1
+            ? String(r2(base + remainder))
+            : String(base),
+      }))
+    );
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+
+    if (categories.length < 2) {
+      setError("Add at least 2 budget categories.");
+      return;
+    }
+    if (!isBalanced) {
+      setError(
+        `Category amounts must equal the total budget. You have ${formatCurrency(unallocated > 0 ? unallocated : -unallocated)} ${unallocated > 0 ? "unallocated" : "over-allocated"}.`
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/projects", {
@@ -43,318 +117,271 @@ export function ProjectSetupForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
-          totalBudget: parseFloat(totalBudget),
-          categories: selectedCategories.map((cat) => ({
-            name: cat,
-            allocatedAmount: parseFloat(totalBudget) / selectedCategories.length,
+          description: description || undefined,
+          clientEmail: clientEmail || undefined,
+          totalBudget: totalBudgetNum,
+          categories: categories.map((c) => ({
+            name: c.name,
+            allocatedAmount: r2(Math.max(0, parseFloat(c.amount) || 0)),
           })),
         }),
       });
-      if (res.ok) {
-        router.push("/dashboard");
-        router.refresh();
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error ?? "Failed to create project.");
+        return;
       }
+
+      const project = await res.json();
+      router.push(`/projects/${project.id}`);
+      router.refresh();
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  const budgetNum = parseFloat(totalBudget) || 0;
-  const thresholdNum = parseFloat(threshold) || 0;
-
   return (
-    <div className="pt-8 pb-20 px-6 md:px-24 max-w-7xl mx-auto w-full">
-      {/* Header & Stepper */}
-      <header className="mb-12 text-center max-w-2xl mx-auto">
-        <h1 className="font-headline text-4xl font-bold text-foreground tracking-tight mb-4">
-          Initialize New Project
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Set the architectural parameters for your contractor spend and
-          financial oversight.
-        </p>
+    <div className="max-w-[900px] mx-auto px-5 py-8 lg:px-10 lg:py-12 space-y-8">
+      {/* Back */}
+      <Link href="/dashboard" className={cn(shared.backLink, "group")}>
+        <Icon
+          name="arrow_back"
+          className="text-lg group-hover:-translate-x-1 transition-transform"
+        />
+        <span className="text-sm font-medium">Back to Dashboard</span>
+      </Link>
 
-        <div className="mt-10 flex items-center justify-center gap-4">
-          {[
-            { num: 1, label: "Scope" },
-            { num: 2, label: "Control" },
-            { num: 3, label: "Team" },
-          ].map((s, i) => (
-            <div key={s.num} className="flex items-center gap-2">
-              {i > 0 && <div className="h-px w-12 bg-accent" />}
+      <div>
+        <h1 className={shared.pageTitle}>New Project</h1>
+        <p className="text-sm text-off-black/50 mt-1">
+          Set up the project details and budget, then invite your client to review and approve.
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Project details */}
+        <div className="bg-white rounded-2xl shadow-elevation-1 p-6 space-y-5">
+          <h2 className="text-sm font-bold text-off-black">Project Details</h2>
+
+          <div className={shared.fieldGroup}>
+            <Label htmlFor="name" className={shared.fieldLabel}>
+              Project Name <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="name"
+              placeholder="e.g. Kitchen Renovation — 123 Main St"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className={shared.fieldGroup}>
+            <Label htmlFor="description" className={shared.fieldLabel}>
+              Description
+            </Label>
+            <textarea
+              id="description"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+              rows={3}
+              placeholder="Brief overview of scope and work to be done..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
+          <div className={shared.fieldGroup}>
+            <Label htmlFor="clientEmail" className={shared.fieldLabel}>
+              Client Email
+            </Label>
+            <Input
+              id="clientEmail"
+              type="email"
+              placeholder="client@example.com"
+              value={clientEmail}
+              onChange={(e) => setClientEmail(e.target.value)}
+            />
+            <p className="text-xs text-off-black/40 mt-1">
+              The client will be linked to this project when they sign up with this email.
+            </p>
+          </div>
+        </div>
+
+        {/* Budget */}
+        <div className="bg-white rounded-2xl shadow-elevation-1 p-6 space-y-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-off-black">Budget</h2>
+            {totalBudgetNum > 0 && categories.length >= 2 && (
               <button
-                onClick={() => setStep(s.num)}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors",
-                  step >= s.num
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-accent text-muted-foreground"
-                )}
+                type="button"
+                onClick={distributeEvenly}
+                className="text-xs font-semibold text-primary hover:underline"
               >
-                {s.num}
+                Distribute evenly
               </button>
+            )}
+          </div>
+
+          <div className={shared.fieldGroup}>
+            <Label htmlFor="totalBudget" className={shared.fieldLabel}>
+              Total Budget <span className="text-red-500">*</span>
+            </Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-off-black/40 text-sm font-medium">
+                $
+              </span>
+              <Input
+                id="totalBudget"
+                type="number"
+                min="0.01"
+                step="0.01"
+                className="pl-7"
+                placeholder="0.00"
+                value={totalBudget}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/-/g, "");
+                  const parts = val.split(".");
+                  const capped = parts.length > 1
+                    ? parts[0] + "." + parts[1].slice(0, 2)
+                    : val;
+                  setTotalBudget(capped);
+                }}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Category rows */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className={shared.fieldLabel}>
+                Budget Categories <span className="text-red-500">*</span>
+              </Label>
               <span
                 className={cn(
-                  "text-sm font-medium",
-                  step >= s.num
-                    ? "font-semibold text-foreground"
-                    : "text-muted-foreground opacity-60"
+                  "text-xs font-semibold tabular-nums",
+                  isBalanced
+                    ? "text-green-600"
+                    : unallocated > 0
+                      ? "text-off-black/40"
+                      : "text-red-500"
                 )}
               >
-                {s.label}
+                {isBalanced
+                  ? "Balanced ✓"
+                  : unallocated > 0
+                    ? `${formatCurrency(unallocated)} left to allocate`
+                    : `${formatCurrency(Math.abs(unallocated))} over budget`}
               </span>
             </div>
-          ))}
-        </div>
-      </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        {/* Main Form */}
-        <section className="lg:col-span-8 space-y-10">
-          {/* Project Identity */}
-          <div className="bg-card p-10 rounded-xl shadow-soft">
-            <h2 className="text-xl font-bold mb-8 flex items-center gap-3 font-headline">
-              <Icon name="architecture" className="text-primary" />
-              Project Identity
-            </h2>
-            <div className="space-y-8">
-              <div>
-                <label className="block text-[0.6875rem] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                  Project Name
-                </label>
-                <input
-                  className="w-full bg-surface-container-low border-none rounded-lg p-4 text-foreground focus:ring-1 focus:ring-primary transition-all text-base placeholder:text-muted-foreground"
-                  placeholder="e.g. Q4 Growth Campaign"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-[0.6875rem] font-bold uppercase tracking-wider text-muted-foreground mb-4">
-                  Vendor Categories
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {VENDOR_CATEGORIES.map((cat) => {
-                    const selected = selectedCategories.includes(cat);
-                    return (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => toggleCategory(cat)}
-                        className={cn(
-                          "px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 transition-colors",
-                          selected
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-accent text-muted-foreground hover:bg-surface-container-highest"
-                        )}
-                      >
-                        {cat}
-                        {selected && (
-                          <Icon name="close" className="text-sm" />
-                        )}
-                      </button>
-                    );
-                  })}
-                  <button
-                    type="button"
-                    className="px-6 py-2 rounded-full border border-dashed border-outline-variant text-muted-foreground text-sm font-medium flex items-center gap-2"
-                  >
-                    <Icon name="add" className="text-sm" /> Add Category
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Financial Guardrails */}
-          <div className="bg-card p-10 rounded-xl shadow-soft">
-            <h2 className="text-xl font-bold mb-8 flex items-center gap-3 font-headline">
-              <Icon name="account_balance_wallet" className="text-primary" />
-              Financial Guardrails
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {(
-                [
-                  {
-                    type: "total" as BudgetType,
-                    label: "Total Budget",
-                    desc: "Fixed amount for the project lifecycle",
-                  },
-                  {
-                    type: "monthly" as BudgetType,
-                    label: "Monthly Cap",
-                    desc: "Recurring spend limit per month",
-                  },
-                ] as const
-              ).map((opt) => (
-                <button
-                  key={opt.type}
-                  type="button"
-                  onClick={() => setBudgetType(opt.type)}
-                  className={cn(
-                    "p-6 rounded-xl border-2 bg-surface-container-low text-left transition-all",
-                    budgetType === opt.type
-                      ? "border-primary"
-                      : "border-transparent opacity-60 hover:opacity-100"
-                  )}
-                >
-                  <Icon
-                    name={
-                      budgetType === opt.type ? "check_circle" : "circle"
-                    }
-                    filled={budgetType === opt.type}
-                    className={cn(
-                      "mb-3",
-                      budgetType === opt.type
-                        ? "text-primary"
-                        : "text-muted-foreground"
+            <div className="space-y-2">
+              {categories.map((cat, i) => {
+                const amt = parseFloat(cat.amount) || 0;
+                const pct =
+                  totalBudgetNum > 0 ? (amt / totalBudgetNum) * 100 : 0;
+                return (
+                  <div key={cat.id} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Category name"
+                      value={cat.name}
+                      onChange={(e) =>
+                        updateCategory(cat.id, "name", e.target.value)
+                      }
+                      className="flex-1"
+                      required
+                    />
+                    <div className="relative w-36 shrink-0">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-off-black/40 text-sm">
+                        $
+                      </span>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        className="pl-7"
+                        value={cat.amount}
+                        onChange={(e) =>
+                          updateCategory(cat.id, "amount", e.target.value)
+                        }
+                        required
+                      />
+                    </div>
+                    {totalBudgetNum > 0 && amt > 0 && (
+                      <span className="text-xs text-off-black/30 w-10 text-right shrink-0 tabular-nums">
+                        {Math.round(pct)}%
+                      </span>
                     )}
-                  />
-                  <div className="font-bold text-foreground">{opt.label}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {opt.desc}
+                    <button
+                      type="button"
+                      onClick={() => removeCategory(cat.id)}
+                      disabled={categories.length <= 2}
+                      className="text-off-black/20 hover:text-red-400 disabled:opacity-0 transition-colors shrink-0"
+                    >
+                      <Icon name="close" className="text-base" />
+                    </button>
                   </div>
-                </button>
-              ))}
+                );
+              })}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-[0.6875rem] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                  Budget Amount ($)
-                </label>
-                <input
-                  className="w-full bg-surface-container-low border-none rounded-lg p-4 text-foreground focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground"
-                  placeholder="50,000"
-                  type="number"
-                  value={totalBudget}
-                  onChange={(e) => setTotalBudget(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-[0.6875rem] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                  Spending Threshold
-                </label>
-                <div className="relative">
-                  <input
-                    className="w-full bg-surface-container-low border-none rounded-lg p-4 pl-12 text-foreground focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground"
-                    placeholder="500"
-                    type="number"
-                    value={threshold}
-                    onChange={(e) => setThreshold(e.target.value)}
-                  />
-                  <Icon
-                    name="lock_open"
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"
-                  />
-                </div>
-                <p className="mt-2 text-[0.6875rem] text-muted-foreground">
-                  Approvals required for transactions above this limit.
-                </p>
-              </div>
-            </div>
-          </div>
 
-          {/* Assign Contractor */}
-          <div className="bg-card p-10 rounded-xl shadow-soft">
-            <h2 className="text-xl font-bold mb-8 flex items-center gap-3 font-headline">
-              <Icon name="person_add" className="text-primary" />
-              Assign Contractor
-            </h2>
-            <div className="relative">
-              <Icon
-                name="search"
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-              />
-              <input
-                className="w-full bg-surface-container-low border-none rounded-lg p-4 pl-12 text-foreground focus:ring-1 focus:ring-primary transition-all placeholder:text-muted-foreground"
-                placeholder="Search by name or enter email address..."
-                type="text"
-                value={contractorSearch}
-                onChange={(e) => setContractorSearch(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Submit */}
-          <div className="flex items-center justify-end gap-6 pt-6">
-            <button
-              type="button"
-              className="text-muted-foreground font-semibold hover:text-foreground transition-colors"
-              onClick={() => router.push("/dashboard")}
-            >
-              Save as Draft
-            </button>
-            <button
-              type="button"
-              disabled={!name || !totalBudget || isSubmitting}
-              onClick={handleSubmit}
-              className="bg-primary text-primary-foreground px-10 py-4 rounded-lg font-bold text-lg hover:shadow-lg transition-all active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              {isSubmitting ? "Creating..." : "Launch Project"}
-              <Icon name="rocket_launch" />
-            </button>
-          </div>
-        </section>
-
-        {/* Sidebar */}
-        <aside className="lg:col-span-4 sticky top-24 space-y-6">
-          {/* Summary Card */}
-          <div className="bg-surface-container-low p-8 rounded-xl border border-surface-container-highest">
-            <h3 className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground mb-6">
-              Setup Preview
-            </h3>
-            <div className="space-y-6">
-              <div className="flex flex-col gap-1">
-                <span className="text-[0.6875rem] text-muted-foreground">
-                  Project Allocation
-                </span>
-                <span className="text-2xl font-bold tracking-tight text-foreground">
-                  {budgetNum > 0 ? formatCurrency(budgetNum) : "$0.00"}
-                </span>
-              </div>
-              <div className="h-px bg-surface-container-highest" />
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Approval Rule</span>
-                  <span className="font-semibold">
-                    &gt;{formatCurrency(thresholdNum)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Categories</span>
-                  <span className="font-semibold">
-                    {selectedCategories.length} selected
-                  </span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Budget Type</span>
-                  <span className="font-semibold capitalize">{budgetType}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Helper Card */}
-          <div className="bg-primary-container text-white p-8 rounded-xl overflow-hidden relative">
-            <div className="relative z-10">
-              <Icon
-                name="lightbulb"
-                className="text-secondary-fixed mb-4"
-              />
-              <h4 className="font-bold text-lg mb-2">Need advice?</h4>
-              <p className="text-sm opacity-80 mb-6">
-                Based on similar projects in your industry, a Monthly Cap of
-                $4,500 is common for Ad Spend categories.
-              </p>
-              <button className="text-xs font-bold uppercase tracking-widest text-secondary-fixed hover:underline">
-                Apply Recommendation
+            {/* Add category */}
+            <div className="flex flex-wrap gap-2 pt-1">
+              {SUGGESTED_CATEGORIES.filter(
+                (s) => !categories.find((c) => c.name === s)
+              )
+                .slice(0, 4)
+                .map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => addCategory(suggestion)}
+                    className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-off-black/50 border border-dashed border-off-black/20 rounded-lg hover:border-primary hover:text-primary transition-colors"
+                  >
+                    <Icon name="add" className="text-xs" />
+                    {suggestion}
+                  </button>
+                ))}
+              <button
+                type="button"
+                onClick={() => addCategory()}
+                className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-off-black/50 border border-dashed border-off-black/20 rounded-lg hover:border-primary hover:text-primary transition-colors"
+              >
+                <Icon name="add" className="text-xs" />
+                Custom
               </button>
             </div>
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
           </div>
-        </aside>
-      </div>
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className={shared.errorBanner}>
+            <Icon name="error" className="text-destructive text-lg shrink-0" />
+            <p className="text-sm text-destructive">{error}</p>
+          </div>
+        )}
+
+        {/* Submit */}
+        <div className="flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard")}
+            className="text-sm font-semibold text-off-black/50 hover:text-off-black transition-colors"
+          >
+            Cancel
+          </button>
+          <Button
+            type="submit"
+            variant="pill"
+            disabled={!name || !totalBudget || !isBalanced || isSubmitting}
+          >
+            {isSubmitting ? "Creating..." : clientEmail ? "Create & Send to Client" : "Create Project"}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

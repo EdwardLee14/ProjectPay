@@ -25,3 +25,5 @@ export {
 export {
   createReceiptSchema,
 } from "./receipt.schema";
+
+export { sendProjectMessageSchema } from "./message.schema";

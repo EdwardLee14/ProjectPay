@@ -11,7 +11,7 @@ interface ChangeOrderItem {
   id: string;
   amount: number;
   reason: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
+  status: "PENDING" | "APPROVED" | "REJECTED" | "COUNTERED";
   createdAt: string;
   requester: {
     name: string;
@@ -22,6 +22,7 @@ const statusVariant: Record<string, "default" | "secondary" | "destructive" | "o
   PENDING: "secondary",
   APPROVED: "default",
   REJECTED: "destructive",
+  COUNTERED: "outline",
 };
 
 export function ChangeOrderList({

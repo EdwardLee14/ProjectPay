@@ -15,15 +15,29 @@ export default async function OnboardingPage() {
     where: { supabaseId: user.id },
   });
 
-  if (existingUser) {
-    redirect("/dashboard");
-  }
+  if (existingUser) redirect("/dashboard");
 
   const name =
     user.user_metadata?.full_name ??
     user.email?.split("@")[0] ??
     "User";
 
+  const metaRole = user.user_metadata?.role;
+
+  // Role was captured during sign-up — auto-create and skip selector
+  if (metaRole === "CONTRACTOR" || metaRole === "CLIENT") {
+    await prisma.user.create({
+      data: {
+        supabaseId: user.id,
+        name,
+        email: user.email!,
+        role: metaRole,
+      },
+    });
+    redirect("/dashboard");
+  }
+
+  // Fallback: show role selector (e.g. OAuth sign-ups or legacy flows)
   return (
     <div className="flex min-h-screen items-center justify-center p-8">
       <RoleSelector

@@ -64,7 +64,7 @@ export function RoleSelector({
           disabled={isSubmitting}
         >
           <Icon name="home" className="text-3xl" />
-          <span className="text-lg font-medium">I&apos;m a Homeowner</span>
+          <span className="text-lg font-medium">I&apos;m a Client</span>
         </Button>
       </CardContent>
     </Card>

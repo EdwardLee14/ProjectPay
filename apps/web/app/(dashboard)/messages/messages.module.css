@@ -35,7 +35,7 @@
 }
 
 .messageContent {
-  @apply lg:col-span-8 bg-white rounded-2xl shadow-elevation-1 overflow-hidden flex flex-col;
+  @apply lg:col-span-8 bg-white rounded-2xl shadow-elevation-1 overflow-hidden flex flex-col min-h-[420px] lg:min-h-[500px];
 }
 
 .messageEmptyState {
@@ -48,4 +48,120 @@
 
 .messageEmptyDesc {
   @apply text-sm text-off-black/40 mt-1 max-w-[280px];
+}
+
+.conversationItems {
+  @apply flex-1 overflow-y-auto divide-y divide-off-black/5;
+}
+
+.conversationItem {
+  @apply block px-5 py-3.5 transition-colors hover:bg-off-black/[0.02] border-l-2 border-l-transparent;
+}
+
+.conversationItemActive {
+  @apply bg-off-black/[0.04] border-l-off-black;
+}
+
+.conversationTitle {
+  @apply text-sm font-bold text-off-black truncate;
+}
+
+.conversationMeta {
+  @apply text-[11px] text-off-black/45 mt-0.5 truncate;
+}
+
+.conversationPreview {
+  @apply text-xs text-off-black/55 mt-1 line-clamp-2;
+}
+
+.conversationPreviewMuted {
+  @apply text-xs text-off-black/30 mt-1 italic;
+}
+
+.threadHeader {
+  @apply px-5 py-4 border-b border-off-black/5 shrink-0;
+}
+
+.threadTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.threadMeta {
+  @apply text-xs text-off-black/45 mt-0.5;
+}
+
+.threadScroll {
+  @apply flex-1 overflow-y-auto min-h-0 p-4;
+}
+
+.threadEmptyInline {
+  @apply flex items-center justify-center py-12;
+}
+
+.threadEmptyText {
+  @apply text-sm text-off-black/40;
+}
+
+.threadList {
+  @apply flex flex-col gap-3;
+}
+
+.bubbleRow {
+  @apply flex w-full;
+}
+
+.bubbleRowMine {
+  @apply justify-end;
+}
+
+.bubbleRowTheirs {
+  @apply justify-start;
+}
+
+.bubble {
+  @apply max-w-[min(100%,28rem)] rounded-2xl px-4 py-2.5 shadow-sm;
+}
+
+.bubbleMine {
+  @apply bg-off-black text-white rounded-br-md;
+}
+
+.bubbleTheirs {
+  @apply bg-off-black/[0.06] text-off-black rounded-bl-md;
+}
+
+.bubbleSender {
+  @apply text-[10px] font-bold uppercase tracking-wide text-off-black/45 mb-1;
+}
+
+.bubbleBody {
+  @apply text-sm whitespace-pre-wrap break-words;
+}
+
+.bubbleMine .bubbleBody {
+  @apply text-white/95;
+}
+
+.bubbleTime {
+  @apply text-[10px] mt-1.5 opacity-60;
+}
+
+.composer {
+  @apply border-t border-off-black/5 p-4 shrink-0 bg-off-black/[0.02];
+}
+
+.composerError {
+  @apply text-xs text-red-600 mb-2;
+}
+
+.composerRow {
+  @apply flex gap-2 items-end;
+}
+
+.composerInput {
+  @apply flex-1 resize-none rounded-xl border border-off-black/10 bg-white px-3 py-2.5 text-sm text-off-black placeholder:text-off-black/35 focus:outline-none focus:ring-2 focus:ring-off-black/15 min-h-[44px];
+}
+
+.composerSend {
+  @apply shrink-0 w-11 h-11 rounded-xl bg-off-black flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity;
 }

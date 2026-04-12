@@ -2,14 +2,16 @@
   "name": "projectpay",
   "private": true,
   "scripts": {
-    "postinstall": "test -f .env && ln -sf ../../.env packages/db/.env || true",
+    "postinstall": "test -f .env && ln -sf ../../.env packages/db/.env || true; pnpm --filter @projectpay/db exec prisma generate",
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
     "dev:web": "turbo dev --filter=web",
     "db:generate": "turbo db:generate --filter=@projectpay/db",
     "db:migrate": "turbo db:migrate --filter=@projectpay/db",
-    "db:push": "turbo db:push --filter=@projectpay/db"
+    "db:deploy": "turbo db:deploy --filter=@projectpay/db",
+    "db:push": "turbo db:push --filter=@projectpay/db",
+    "db:seed": "pnpm --filter @projectpay/db exec prisma db seed"
   },
   "devDependencies": {
     "turbo": "^2.5.0",
