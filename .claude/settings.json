@@ -58,11 +58,17 @@
       "Bash(npx tailwindcss:*)",
       "Bash(cat .next/static/css/*.css)",
       "Bash(grep -l '3xl' /Users/nam/Documents/Projects/ProjectPay/apps/web/.next/static/css/app/**/*.css)",
-      "Bash(awk '{print $6, $7, $8}')"
+      "Bash(awk '{print $6, $7, $8}')",
+      "Bash(pnpm add:*)",
+      "Bash(grep -r \"cuid2\\\\|cuid\\\\|nanoid\\\\|uuid\" node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/library.js)",
+      "Bash(node -e ':*)",
+      "Bash(ls /Users/nam/Documents/Projects/ProjectPay/apps/web/components/projects/edit-project-form*)"
     ],
     "additionalDirectories": [
       "/Users/nam/Documents/Projects/ProjectPay/.claude/skills",
-      "/Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/budget-alerts/[id]"
+      "/Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/budget-alerts/[id]",
+      "/Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/transactions",
+      "/Users/nam/Documents/Projects/ProjectPay/apps/web/app/api/budget-categories"
     ]
   }
 }
