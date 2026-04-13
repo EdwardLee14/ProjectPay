@@ -41,6 +41,7 @@ export function TransactionTable({
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loading, setLoading] = useState(false);
   const [selectedProject, setSelectedProject] = useState<string>("");
+  const [timeFilter, setTimeFilter] = useState<"all" | "week" | "month">("all");
 
   const cursor =
     transactions.length > 0
@@ -103,13 +104,30 @@ export function TransactionTable({
     []
   );
 
-  const filtered = transactions;
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const timeFiltered = timeFilter === "all" ? transactions
+    : timeFilter === "week" ? transactions.filter(tx => new Date(tx.createdAt) >= weekAgo)
+    : transactions.filter(tx => new Date(tx.createdAt) >= monthAgo);
 
   return (
     <>
       {/* Filter row */}
-      {projects.length > 1 && (
-        <div className={s.filterRow}>
+      <div className={s.filterRow}>
+        <div className={s.filterPills}>
+          {(["all", "week", "month"] as const).map((f) => (
+            <button
+              key={f}
+              className={timeFilter === f ? shared.filterPillActive : shared.filterPill}
+              onClick={() => setTimeFilter(f)}
+            >
+              {f === "all" ? "All" : f === "week" ? "This Week" : "This Month"}
+            </button>
+          ))}
+        </div>
+        {projects.length > 1 && (
           <div className={s.selectWrap}>
             <select
               className={s.projectSelect}
@@ -124,10 +142,10 @@ export function TransactionTable({
               ))}
             </select>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {filtered.length > 0 ? (
+      {timeFiltered.length > 0 ? (
         <>
           <div className={s.tableWrap}>
             <div className={s.tableAccent} />
@@ -150,14 +168,15 @@ export function TransactionTable({
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((tx, i) => (
+                {timeFiltered.map((tx, i) => (
                   <tr
                     key={tx.id}
-                    className={
-                      i < filtered.length - 1
+                    className={cn(
+                      i < timeFiltered.length - 1
                         ? shared.tableRowBorder
-                        : shared.tableRow
-                    }
+                        : shared.tableRow,
+                      i % 2 === 1 && s.altRow
+                    )}
                   >
                     <td className={shared.tableCell}>
                       <p className={s.vendor}>{tx.merchantName}</p>

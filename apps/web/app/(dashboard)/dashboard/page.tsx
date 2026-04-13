@@ -6,6 +6,7 @@ import { formatCurrency, cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { ClientDashboard } from "./client-view";
 import s from "./dashboard.module.css";
 import shared from "@/styles/shared.module.css";
 
@@ -16,18 +17,124 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/onboarding");
 
-  const projects =
-    user.role === "CONTRACTOR"
-      ? await prisma.project.findMany({
-          where: { contractorId: user.id },
-          include: { budgetCategories: true, client: true },
-          orderBy: { createdAt: "desc" },
-        })
-      : await prisma.project.findMany({
-          where: { clientId: user.id },
-          include: { budgetCategories: true, contractor: true },
-          orderBy: { createdAt: "desc" },
-        });
+  // ── Client dashboard ─────────────────────────────────────────────────────
+  if (user.role === "CLIENT") {
+    const projectIds: string[] = [];
+
+    const clientProjects = await prisma.project.findMany({
+      where: {
+        clientId: user.id,
+        status: { notIn: ["DRAFT", "CANCELLED"] },
+      },
+      include: { budgetCategories: true, contractor: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    clientProjects.forEach((p) => projectIds.push(p.id));
+
+    const [pendingChangeOrders, pendingTopUps] = await Promise.all([
+      prisma.changeOrder.findMany({
+        where: { projectId: { in: projectIds }, status: "PENDING" },
+        include: { project: { select: { name: true } }, budgetCategory: { select: { name: true } }, requester: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.topUpRequest.findMany({
+        where: { projectId: { in: projectIds }, status: "PENDING" },
+        include: { project: { select: { name: true } }, budgetCategory: { select: { name: true } }, requester: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
+
+    const pendingRequests = [
+      ...pendingChangeOrders.map((co) => ({
+        id: co.id,
+        type: "change_order" as const,
+        projectName: co.project.name,
+        projectId: co.projectId,
+        amount: Number(co.amount),
+        reason: co.reason,
+        categoryName: co.budgetCategory?.name ?? null,
+        requesterName: co.requester.name,
+        createdAt: co.createdAt.toISOString(),
+      })),
+      ...pendingTopUps.map((t) => ({
+        id: t.id,
+        type: "top_up" as const,
+        projectName: t.project.name,
+        projectId: t.projectId,
+        amount: Number(t.requestedAmount),
+        reason: t.reason,
+        categoryName: t.budgetCategory?.name ?? null,
+        requesterName: t.requester.name,
+        createdAt: t.createdAt.toISOString(),
+      })),
+    ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    const REVIEW_STATUSES = new Set(["PENDING_APPROVAL", "COUNTER_PROPOSED"]);
+
+    const projectRequests = clientProjects
+      .filter((p) => REVIEW_STATUSES.has(p.status))
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        status: p.status as "PENDING_APPROVAL" | "COUNTER_PROPOSED",
+        totalBudget: Number(p.totalBudget),
+        counterBudget: p.counterBudget ? Number(p.counterBudget) : null,
+        contractorName: p.contractor.name,
+        createdAt: p.createdAt.toISOString(),
+        description: p.description ?? null,
+        categories: p.budgetCategories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          allocatedAmount: Number(c.allocatedAmount),
+        })),
+      }));
+
+    const mappedProjects = clientProjects
+      .filter((p) => !REVIEW_STATUSES.has(p.status))
+      .map((p) => {
+        const totalSpent = p.budgetCategories.reduce((s, c) => s + Number(c.spentAmount), 0);
+        return {
+          id: p.id,
+          name: p.name,
+          status: p.status,
+          totalBudget: Number(p.totalBudget),
+          fundedAmount: Number(p.fundedAmount),
+          stripeCardId: p.stripeCardId,
+          contractorName: p.contractor.name,
+          totalSpent,
+          categories: p.budgetCategories.map((c) => ({
+            id: c.id,
+            name: c.name,
+            allocatedAmount: Number(c.allocatedAmount),
+            spentAmount: Number(c.spentAmount),
+          })),
+        };
+      });
+
+    const totalBudget = mappedProjects.reduce((s, p) => s + p.totalBudget, 0);
+    const totalSpent = mappedProjects.reduce((s, p) => s + p.totalSpent, 0);
+    const activeCount = mappedProjects.filter((p) => p.status === "ACTIVE").length;
+
+    return (
+      <ClientDashboard
+        userName={user.name}
+        projects={mappedProjects}
+        projectRequests={projectRequests}
+        pendingRequests={pendingRequests}
+        totalBudget={totalBudget}
+        totalSpent={totalSpent}
+        activeCount={activeCount}
+      />
+    );
+  }
+
+  // ── Contractor dashboard ──────────────────────────────────────────────────
+  const projects = await prisma.project.findMany({
+    where: { contractorId: user.id, status: { not: "CANCELLED" } },
+    include: { budgetCategories: true, client: true },
+    orderBy: { createdAt: "desc" },
+  });
 
   const totalBudget = projects.reduce((s, p) => s + Number(p.totalBudget), 0);
   const totalFunded = projects.reduce((s, p) => s + Number(p.fundedAmount), 0);
@@ -40,6 +147,18 @@ export default async function DashboardPage() {
 
   const activeCount = projects.filter((p) => p.status === "ACTIVE").length;
 
+  const awaitingApproval = projects
+    .filter((p) => p.status === "PENDING_APPROVAL" || p.status === "COUNTER_PROPOSED")
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      status: p.status as "PENDING_APPROVAL" | "COUNTER_PROPOSED",
+      totalBudget: Number(p.totalBudget),
+      counterBudget: p.counterBudget ? Number(p.counterBudget) : null,
+      clientName: p.client?.name ?? p.clientEmail ?? "Client",
+      createdAt: p.createdAt.toISOString(),
+    }));
+
   const recentTransactions = await prisma.transaction.findMany({
     where: { projectId: { in: projects.map((p) => p.id) } },
     include: { project: true },
@@ -47,12 +166,36 @@ export default async function DashboardPage() {
     take: 6,
   });
 
-  const pendingOrders = await prisma.changeOrder.count({
-    where: {
-      projectId: { in: projects.map((p) => p.id) },
-      status: "PENDING",
-    },
-  });
+  const [pendingChangeOrders, pendingTopUpRequests] = await Promise.all([
+    prisma.changeOrder.findMany({
+      where: {
+        projectId: { in: projects.map((p) => p.id) },
+        status: "PENDING",
+      },
+      select: { id: true, projectId: true },
+    }),
+    prisma.topUpRequest.findMany({
+      where: {
+        projectId: { in: projects.map((p) => p.id) },
+        status: "PENDING",
+      },
+      select: { id: true, projectId: true },
+    }),
+  ]);
+
+  const pendingOrders = pendingChangeOrders.length;
+  const pendingTopUps = pendingTopUpRequests.length;
+  const pendingTotal = pendingOrders + pendingTopUps;
+
+  // If all pending requests belong to one project, link directly to it
+  const pendingProjectIds = new Set([
+    ...pendingChangeOrders.map((co) => co.projectId),
+    ...pendingTopUpRequests.map((t) => t.projectId),
+  ]);
+  const pendingAlertHref =
+    pendingProjectIds.size === 1
+      ? `/projects/${Array.from(pendingProjectIds)[0]}`
+      : "/projects";
 
   const hasProjects = projects.length > 0;
 
@@ -61,9 +204,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className={s.header}>
         <div>
-          <h1 className={shared.pageTitle}>
-            Welcome back, {user.name?.split(" ")[0] ?? "there"}.
-          </h1>
+          <h1 className={shared.pageTitle}>Dashboard</h1>
         </div>
         {hasProjects && (
           <p className={s.headerMeta}>
@@ -73,16 +214,65 @@ export default async function DashboardPage() {
       </div>
 
       {/* Pending alert */}
-      {pendingOrders > 0 && (
-        <Link href="/projects" className={s.alertBar}>
+      {pendingTotal > 0 && (
+        <Link href={pendingAlertHref} className={s.alertBar}>
           <div className={s.alertBarContent}>
             <Icon name="pending_actions" className={s.alertBarIcon} />
             <span className={s.alertBarText}>
-              {pendingOrders} change order{pendingOrders !== 1 ? "s" : ""} pending review
+              {pendingTotal} request{pendingTotal !== 1 ? "s" : ""} pending your review
             </span>
           </div>
           <Icon name="arrow_forward" className={s.alertBarArrow} />
         </Link>
+      )}
+
+      {/* Awaiting approval / counter-proposed */}
+      {awaitingApproval.length > 0 && (
+        <div className={s.awaitingSection}>
+          <div className={s.awaitingSectionHeader}>
+            <Icon name="pending_actions" className={s.awaitingSectionIcon} />
+            <h2 className={s.awaitingSectionTitle}>Awaiting Client Approval</h2>
+            <span className={s.awaitingCount}>
+              {awaitingApproval.length}
+            </span>
+          </div>
+          <div className={s.awaitingList}>
+            {awaitingApproval.map((p) => (
+              <Link
+                key={p.id}
+                href={`/projects/${p.id}`}
+                className={s.awaitingRow}
+              >
+                <div className={s.awaitingIconCircle}>
+                  <Icon
+                    name={p.status === "COUNTER_PROPOSED" ? "swap_horiz" : "hourglass_top"}
+                    className={s.awaitingIconCircleIcon}
+                  />
+                </div>
+                <div className={s.awaitingInfo}>
+                  <p className={s.awaitingName}>{p.name}</p>
+                  <p className={s.awaitingMeta}>
+                    {p.clientName} &middot;{" "}
+                    {new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </p>
+                </div>
+                <div className={s.clientRequestBudgetWrap}>
+                  <p className={s.awaitingBudget}>{formatCurrency(p.totalBudget)}</p>
+                  {p.status === "COUNTER_PROPOSED" && p.counterBudget ? (
+                    <p className={s.awaitingCounterText}>
+                      Counter: {formatCurrency(p.counterBudget)}
+                    </p>
+                  ) : (
+                    <p className={s.awaitingWaiting}>waiting on client</p>
+                  )}
+                </div>
+                <span className={p.status === "COUNTER_PROPOSED" ? s.awaitingBadgeCounter : s.awaitingBadgePending}>
+                  {p.status === "COUNTER_PROPOSED" ? "Counter Received" : "Pending Approval"}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
 
       {hasProjects ? (
@@ -134,22 +324,21 @@ export default async function DashboardPage() {
             })()}
           </section>
 
-          {/* 2. Project Cards */}
+          {/* 2. Project Cards — active only */}
+          {projects.filter((p) => p.status === "ACTIVE" && p.stripeCardId).length > 0 && (
           <section className={s.cardStackSection}>
             <div className={s.cardStackSectionHeader}>
-              <h3 className={s.cardStackSectionTitle}>Project Cards</h3>
+              <h3 className={s.cardStackSectionTitle}>Active Cards</h3>
               <Link href="/projects" className={s.cardStackSectionAction}>
                 View all &rarr;
               </Link>
             </div>
             <div className={s.cardStackTrack}>
-              {projects.slice(0, 5).map((project, idx) => {
+              {projects.filter((p) => p.status === "ACTIVE" && p.stripeCardId).slice(0, 5).map((project, idx) => {
                 const spent = project.budgetCategories.reduce((s, c) => s + Number(c.spentAmount), 0);
                 const pct = Number(project.totalBudget) > 0 ? (spent / Number(project.totalBudget)) * 100 : 0;
                 const last4 = String(idx + 1).padStart(4, "0");
-                const clientName = user.role === "CONTRACTOR"
-                  ? ("client" in project ? project.client?.name : null) ?? "Client"
-                  : ("contractor" in project ? project.contractor?.name : null) ?? "Contractor";
+                const clientName = project.client?.name ?? "Client";
                 return (
                   <Link
                     key={project.id}
@@ -201,6 +390,7 @@ export default async function DashboardPage() {
               })}
             </div>
           </section>
+          )}
 
           {/* 3. Budget Utilization (5-col) + Activity (7-col) */}
           <section className={s.row2col}>
@@ -297,30 +487,52 @@ export default async function DashboardPage() {
                   {/* Vertical divider */}
                   <div className={s.utilInnerDivider} />
 
-                  {/* Donut chart */}
-                  <div className={s.utilInnerRight}>
-                    <div className={s.utilDonut}>
-                      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                        <circle
-                          cx="18" cy="18" r="15.5"
-                          fill="none"
-                          stroke="hsl(0 0% 0% / 0.08)"
-                          strokeWidth="3"
-                        />
-                        <circle
-                          cx="18" cy="18" r="15.5"
-                          fill="none"
-                          stroke="hsl(22 82% 51%)"
-                          strokeWidth="3"
-                          strokeDasharray={`${Math.min(usagePct, 100)} ${100 - Math.min(usagePct, 100)}`}
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                      <div className={s.utilDonutCenter}>
-                        <span className={s.utilDonutPct}>{Math.round(usagePct)}%</span>
+                  {/* Score gauge */}
+                  {(() => {
+                    const budgetScore = Math.max(0, Math.min(100, Math.round(100 - usagePct)));
+                    const scoreColor =
+                      budgetScore >= 70
+                        ? "hsl(152 60% 40%)"
+                        : budgetScore >= 40
+                          ? "hsl(38 90% 50%)"
+                          : "hsl(0 72% 51%)";
+                    const scoreLabel =
+                      budgetScore >= 70
+                        ? "Healthy"
+                        : budgetScore >= 40
+                          ? "Fair"
+                          : "At Risk";
+                    const circumference = 2 * Math.PI * 15.5;
+                    const arcLength = (budgetScore / 100) * circumference;
+                    return (
+                      <div className={s.utilInnerRight}>
+                        <div className={s.utilDonut}>
+                          <svg viewBox="0 0 36 36" className="w-full h-full">
+                            <circle
+                              cx="18" cy="18" r="15.5"
+                              fill="none"
+                              stroke="hsl(0 0% 0% / 0.08)"
+                              strokeWidth="3"
+                            />
+                            <circle
+                              cx="18" cy="18" r="15.5"
+                              fill="none"
+                              stroke={scoreColor}
+                              strokeWidth="3"
+                              strokeDasharray={`${arcLength} ${circumference - arcLength}`}
+                              strokeDashoffset={circumference * 0.25}
+                              strokeLinecap="round"
+                              style={{ transition: "stroke-dasharray 0.6s ease" }}
+                            />
+                          </svg>
+                          <div className={s.utilDonutCenter}>
+                            <span className={s.utilDonutScore}>{budgetScore}</span>
+                            <span className={s.utilDonutLabel}>{scoreLabel}</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -356,15 +568,12 @@ export default async function DashboardPage() {
                     <div className={s.activityRow}>
                       <span className={s.activityDot} />
                       <div>
-                        <p className={s.activityTitle}>Project created</p>
-                        <p className={s.activityMeta}>Your first project is ready to fund</p>
-                      </div>
-                    </div>
-                    <div className={s.activityRow}>
-                      <span className={s.activityDot} />
-                      <div>
                         <p className={s.activityTitle}>No transactions yet</p>
-                        <p className={s.activityMeta}>Spending will appear here once the project is funded</p>
+                        <p className={s.activityMeta}>
+                          {user.role === "CONTRACTOR"
+                            ? "Spending will appear here once the project is funded"
+                            : "Spending will appear here once a project is active"}
+                        </p>
                       </div>
                     </div>
                   </>
@@ -390,10 +599,10 @@ export default async function DashboardPage() {
               <h3 className={s.plainHeaderTitle}>Recent Transactions</h3>
               <div className={s.txToolbar}>
                 <button className={shared.toolbarBtn}>
-                  <Icon name="filter_list" className="text-off-black/40 text-lg" />
+                  <Icon name="filter_list" className={s.toolbarIcon} />
                 </button>
                 <button className={shared.toolbarBtn}>
-                  <Icon name="download" className="text-off-black/40 text-lg" />
+                  <Icon name="download" className={s.toolbarIcon} />
                 </button>
               </div>
             </div>
@@ -410,23 +619,23 @@ export default async function DashboardPage() {
                 <p className={s.txRecordCount}>
                   Showing {recentTransactions.length} transaction{recentTransactions.length !== 1 ? "s" : ""}
                 </p>
-                <table className="w-full text-left">
+                <table className={s.txTable}>
                   <thead>
-                    <tr className="border-b border-off-black/5">
+                    <tr className={s.txTheadRow}>
                       <th className={shared.tableHeader}>
                         <span className={s.txSortHeader}>
-                          Vendor <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                          Vendor <Icon name="swap_vert" className={s.txSortIcon} />
                         </span>
                       </th>
-                      <th className={cn(shared.tableHeader, "hidden md:table-cell")}>
+                      <th className={cn(shared.tableHeader, s.txHeaderHiddenMd)}>
                         <span className={s.txSortHeader}>
-                          Project <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                          Project <Icon name="swap_vert" className={s.txSortIcon} />
                         </span>
                       </th>
-                      <th className={cn(shared.tableHeader, "hidden lg:table-cell")}>Category</th>
-                      <th className={cn(shared.tableHeader, "text-right")}>
-                        <span className={cn(s.txSortHeader, "justify-end")}>
-                          Amount <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                      <th className={cn(shared.tableHeader, s.txHeaderHiddenLg)}>Category</th>
+                      <th className={cn(shared.tableHeader, s.txHeaderRight)}>
+                        <span className={s.txSortHeaderEnd}>
+                          Amount <Icon name="swap_vert" className={s.txSortIcon} />
                         </span>
                       </th>
                     </tr>
@@ -437,7 +646,7 @@ export default async function DashboardPage() {
                         key={tx.id}
                         className={cn(
                           i < recentTransactions.length - 1 ? shared.tableRowBorder : shared.tableRow,
-                          i % 2 === 1 && "bg-peach-50/30"
+                          i % 2 === 1 && s.txRowStriped
                         )}
                       >
                         <td className={shared.tableCell}>
@@ -446,13 +655,13 @@ export default async function DashboardPage() {
                             {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
                         </td>
-                        <td className={cn(shared.tableCell, "hidden md:table-cell")}>
+                        <td className={cn(shared.tableCell, s.txCellHiddenMd)}>
                           <p className={s.txProject}>{tx.project.name}</p>
                         </td>
-                        <td className={cn(shared.tableCell, "hidden lg:table-cell")}>
+                        <td className={cn(shared.tableCell, s.txCellHiddenLg)}>
                           <span className={s.txCategory}>{tx.categoryCode}</span>
                         </td>
-                        <td className={cn(shared.tableCell, "text-right")}>
+                        <td className={cn(shared.tableCell, s.txCellRight)}>
                           <p className={s.txAmount}>{formatCurrency(Number(tx.amount))}</p>
                         </td>
                       </tr>
@@ -461,9 +670,9 @@ export default async function DashboardPage() {
                 </table>
               </>
             ) : (
-              <div className="text-center py-8 lg:py-12">
-                <Icon name="receipt_long" className="text-off-black/10 mb-2" size={40} />
-                <p className="text-sm text-off-black">No transactions yet</p>
+              <div className={s.txEmptyState}>
+                <Icon name="receipt_long" className={s.txEmptyIcon} size={40} />
+                <p className={s.txEmptyText}>No transactions yet</p>
               </div>
             )}
           </section>
@@ -472,20 +681,17 @@ export default async function DashboardPage() {
         /* Empty State */
         <section className={s.emptyGrid}>
           <div className={s.emptyHero}>
-            <p className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] text-white">Get Started</p>
+            <p className={s.emptyHeroEyebrow}>Get Started</p>
             <h2 className={s.emptyHeroTitle}>Create your first project.</h2>
             <p className={s.emptyHeroDesc}>
               Set up a structured budget, share it with your client, and start tracking every dollar in real time.
             </p>
-            <div className="pt-2">
+            <div className={s.emptyHeroBtnWrap}>
               <Button variant="pill" asChild>
-                <Link href="/projects/new">
-                  New Project &rarr;
-                </Link>
+                <Link href="/projects/new">New Project &rarr;</Link>
               </Button>
             </div>
           </div>
-
           <div className={s.emptySteps}>
             {[
               { icon: "edit_note", title: "Define your budget", desc: "2-8 categories, each with a dollar cap." },
@@ -493,7 +699,7 @@ export default async function DashboardPage() {
               { icon: "credit_card", title: "Spend transparently", desc: "Every dollar tracked and visible." },
             ].map((item, i) => (
               <div key={item.title} className={i < 2 ? s.emptyStepBorder : s.emptyStep}>
-                <Icon name={item.icon} className="text-lg lg:text-xl text-primary flex-shrink-0 mt-0.5" />
+                <Icon name={item.icon} className={s.emptyStepIcon} />
                 <div>
                   <p className={s.emptyStepTitle}>{item.title}</p>
                   <p className={s.emptyStepDesc}>{item.desc}</p>

@@ -24,7 +24,7 @@ export async function PATCH(
     // Verify contractor owns this project
     const project = await prisma.project.findUnique({
       where: { id },
-      select: { contractorId: true },
+      select: { contractorId: true, status: true },
     });
 
     if (!project) {
@@ -33,6 +33,13 @@ export async function PATCH(
 
     if (project.contractorId !== user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    if (project.status === "CANCELLED") {
+      return NextResponse.json(
+        { error: "Cannot edit a cancelled project" },
+        { status: 409 }
+      );
     }
 
     const updated = await prisma.project.update({

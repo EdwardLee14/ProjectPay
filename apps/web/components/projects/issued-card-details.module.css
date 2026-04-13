@@ -1,0 +1,28 @@
+.container { @apply bg-white rounded-lg shadow-sm overflow-hidden; }
+.header { @apply px-5 py-4 border-b border-border flex items-center justify-between; }
+.headerLeft { @apply flex items-center gap-2; }
+.headerIcon { @apply text-primary text-lg; }
+.headerTitle { @apply text-sm font-bold text-off-black; }
+.headerLimit { @apply text-xs text-off-black/40; }
+.body { @apply p-5 space-y-4; }
+.cardVisual { @apply rounded-lg bg-gradient-to-br from-off-black to-off-black/80 text-white p-5 space-y-4 select-none max-w-md; }
+.cardVisualTop { @apply flex items-center justify-between; }
+.cardBrand { @apply text-sm font-bold tracking-wide opacity-90; }
+.cardNetwork { @apply text-sm font-bold opacity-70; }
+.cardChip { @apply w-8 h-6 rounded bg-yellow-400/80; }
+.cardNumber { @apply font-mono text-base tracking-[0.2em] tabular-nums; }
+.cardBottom { @apply flex items-end justify-between; }
+.cardFieldLabel { @apply text-[9px] opacity-50 uppercase tracking-widest; }
+.cardFieldValue { @apply font-mono text-sm; }
+.revealBtn { @apply w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold border border-border rounded-lg hover:bg-off-black/[0.02] disabled:opacity-50 transition-all; }
+.revealBtnIcon { @apply text-base text-off-black/40; }
+.copyGrid { @apply grid grid-cols-3 gap-2; }
+.copyBtn { @apply flex flex-col items-center gap-1 py-2.5 px-3 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/[0.02] transition-all; }
+.copyBtnIconCopied { @apply text-sm text-primary; }
+.copyBtnIconDefault { @apply text-sm text-off-black/30; }
+.copyBtnLabel { @apply text-[10px] font-medium text-off-black/50; }
+.errorText { @apply text-xs text-destructive flex items-center gap-1; }
+.errorIcon { @apply text-sm; }
+.footnote { @apply text-[10px] text-off-black/30 text-center; }
+.statusBadgeActive { @apply px-2 py-0.5 text-[10px] font-bold rounded-full border bg-primary/10 text-primary border-primary/20; }
+.statusBadgeInactive { @apply px-2 py-0.5 text-[10px] font-bold rounded-full border bg-off-black/5 text-off-black/40 border-off-black/10; }

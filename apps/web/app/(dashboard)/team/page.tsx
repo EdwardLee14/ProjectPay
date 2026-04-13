@@ -3,7 +3,6 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getSupabaseUser, getCurrentUser } from "@/lib/auth";
 import { Icon } from "@/components/ui/icon";
-import { Button } from "@/components/ui/button";
 import s from "./team.module.css";
 import shared from "@/styles/shared.module.css";
 
@@ -70,85 +69,49 @@ export default async function TeamPage() {
 
   return (
     <main className={shared.dashboardPage}>
-      {/* Header */}
-      <div className={s.header}>
-        <div>
-          <h1 className={shared.pageTitle}>Team</h1>
-          {collaborators.length > 0 && (
-            <p className={s.headerMeta}>
-              {collaborators.length} collaborator
-              {collaborators.length !== 1 ? "s" : ""}
-            </p>
-          )}
-        </div>
-        <Button variant="pill">
-          <Icon name="person_add" size={16} />
-          Add Member
-        </Button>
-      </div>
-
-      {collaborators.length > 0 ? (
-        <section className={s.collaboratorGrid}>
-          {collaborators.map((collab) => (
-            <div key={collab.id} className={s.collaboratorCard}>
-              <div className={s.cardBody}>
-                {/* Avatar + name */}
-                <div className={s.cardTop}>
-                  <div className={s.avatar}>{getInitials(collab.name)}</div>
-                  <div className={s.nameBlock}>
-                    <p className={s.name}>{collab.name}</p>
-                    <p className={s.email}>{collab.email}</p>
-                    {collab.companyName && (
-                      <p className={s.company}>{collab.companyName}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Role badge */}
-                <div>
-                  <span
-                    className={
-                      collab.role === "CONTRACTOR"
-                        ? s.roleBadgeContractor
-                        : s.roleBadgeClient
-                    }
-                  >
-                    {collab.role}
-                  </span>
-                </div>
-
-                {/* Shared projects */}
-                <div>
-                  <p className={s.sharedCount}>
-                    {collab.projectNames.length} shared project
-                    {collab.projectNames.length !== 1 ? "s" : ""}
-                  </p>
-                  <div className={s.projectList}>
-                    {collab.projectNames.map((name) => (
-                      <p key={name} className={s.projectName}>
-                        {name}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </section>
-      ) : (
-        <section className={s.emptyContainer}>
-          <Icon name="group" className={s.emptyIcon} size={48} />
-          <p className={s.emptyTitle}>No team members yet</p>
-          <p className={s.emptyDesc}>
-            Team members appear here when you collaborate on projects
+      <div>
+        <h1 className={shared.pageTitle}>Team</h1>
+        {collaborators.length > 0 && (
+          <p className={s.pageMeta}>
+            {collaborators.length} collaborator
+            {collaborators.length !== 1 ? "s" : ""}
           </p>
-          {user.role === "CONTRACTOR" && (
-            <Button variant="pill" asChild>
+        )}
+      </div>
+      <div className={s.pageCard}>
+
+        {collaborators.length > 0 ? (
+          <section className={s.collaboratorList}>
+            {collaborators.map((collab) => (
+              <div key={collab.id} className={s.collaboratorRow}>
+                <div className={s.avatar}>{getInitials(collab.name)}</div>
+                <div className={s.nameBlock}>
+                  <p className={s.name}>{collab.name}</p>
+                  <p className={s.email}>{collab.email}</p>
+                  {collab.companyName && <p className={s.company}>{collab.companyName}</p>}
+                </div>
+                <span className={collab.role === "CONTRACTOR" ? s.roleBadgeContractor : s.roleBadgeClient}>
+                  {collab.role}
+                </span>
+                <span className={s.sharedCount}>
+                  {collab.projectNames.length} project{collab.projectNames.length !== 1 ? "s" : ""}
+                </span>
+              </div>
+            ))}
+          </section>
+        ) : (
+          <section className={s.emptyContainer}>
+            <Icon name="group" className={s.emptyIcon} size={48} />
+            <p className={s.emptyTitle}>No team members yet</p>
+            <p className={s.emptyDesc}>
+              Team members appear here when you collaborate on projects
+            </p>
+            {user.role === "CONTRACTOR" && (
               <Link href="/projects/new">Create a Project &rarr;</Link>
-            </Button>
-          )}
-        </section>
-      )}
+            )}
+          </section>
+        )}
+      </div>
     </main>
   );
 }

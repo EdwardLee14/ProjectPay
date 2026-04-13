@@ -5,7 +5,7 @@
 }
 
 .headerMeta {
-  @apply text-xs text-off-black/50;
+  @apply text-sm text-off-black/40 mt-1.5;
 }
 
 /* Floating section header — no card, just text */
@@ -14,16 +14,16 @@
 }
 
 .sectionHeaderTitle {
-  @apply text-xs lg:text-sm font-bold text-off-black flex items-center gap-2;
+  @apply text-xs 3xl:text-sm font-bold text-off-black flex items-center gap-2;
 }
 
 .sectionHeaderAction {
-  @apply text-[10px] lg:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
+  @apply text-[10px] 3xl:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
 }
 
 /* Pending alert bar */
 .alertBar {
-  @apply flex items-center justify-between rounded-2xl p-3 lg:p-4 bg-white shadow-elevation-1 hover:shadow-elevation-2 transition-all;
+  @apply flex items-center justify-between rounded-lg p-2.5 3xl:p-4 bg-white shadow-sm hover:shadow-elevation-2 transition-all;
 }
 
 .alertBarContent {
@@ -35,7 +35,7 @@
 }
 
 .alertBarIcon {
-  @apply text-lg lg:text-xl text-primary;
+  @apply text-base 3xl:text-xl text-primary;
 }
 
 .alertBarArrow {
@@ -44,11 +44,11 @@
 
 /* KPI grid — elevated white cards */
 .kpiGrid {
-  @apply grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4;
+  @apply grid grid-cols-2 lg:grid-cols-4 gap-2 3xl:gap-4;
 }
 
 .kpiCard {
-  @apply bg-white rounded-2xl p-5 lg:p-6 shadow-elevation-1;
+  @apply bg-white rounded-lg p-3 3xl:p-6 shadow-sm;
 }
 
 .kpiLabel {
@@ -56,15 +56,15 @@
 }
 
 .kpiLabelText {
-  @apply text-xs lg:text-sm font-medium text-off-black;
+  @apply text-xs 3xl:text-sm font-medium text-off-black;
 }
 
 .kpiValue {
-  @apply font-headline text-xl lg:text-3xl font-bold tracking-tight text-off-black;
+  @apply font-headline text-lg 3xl:text-3xl font-bold tracking-tight text-off-black;
 }
 
 .kpiSub {
-  @apply text-[10px] lg:text-[11px] font-medium text-off-black/40 mt-1 lg:mt-1.5 flex items-center gap-1;
+  @apply text-[9px] 3xl:text-[11px] font-medium text-off-black/40 mt-0.5 3xl:mt-1.5 flex items-center gap-1;
 }
 
 .kpiDelta {
@@ -77,35 +77,35 @@
 
 /* 3D Project Card Stack */
 .cardStackSection {
-  @apply bg-white rounded-2xl shadow-elevation-1 overflow-hidden;
+  @apply bg-white rounded-lg shadow-sm overflow-hidden;
 }
 
 .cardStackSectionHeader {
-  @apply flex items-center justify-between px-4 pt-4 pb-0 lg:px-6 lg:pt-5;
+  @apply flex items-center justify-between px-3 pt-3 pb-0 3xl:px-6 3xl:pt-5;
 }
 
 .cardStackSectionTitle {
-  @apply text-xs lg:text-sm font-bold text-off-black;
+  @apply text-xs 3xl:text-sm font-bold text-off-black;
 }
 
 .cardStackSectionAction {
-  @apply text-[10px] lg:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
+  @apply text-[10px] 3xl:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
 }
 
 .cardStackHeader {
-  @apply flex items-center justify-between mb-4 lg:mb-5;
+  @apply flex items-center justify-between mb-3 3xl:mb-5;
 }
 
 .cardStackTitle {
-  @apply text-xs lg:text-sm font-bold text-off-black flex items-center gap-2;
+  @apply text-xs 3xl:text-sm font-bold text-off-black flex items-center gap-2;
 }
 
 .cardStackAction {
-  @apply text-[10px] lg:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
+  @apply text-[10px] 3xl:text-xs font-semibold text-primary hover:text-primary/80 transition-colors;
 }
 
 .cardStackTrack {
-  @apply flex py-3 px-4 lg:px-6 overflow-x-auto;
+  @apply flex py-3 px-3 3xl:px-6 overflow-x-auto;
   perspective: 1200px;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -118,12 +118,12 @@
 /* Outer card — the project container */
 .stackCard {
   @apply relative flex-shrink-0 cursor-pointer transition-all duration-300;
-  width: 240px;
+  width: 200px;
   transform-style: preserve-3d;
 }
 
 .stackCard:not(:first-child) {
-  margin-left: -32px;
+  margin-left: -28px;
 }
 
 .stackCard:hover {
@@ -134,7 +134,7 @@
 /* Virtual card graphic — reference-style layout */
 .virtualCard {
   @apply relative w-full rounded-xl overflow-hidden flex flex-col;
-  height: 150px;
+  height: 130px;
   background: linear-gradient(145deg, #242424 0%, #1a1a1a 40%, #2a2a2a 100%);
 }
 
@@ -216,11 +216,11 @@
 }
 
 .stackCardName {
-  @apply text-xs lg:text-sm font-bold text-off-black truncate;
+  @apply text-xs 3xl:text-sm font-bold text-off-black truncate;
 }
 
 .stackCardBudget {
-  @apply font-headline text-[11px] lg:text-xs text-off-black/50 mt-0.5;
+  @apply font-headline text-[11px] 3xl:text-xs text-off-black/50 mt-0.5;
 }
 
 .stackCardRow {
@@ -237,7 +237,7 @@
 
 /* Row layout helpers */
 .row2col {
-  @apply grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4;
+  @apply grid grid-cols-1 lg:grid-cols-12 gap-2 3xl:gap-4;
 }
 
 .col7 {
@@ -250,14 +250,14 @@
 
 /* Utilization banner — reference card style */
 .utilBanner {
-  @apply rounded-2xl shadow-elevation-1 relative border border-off-black;
+  @apply rounded-2xl relative border border-off-black;
   background-color: #F6CA9E;
-  min-height: 240px;
+  min-height: 200px;
   overflow: hidden;
 }
 
 .utilOuterContent {
-  @apply p-5 lg:p-7;
+  @apply p-3 3xl:p-7;
 }
 
 .utilHeader {
@@ -269,11 +269,11 @@
 }
 
 .utilEyebrow {
-  @apply font-headline text-sm lg:text-base font-normal text-off-black;
+  @apply font-headline text-xs 3xl:text-base font-normal text-off-black;
 }
 
 .utilTitle {
-  @apply font-headline text-sm lg:text-base font-bold text-off-black;
+  @apply font-headline text-xs 3xl:text-base font-bold text-off-black;
 }
 
 /* Geometric visualization — top-right of card */
@@ -285,16 +285,16 @@
 }
 
 .utilDivider {
-  @apply w-full h-px bg-off-black my-3 lg:my-4 relative z-10;
+  @apply w-full h-px bg-off-black my-2 3xl:my-4 relative z-10;
 }
 
 /* Inner white card */
 .utilInnerCard {
-  @apply bg-white rounded-xl p-4 lg:p-5 flex gap-0 items-stretch relative z-10 border border-off-black;
+  @apply bg-white rounded-xl p-3 3xl:p-5 flex gap-0 items-stretch relative z-10 border border-off-black;
 }
 
 .utilInnerLeft {
-  @apply flex-1 min-w-0 pr-4 lg:pr-5;
+  @apply flex-1 min-w-0 pr-2.5 3xl:pr-5;
 }
 
 .utilInnerDivider {
@@ -302,11 +302,11 @@
 }
 
 .utilInnerRight {
-  @apply flex-shrink-0 flex items-center justify-center pl-4 lg:pl-5;
+  @apply flex-shrink-0 flex items-center justify-center pl-2.5 3xl:pl-5;
 }
 
 .utilInnerTitle {
-  @apply text-xs lg:text-sm font-bold text-off-black mb-2;
+  @apply text-xs 3xl:text-sm font-bold text-off-black mb-2;
 }
 
 .utilProgressRow {
@@ -345,29 +345,33 @@
 /* Donut chart */
 .utilDonut {
   @apply relative;
-  width: 90px;
-  height: 90px;
+  width: 75px;
+  height: 75px;
 }
 
 .utilDonutCenter {
-  @apply absolute inset-0 flex items-center justify-center;
+  @apply absolute inset-0 flex flex-col items-center justify-center;
 }
 
-.utilDonutPct {
-  @apply font-headline text-sm font-bold text-off-black;
+.utilDonutScore {
+  @apply font-headline text-lg font-bold text-off-black leading-none;
+}
+
+.utilDonutLabel {
+  @apply text-[9px] font-medium text-off-black mt-0.5;
 }
 
 /* Activity / recent items card — elevated */
 .activityCard {
-  @apply bg-white rounded-2xl overflow-hidden shadow-elevation-1;
+  @apply bg-white rounded-lg overflow-hidden shadow-sm;
 }
 
 .activityHeader {
-  @apply flex items-center justify-between px-5 py-3.5 lg:px-6 lg:py-4 border-b border-off-black/5;
+  @apply flex items-center justify-between px-3.5 py-2.5 3xl:px-6 3xl:py-4 border-b border-off-black/5;
 }
 
 .activityHeaderTitle {
-  @apply text-sm lg:text-base font-bold text-off-black;
+  @apply text-sm 3xl:text-base font-bold text-off-black;
 }
 
 .activityHeaderCount {
@@ -375,7 +379,7 @@
 }
 
 .activityRow {
-  @apply flex items-start gap-2.5 px-5 py-2.5 lg:px-6 lg:py-3 hover:bg-off-black/[0.02] transition-colors;
+  @apply flex items-start gap-2.5 px-3.5 py-1.5 3xl:px-6 3xl:py-3 hover:bg-off-black/[0.02] transition-colors;
 }
 
 .activityDot {
@@ -383,7 +387,7 @@
 }
 
 .activityTitle {
-  @apply text-[11px] lg:text-xs font-medium text-off-black;
+  @apply text-[11px] 3xl:text-xs font-medium text-off-black;
 }
 
 .activityMeta {
@@ -392,15 +396,15 @@
 
 /* Plain white card — elevated */
 .plainCard {
-  @apply bg-white rounded-2xl overflow-hidden shadow-elevation-1;
+  @apply bg-white rounded-lg overflow-hidden shadow-sm;
 }
 
 .plainHeader {
-  @apply flex items-center justify-between px-5 py-3.5 lg:px-6 lg:py-4 border-b border-off-black/5;
+  @apply flex items-center justify-between px-3.5 py-2.5 3xl:px-6 3xl:py-4 border-b border-off-black/5;
 }
 
 .plainHeaderTitle {
-  @apply text-sm lg:text-base font-bold text-off-black;
+  @apply text-sm 3xl:text-base font-bold text-off-black;
 }
 
 .plainHeaderAction {
@@ -413,11 +417,11 @@
 }
 
 .txTabs {
-  @apply flex items-center gap-0 px-5 lg:px-6 border-b border-off-black/5;
+  @apply flex items-center gap-0 px-3.5 3xl:px-6 border-b border-off-black/5;
 }
 
 .txTab {
-  @apply px-4 py-2.5 text-[11px] lg:text-xs font-semibold text-off-black/35 border-b-2 border-transparent hover:text-off-black transition-colors cursor-pointer;
+  @apply px-4 py-2.5 text-[11px] 3xl:text-xs font-semibold text-off-black/35 border-b-2 border-transparent hover:text-off-black transition-colors cursor-pointer;
 }
 
 .txTabActive {
@@ -426,7 +430,7 @@
 }
 
 .txRecordCount {
-  @apply px-5 lg:px-6 py-2 text-[10px] text-off-black/35;
+  @apply px-3.5 3xl:px-6 py-2 text-[10px] text-off-black/35;
 }
 
 .txSortHeader {
@@ -434,7 +438,7 @@
 }
 
 .txVendor {
-  @apply text-[11px] lg:text-xs font-medium text-off-black;
+  @apply text-[11px] 3xl:text-xs font-medium text-off-black;
 }
 
 .txDate {
@@ -442,32 +446,32 @@
 }
 
 .txProject {
-  @apply text-[11px] lg:text-xs text-off-black;
+  @apply text-[11px] 3xl:text-xs text-off-black;
 }
 
 .txCategory {
-  @apply text-[8px] lg:text-[9px] font-bold text-off-black/40 uppercase tracking-wide;
+  @apply text-[8px] 3xl:text-[9px] font-bold text-off-black/40 uppercase tracking-wide;
 }
 
 .txAmount {
-  @apply font-headline text-[11px] lg:text-xs font-bold text-off-black tabular-nums;
+  @apply font-headline text-[11px] 3xl:text-xs font-bold text-off-black tabular-nums;
 }
 
 /* Empty state — elevated */
 .emptyGrid {
-  @apply grid grid-cols-1 lg:grid-cols-2 rounded-2xl overflow-hidden shadow-elevation-2;
+  @apply grid grid-cols-1 lg:grid-cols-2 rounded-lg overflow-hidden shadow-sm;
 }
 
 .emptyHero {
-  @apply bg-primary p-5 lg:p-8 space-y-3 lg:space-y-4;
+  @apply bg-primary p-4 3xl:p-8 space-y-3 lg:space-y-4;
 }
 
 .emptyHeroTitle {
-  @apply font-headline text-xl lg:text-2xl font-bold text-white;
+  @apply font-headline text-base 3xl:text-2xl font-bold text-white;
 }
 
 .emptyHeroDesc {
-  @apply text-[11px] lg:text-xs text-white leading-relaxed max-w-sm;
+  @apply text-[11px] 3xl:text-xs text-white leading-relaxed max-w-sm;
 }
 
 .emptySteps {
@@ -475,7 +479,7 @@
 }
 
 .emptyStep {
-  @apply flex items-start gap-2.5 lg:gap-3 px-3 py-3 lg:px-4 lg:py-3.5;
+  @apply flex items-start gap-2.5 lg:gap-3 px-2.5 py-2 3xl:px-4 3xl:py-3.5;
 }
 
 .emptyStepBorder {
@@ -484,9 +488,350 @@
 }
 
 .emptyStepTitle {
-  @apply text-[11px] lg:text-xs font-bold text-off-black;
+  @apply text-[11px] 3xl:text-xs font-bold text-off-black;
 }
 
 .emptyStepDesc {
-  @apply text-[9px] lg:text-[10px] text-off-black/35 mt-0.5;
+  @apply text-[9px] 3xl:text-[10px] text-off-black/35 mt-0.5;
+}
+
+/* ── Awaiting approval section ── */
+.awaitingSection {
+  @apply shadow-sm rounded-lg overflow-hidden;
+}
+
+.awaitingSectionHeader {
+  @apply flex items-center gap-2 px-3.5 py-2.5 3xl:px-5 3xl:py-4 border-b border-border;
+}
+
+.awaitingSectionIcon {
+  @apply text-primary text-lg;
+}
+
+.awaitingSectionTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.awaitingCount {
+  @apply inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold;
+}
+
+.awaitingList {
+  @apply divide-y divide-border;
+}
+
+.awaitingRow {
+  @apply flex items-center gap-2.5 px-3.5 py-2.5 3xl:gap-4 3xl:px-5 3xl:py-4 hover:bg-peach-50 transition-colors;
+}
+
+.awaitingIconCircle {
+  @apply w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0;
+}
+
+.awaitingIconCircleIcon {
+  @apply text-base text-primary;
+}
+
+.awaitingInfo {
+  @apply flex-1 min-w-0;
+}
+
+.awaitingName {
+  @apply text-sm font-semibold text-off-black truncate;
+}
+
+.awaitingMeta {
+  @apply text-xs text-off-black/40;
+}
+
+.awaitingBudget {
+  @apply text-sm font-semibold text-off-black;
+}
+
+.awaitingCounterText {
+  @apply text-xs text-peach-600 font-medium;
+}
+
+.awaitingWaiting {
+  @apply text-[10px] text-off-black/30;
+}
+
+.awaitingBadgePending {
+  @apply shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-full border bg-primary/10 text-primary border-primary/20;
+}
+
+.awaitingBadgeCounter {
+  @apply shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-full border bg-peach-50 text-peach-600 border-peach-600/20;
+}
+
+/* ── Empty state transaction area ── */
+.txEmptyState {
+  @apply text-center py-5 3xl:py-12;
+}
+
+.txEmptyIcon {
+  @apply text-off-black/10 mb-2;
+}
+
+.txEmptyText {
+  @apply text-sm text-off-black;
+}
+
+/* ── Client view: incoming requests ── */
+.clientRequestCard {
+  @apply border border-border rounded-lg overflow-hidden border-l-4 border-l-primary;
+}
+
+.clientRequestBody {
+  @apply px-3.5 pt-3.5 pb-2.5 3xl:px-5 3xl:pt-5 3xl:pb-4;
+}
+
+.clientRequestHeaderRow {
+  @apply flex items-start justify-between gap-4 mb-4;
+}
+
+.clientRequestName {
+  @apply text-sm font-bold text-off-black;
+}
+
+.clientRequestMeta {
+  @apply text-xs text-off-black/40 mt-0.5;
+}
+
+.clientRequestDesc {
+  @apply text-xs text-off-black/60 mt-1;
+}
+
+.clientRequestBudget {
+  @apply text-lg font-bold text-off-black;
+}
+
+.clientRequestBudgetLabel {
+  @apply text-[10px] text-off-black/40;
+}
+
+.clientCategoryBreakdown {
+  @apply mb-4 space-y-1.5 bg-off-black/[0.02] rounded-lg p-3;
+}
+
+.clientCategoryTitle {
+  @apply text-[10px] font-bold text-off-black/40 uppercase tracking-widest mb-2;
+}
+
+.clientCategoryRow {
+  @apply flex items-center justify-between text-xs;
+}
+
+.clientCategoryName {
+  @apply text-off-black/70;
+}
+
+.clientCategoryAmount {
+  @apply font-medium text-off-black tabular-nums;
+}
+
+.clientCategoryPct {
+  @apply text-off-black/30 ml-1;
+}
+
+.clientCounterNote {
+  @apply mb-4 bg-peach-50 border-l-4 border-primary rounded-r-lg px-3 py-2;
+}
+
+.clientCounterText {
+  @apply text-xs text-peach-600;
+}
+
+.clientCounterAmount {
+  @apply font-semibold;
+}
+
+.clientViewLink {
+  @apply inline-block mt-3 text-xs font-semibold text-primary hover:underline;
+}
+
+/* ── Client view: active projects ── */
+.clientProjectCard {
+  @apply border border-border rounded-lg overflow-hidden;
+}
+
+.clientProjectTop {
+  @apply px-3.5 pt-3.5 pb-2.5 3xl:px-5 3xl:pt-5 3xl:pb-4 border-b border-border;
+}
+
+.clientProjectHeaderRow {
+  @apply flex items-start justify-between gap-3;
+}
+
+.clientProjectNameWrap {
+  @apply min-w-0;
+}
+
+.clientProjectName {
+  @apply text-sm font-bold text-off-black hover:text-primary transition-colors truncate block;
+}
+
+.clientProjectContractor {
+  @apply text-xs text-off-black/40 mt-0.5;
+}
+
+.clientProjectBudgetRow {
+  @apply mt-3 space-y-2;
+}
+
+.clientProjectSpentRow {
+  @apply flex items-center justify-between text-xs;
+}
+
+.clientProjectSpentLabel {
+  @apply text-off-black/50;
+}
+
+.clientProjectTotalLabel {
+  @apply font-semibold text-off-black;
+}
+
+.clientProjectRemaining {
+  @apply text-[10px] text-off-black/30;
+}
+
+.clientProjectCategories {
+  @apply px-3.5 py-2.5 3xl:px-5 3xl:py-4 space-y-3;
+}
+
+.clientProjectCategoryTitle {
+  @apply text-[10px] font-bold text-off-black/40 uppercase tracking-widest;
+}
+
+.clientProjectCategoryRow {
+  @apply space-y-1;
+}
+
+.clientProjectCategoryHeader {
+  @apply flex items-center justify-between;
+}
+
+.clientProjectCategoryName {
+  @apply text-xs font-medium text-off-black;
+}
+
+.clientProjectCategoryAmounts {
+  @apply text-xs text-off-black/40 tabular-nums;
+}
+
+.clientProjectCategorySlash {
+  @apply text-off-black/25;
+}
+
+.clientProjectFooter {
+  @apply px-3.5 pb-3 3xl:px-5 3xl:pb-5;
+}
+
+.clientProjectViewLink {
+  @apply text-xs font-semibold text-primary hover:underline;
+}
+
+.clientProjectsGrid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-4;
+}
+
+/* ── Client view: section helpers ── */
+.clientSectionWrap {
+  @apply space-y-3;
+}
+
+.clientRequestCountBadge {
+  @apply inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold;
+}
+
+.clientRequestsInner {
+  @apply space-y-3;
+}
+
+.clientRequestBudgetWrap {
+  @apply shrink-0 text-right;
+}
+
+.clientSectionHeaderRow {
+  @apply flex items-center gap-2;
+}
+
+/* ── Empty state inline extractions ── */
+.emptyHeroEyebrow {
+  @apply text-[10px] 3xl:text-xs font-bold uppercase tracking-[0.15em] text-white;
+}
+
+.emptyStepIcon {
+  @apply text-base 3xl:text-xl text-primary flex-shrink-0 mt-0.5;
+}
+
+.emptyHeroBtnWrap {
+  @apply pt-2;
+}
+
+/* ── Client project badge icon helpers ── */
+.badgeIconWrap {
+  @apply flex items-center gap-1;
+}
+
+.badgeIconSmall {
+  @apply text-xs;
+}
+
+/* ── Table & toolbar inline extractions ── */
+.toolbarIcon {
+  @apply text-off-black/40 text-lg;
+}
+
+.txTable {
+  @apply w-full text-left;
+}
+
+.txTheadRow {
+  @apply border-b border-off-black/5;
+}
+
+.txSortIcon {
+  @apply text-[10px] text-off-black/20;
+}
+
+.txRowStriped {
+  @apply bg-peach-50/30;
+}
+
+.txHeaderHiddenMd {
+  @apply hidden md:table-cell;
+}
+
+.txHeaderHiddenLg {
+  @apply hidden lg:table-cell;
+}
+
+.txCellHiddenMd {
+  @apply hidden md:table-cell;
+}
+
+.txCellHiddenLg {
+  @apply hidden lg:table-cell;
+}
+
+.txHeaderRight {
+  @apply text-right;
+}
+
+.txCellRight {
+  @apply text-right;
+}
+
+.txSortHeaderEnd {
+  @apply flex items-center gap-1 justify-end;
+}
+
+/* 3xl breakpoint — restore full desktop sizes */
+@media (min-width: 1920px) {
+  .stackCard { width: 240px; }
+  .stackCard:not(:first-child) { margin-left: -32px; }
+  .virtualCard { height: 150px; }
+  .utilBanner { min-height: 240px; }
+  .utilDonut { width: 90px; height: 90px; }
 }

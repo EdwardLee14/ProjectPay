@@ -64,21 +64,19 @@ export default async function TransactionsPage() {
 
   return (
     <main className={shared.dashboardPage}>
-      {/* Header */}
-      <div className={s.header}>
-        <div>
-          <h1 className={shared.pageTitle}>All Transactions</h1>
-          <p className={s.headerMeta}>
-            {totalCount} transaction{totalCount !== 1 ? "s" : ""} total
-          </p>
-        </div>
+      <div className={s.pageHeader}>
+        <h1 className={shared.pageTitle}>All Transactions</h1>
+        <p className={s.pageMeta}>
+          {totalCount} transaction{totalCount !== 1 ? "s" : ""} total
+        </p>
       </div>
-
-      <TransactionTable
-        initialTransactions={serialized}
-        initialHasMore={hasMore}
-        projects={projects}
-      />
+      <div className={s.contentCard}>
+        <TransactionTable
+          initialTransactions={serialized}
+          initialHasMore={hasMore}
+          projects={projects}
+        />
+      </div>
     </main>
   );
 }

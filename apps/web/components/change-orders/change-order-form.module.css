@@ -1,0 +1,5 @@
+.title { @apply text-sm font-bold text-off-black mb-4; }
+.form { @apply space-y-4; }
+.fieldGroup { @apply space-y-1.5; }
+.label { @apply text-sm font-bold text-off-black; }
+.submitBtn { @apply w-full py-2.5 text-sm font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all; }

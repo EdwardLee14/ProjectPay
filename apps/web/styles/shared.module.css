@@ -5,30 +5,28 @@
 
 /* Layout */
 .pageContainer {
-  @apply max-w-[1200px] mx-auto w-full;
+  @apply w-full;
 }
 
 .dashboardPage {
-  composes: pageContainer;
-  @apply px-5 py-4 lg:px-10 lg:py-6 xl:px-16 xl:py-8 space-y-5 lg:space-y-6;
+  @apply w-full px-4 pt-5 pb-3 3xl:px-8 3xl:pt-8 3xl:pb-6 space-y-3.5 3xl:space-y-6;
 }
 
 .detailPage {
-  composes: pageContainer;
-  @apply p-8 lg:p-12 space-y-10;
+  @apply w-full p-4 3xl:p-8 space-y-4 3xl:space-y-6;
 }
 
 .sectionPadding {
-  @apply px-6 lg:px-10;
+  @apply px-4 3xl:px-10;
 }
 
 .sectionBlock {
   composes: sectionPadding;
-  @apply py-20 lg:py-28;
+  @apply py-16 lg:py-20 3xl:py-28;
 }
 
 .contentWrap {
-  @apply max-w-[1440px] mx-auto;
+  @apply max-w-[1100px] 3xl:max-w-[1440px] mx-auto;
 }
 
 /* Typography */
@@ -45,15 +43,15 @@
 }
 
 .pageTitle {
-  @apply font-headline text-lg lg:text-xl font-bold text-off-black;
+  @apply font-headline text-base 3xl:text-xl font-bold text-off-black;
 }
 
 .sectionTitle {
-  @apply font-headline text-4xl lg:text-5xl font-bold text-off-black tracking-tight;
+  @apply font-headline text-2xl 3xl:text-5xl font-bold text-off-black tracking-tight;
 }
 
 .heroTitle {
-  @apply font-headline text-5xl lg:text-7xl font-extrabold text-off-black tracking-tight leading-[1.05];
+  @apply font-headline text-3xl 3xl:text-7xl font-extrabold text-off-black tracking-tight leading-[1.05];
 }
 
 .bodyMuted {
@@ -100,7 +98,7 @@
 }
 
 .cardHeader {
-  @apply flex items-center justify-between px-5 py-4 border-b border-off-black/80 bg-guild-cream;
+  @apply flex items-center justify-between px-3.5 py-2.5 3xl:px-5 3xl:py-4 border-b border-off-black/80 bg-guild-cream;
 }
 
 .cardHeaderTitle {
@@ -108,25 +106,25 @@
 }
 
 .cardBody {
-  @apply p-6;
+  @apply p-4 3xl:p-6;
 }
 
 /* Grid cells — for KPI rows and stat blocks */
 .gridCell {
-  @apply p-5 lg:p-6 border-off-black/80;
+  @apply p-3.5 3xl:p-6 border-off-black/80;
 }
 
 .gridCellLarge {
-  @apply p-8 lg:p-10;
+  @apply p-5 3xl:p-10;
 }
 
 /* Table */
 .tableHeader {
-  @apply px-2.5 py-1.5 lg:px-3.5 lg:py-2 text-[9px] font-bold text-off-black/40 uppercase tracking-widest;
+  @apply px-2 py-1 3xl:px-3.5 3xl:py-2 text-[9px] font-bold text-off-black/40 uppercase tracking-widest;
 }
 
 .tableCell {
-  @apply px-2.5 py-2 lg:px-3.5 lg:py-2.5;
+  @apply px-2 py-1.5 3xl:px-3.5 3xl:py-2.5;
 }
 
 .tableRow {
@@ -316,7 +314,7 @@
 }
 
 .fieldLabel {
-  @apply text-sm font-semibold text-off-black;
+  @apply text-sm font-bold text-off-black;
 }
 
 /* Image container */
@@ -326,4 +324,58 @@
 
 .imagePlaceholder {
   @apply absolute inset-0 flex items-center justify-center bg-guild-taupe;
+}
+
+/* ── Twilio CRM shared patterns ── */
+
+.filterPill {
+  @apply border border-border rounded-full px-3 py-1 text-sm cursor-pointer transition-colors hover:bg-peach-50;
+}
+
+.filterPillActive {
+  @apply bg-primary text-white border-primary rounded-full px-3 py-1 text-sm cursor-pointer;
+}
+
+.tabStrip {
+  @apply flex border-b border-border;
+}
+
+.tabItem {
+  @apply px-4 py-2 text-sm font-medium text-off-black/60 border-b-2 border-transparent cursor-pointer transition-colors hover:text-off-black;
+}
+
+.tabItemActive {
+  @apply px-4 py-2 text-sm font-medium text-primary border-b-2 border-primary cursor-pointer;
+}
+
+.fieldGrid {
+  @apply grid grid-cols-2 3xl:grid-cols-3 gap-x-4 gap-y-2.5 3xl:gap-x-8 3xl:gap-y-4;
+}
+
+.fieldValue {
+  @apply text-sm text-off-black mt-1;
+}
+
+.infoBanner {
+  @apply bg-peach-50 border-l-4 border-primary px-4 py-3 flex items-center gap-3 rounded-r-lg;
+}
+
+.borderedSection {
+  @apply bg-white rounded-lg shadow-sm;
+}
+
+.cardElevated {
+  @apply bg-white rounded-lg shadow-sm;
+}
+
+.statusBadgeNormal {
+  @apply bg-primary/20 text-primary text-xs font-bold px-2 py-0.5 rounded-full;
+}
+
+.statusBadgeWarning {
+  @apply bg-primary text-white text-xs font-bold px-2 py-0.5 rounded-full;
+}
+
+.statusBadgeCritical {
+  @apply bg-peach-800/10 text-peach-800 text-xs font-bold px-2 py-0.5 rounded-full;
 }

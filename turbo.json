@@ -18,6 +18,9 @@
     "db:migrate": {
       "cache": false
     },
+    "db:deploy": {
+      "cache": false
+    },
     "db:push": {
       "cache": false
     }

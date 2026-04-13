@@ -10,13 +10,21 @@ import { Label } from "@/components/ui/label";
 import { Icon } from "@/components/ui/icon";
 import shared from "@/styles/shared.module.css";
 
-export default function SignUpPage() {
+type Role = "CONTRACTOR" | "CLIENT";
+
+export default function SignInPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [step, setStep] = useState<"role" | "credentials">("role");
+  const [role, setRole] = useState<Role | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  function selectRole(r: Role) {
+    setRole(r);
+    setStep("credentials");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -24,13 +32,7 @@ export default function SignUpPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: name },
-      },
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
@@ -38,8 +40,44 @@ export default function SignUpPage() {
       return;
     }
 
-    router.push("/onboarding");
+    router.push("/dashboard");
     router.refresh();
+  }
+
+  if (step === "role") {
+    return (
+      <main className={shared.authPage}>
+        <div className={shared.authCard}>
+          <div className={shared.authHeader}>
+            <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+            <h1 className={shared.authTitle}>Sign in</h1>
+            <p className={shared.authSubtitle}>I am a...</p>
+          </div>
+          <div className={shared.authBody}>
+            <button
+              onClick={() => selectRole("CONTRACTOR")}
+              className="w-full h-24 flex flex-col items-center justify-center gap-2 border border-off-black/10 rounded-xl hover:border-primary hover:bg-primary/5 transition-all"
+            >
+              <Icon name="construction" className="text-3xl" />
+              <span className="text-base font-semibold">Contractor</span>
+            </button>
+            <button
+              onClick={() => selectRole("CLIENT")}
+              className="w-full h-24 flex flex-col items-center justify-center gap-2 border border-off-black/10 rounded-xl hover:border-primary hover:bg-primary/5 transition-all"
+            >
+              <Icon name="home" className="text-3xl" />
+              <span className="text-base font-semibold">Client</span>
+            </button>
+          </div>
+          <div className={shared.authFooter}>
+            <p className={shared.authFooterText}>
+              Don&apos;t have an account?{" "}
+              <Link href="/sign-up" className={shared.authLink}>Sign up</Link>
+            </p>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   return (
@@ -47,8 +85,14 @@ export default function SignUpPage() {
       <div className={shared.authCard}>
         <div className={shared.authHeader}>
           <Link href="/" className={shared.authBrand}>ProjectPay</Link>
-          <h1 className={shared.authTitle}>Create your account</h1>
-          <p className={shared.authSubtitle}>Get started with ProjectPay</p>
+          <h1 className={shared.authTitle}>Sign in</h1>
+          <p className={shared.authSubtitle}>
+            {role === "CONTRACTOR" ? "Signing in as a Contractor" : "Signing in as a Client"}
+            {" · "}
+            <button onClick={() => setStep("role")} className={shared.authLink}>
+              Change
+            </button>
+          </p>
         </div>
         <form onSubmit={handleSubmit}>
           <div className={shared.authBody}>
@@ -58,17 +102,6 @@ export default function SignUpPage() {
                 <p className="text-sm text-destructive">{error}</p>
               </div>
             )}
-            <div className={shared.fieldGroup}>
-              <Label htmlFor="name" className={shared.fieldLabel}>Full Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
             <div className={shared.fieldGroup}>
               <Label htmlFor="email" className={shared.fieldLabel}>Email</Label>
               <Input
@@ -85,21 +118,19 @@ export default function SignUpPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="At least 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={6}
               />
             </div>
           </div>
           <div className={shared.authFooter}>
             <Button variant="pill" type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating account..." : "Sign Up"}
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
             <p className={shared.authFooterText}>
-              Already have an account?{" "}
-              <Link href="/sign-in" className={shared.authLink}>Sign in</Link>
+              Don&apos;t have an account?{" "}
+              <Link href="/sign-up" className={shared.authLink}>Sign up</Link>
             </p>
           </div>
         </form>

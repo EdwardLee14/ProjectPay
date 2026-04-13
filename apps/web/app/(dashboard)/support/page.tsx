@@ -105,7 +105,7 @@ export default async function SupportPage() {
       {/* Contact */}
       <section>
         <div className={s.contactCard}>
-          <div className="flex items-center gap-3 mb-3">
+          <div className={s.contactIconRow}>
             <Icon name="mail" className="text-2xl text-white" />
           </div>
           <h2 className={s.contactTitle}>Need more help?</h2>

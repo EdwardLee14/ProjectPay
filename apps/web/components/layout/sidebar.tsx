@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
-import { cn } from "@/lib/utils";
+import styles from "./sidebar.module.css";
 
 const mainNav = [
   { label: "Dashboard", icon: "dashboard", href: "/dashboard" },
@@ -28,26 +28,13 @@ function NavItem({
   return (
     <Link
       href={item.href}
-      className={cn(
-        "flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl transition-all duration-150",
-        active
-          ? "bg-transparent text-off-black border border-primary"
-          : "text-off-black/45 hover:bg-off-black/[0.03] hover:text-off-black border border-transparent"
-      )}
+      className={active ? styles.navItemActive : styles.navItem}
     >
       <Icon
         name={item.icon}
-        className={cn("text-[22px]", active ? "text-primary" : "")}
+        className={active ? styles.navIconActive : styles.navIcon}
         filled={active}
       />
-      <span
-        className={cn(
-          "text-[9px] leading-tight",
-          active ? "font-semibold" : "font-medium"
-        )}
-      >
-        {item.label}
-      </span>
     </Link>
   );
 }
@@ -61,23 +48,16 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden md:flex flex-col h-screen w-[88px] left-0 top-0 fixed z-[60] bg-white border-r border-off-black/5">
-      {/* Logo */}
-      <div className="px-2 pt-4 pb-5 flex justify-center">
-        <h1 className="font-headline font-extrabold text-sm text-off-black">
-          VB
-        </h1>
-      </div>
-
+    <aside className={styles.aside}>
       {/* Main navigation */}
-      <nav className="flex-1 px-2 space-y-1.5">
+      <nav className={styles.mainNav}>
         {mainNav.map((item) => (
           <NavItem key={item.href} item={item} active={isActive(item.href)} />
         ))}
       </nav>
 
       {/* Bottom navigation */}
-      <div className="mt-auto px-2 pb-4 pt-3 border-t border-off-black/5 space-y-1.5">
+      <div className={styles.bottomNav}>
         {bottomNav.map((item) => (
           <NavItem key={item.href} item={item} active={isActive(item.href)} />
         ))}

@@ -16,7 +16,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-guild-taupe z-50 flex justify-around items-center px-4 h-16">
+    <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-border z-50 flex justify-around items-center px-4 h-16">
       {items.slice(0, 2).map((item) => {
         const active =
           item.href === "/dashboard"

@@ -5,11 +5,11 @@
 }
 
 .sectionCard {
-  @apply bg-white rounded-2xl shadow-elevation-1 overflow-hidden;
+  @apply bg-white shadow-sm rounded-lg overflow-hidden;
 }
 
 .sectionBody {
-  @apply p-5 lg:p-6;
+  @apply p-3.5 3xl:p-6;
 }
 
 .sectionTitle {
