@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Icon } from "@/components/ui/icon";
 import { formatCurrency } from "@/lib/utils";
 import s from "./add-transaction-form.module.css";
@@ -39,6 +40,7 @@ export function AddTransactionForm({
   projectId: string;
   categories: Category[];
 }) {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [merchantName, setMerchantName] = useState("");
@@ -175,6 +177,7 @@ export function AddTransactionForm({
 
       resetForm();
       setOpen(false);
+      router.refresh(); // Re-fetch server data (budget sidebar, category spending)
     } finally {
       setSubmitting(false);
     }
