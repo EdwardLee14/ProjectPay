@@ -23,7 +23,7 @@ export default async function HomePage() {
       {/* Navigation */}
       <header className={s.siteHeader}>
         <div className={s.headerInner}>
-          <h1 className={s.logo}>ProjectPay</h1>
+          <h1 className={s.logo}>VisiBill</h1>
           <nav className={s.navGroup}>
             <a href="#how-it-works" className={shared.navLink}>How It Works</a>
             <a href="#for-contractors" className={shared.navLink}>For Contractors</a>
@@ -195,7 +195,7 @@ export default async function HomePage() {
                     {/* Virtual Card */}
                     <div className={s.mockupCard}>
                       <div className="flex justify-between items-center">
-                        <span className="text-[6px] font-bold text-white/60 tracking-widest">PROJECTPAY</span>
+                        <span className="text-[6px] font-bold text-white/60 tracking-widest">VISIBILL</span>
                         <span className="text-[6px] text-white/30 font-bold tracking-wider">VISA</span>
                       </div>
                       <div className="mt-4 mb-2">
@@ -255,90 +255,183 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* For Contractors */}
-        <section id="for-contractors" className={cn(s.twoColSection, "bg-guild-cream")}>
-          <div className={s.twoColGrid}>
-            <div className={shared.imageFrame}>
-              <Image src="/images/contractor.jpg" alt="Contractor on job site" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
-            </div>
+        {/* Value statement */}
+        <section className={s.valueStatement}>
+          <div className={s.valueStatementInner}>
+            <p className={s.valueStatementText}>
+              One platform. Shared visibility. Built for the way
+              construction actually gets paid.
+            </p>
+          </div>
+        </section>
 
-            <div className={s.sectionContent}>
-              <div>
-                <p className={shared.eyebrowAccent}>For Contractors</p>
-                <h2 className={cn(shared.sectionTitle, "leading-tight")}>
-                  Stop chasing payments.
-                </h2>
+        {/* For Contractors */}
+        <section id="for-contractors" className={s.contractorsSection}>
+          <div className={s.contractorsWrap}>
+            {/* Left: Mini utilization card */}
+            <div className={s.contractorsCards}>
+              <div className={s.miniUtilCard}>
+                {/* SVG geometric viz */}
+                <div className={s.miniUtilViz}>
+                  <svg viewBox="0 0 240 260" preserveAspectRatio="xMaxYMin slice">
+                    <defs>
+                      <pattern id="hatchLanding" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(135)">
+                        <line x1="0" y1="0" x2="0" y2="6" stroke="#1a1a1a" strokeWidth="0.7" />
+                      </pattern>
+                      <clipPath id="shapeClipLanding">
+                        <path d="M0,260 L40,200 L70,120 L110,40 L135,80 L160,15 L195,70 L230,0 L240,0 L240,260 Z" />
+                      </clipPath>
+                    </defs>
+                    <g transform="translate(8, 3)">
+                      <path d="M60,260 L90,140 L120,55 L148,95 L174,22 L212,85 L250,8 L260,15 L260,260 Z" fill="#1a1a1a" opacity="0.1" />
+                    </g>
+                    <path d="M0,260 L40,200 L70,120 L110,40 L135,80 L160,15 L195,70 L230,0 L240,0 L240,260 Z" fill="#D65A0A" opacity="0.75" />
+                    <rect x="0" y="0" width="240" height="260" fill="url(#hatchLanding)" opacity="0.35" clipPath="url(#shapeClipLanding)" />
+                  </svg>
+                </div>
+                <div className={s.miniUtilContent}>
+                  <p className={s.miniUtilEyebrow}>Your Company&apos;s</p>
+                  <p className={s.miniUtilTitle}>Budget Utilization</p>
+                  <div className={s.miniUtilDivider} />
+                  <div className={s.miniUtilInner}>
+                    <div className={s.miniUtilLeft}>
+                      <p className={s.miniUtilLabel}>Overall Spend</p>
+                      <div className={s.miniUtilBarRow}>
+                        <div className={s.miniUtilTrack}>
+                          <div className={s.miniUtilFill} style={{ width: "62%" }} />
+                        </div>
+                        <span className={s.miniUtilPct}>62%</span>
+                      </div>
+                      <p className={s.miniUtilMeta}>$29,760 spent &middot; $48,000 budget</p>
+                    </div>
+                    <div className={s.miniUtilDividerV} />
+                    <div className={s.miniUtilRight}>
+                      <svg viewBox="0 0 36 36" className="w-full h-full">
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="hsl(0 0% 0% / 0.08)" strokeWidth="3" />
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="hsl(152 60% 40%)" strokeWidth="3" strokeDasharray="60.4 97" strokeDashoffset="24.3" strokeLinecap="round" />
+                      </svg>
+                      <div className={s.miniUtilDonutCenter}>
+                        <span className={s.miniUtilScore}>78</span>
+                        <span className={s.miniUtilScoreLabel}>Healthy</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className={s.featureList}>
+              {/* Mini activity feed card */}
+              <div className={s.miniActivityCard}>
+                <div className={s.miniActivityHeader}>
+                  <div className={s.miniActivityDot} />
+                  <span className={s.miniActivityTitle}>Live Activity</span>
+                </div>
                 {[
-                  { icon: "speed", title: "Faster Payments", desc: "Clients release funds faster when they've watched every dollar being spent." },
-                  { icon: "shield", title: "Fewer Disputes", desc: "Real-time visibility eliminates the invoice black box. Issues surface on day 3, not day 30." },
-                  { icon: "workspace_premium", title: "Win More Bids", desc: "\"I use ProjectPay — you'll see every dollar.\" That's the pitch that wins." },
-                  { icon: "schedule", title: "Zero Admin", desc: "No more tracking receipts. Swipe your card and everything logs automatically." },
-                ].map((item, i) => (
-                  <div key={item.title} className={i < 3 ? s.featureItemBorder : s.featureItem}>
-                    <Icon name={item.icon} className={s.featureIcon} />
+                  { merchant: "Home Depot", cat: "Materials", amt: "-$347.20" },
+                  { merchant: "Lowe\u0027s", cat: "Materials", amt: "-$128.50" },
+                  { merchant: "City Permits", cat: "Permits", amt: "-$450.00" },
+                ].map((tx) => (
+                  <div key={tx.merchant} className={s.miniActivityRow}>
                     <div>
-                      <h4 className={s.featureTitle}>{item.title}</h4>
-                      <p className={s.featureDesc}>{item.desc}</p>
+                      <p className={s.miniActivityMerchant}>{tx.merchant}</p>
+                      <p className={s.miniActivityCat}>{tx.cat}</p>
                     </div>
+                    <span className={s.miniActivityAmt}>{tx.amt}</span>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <Button variant="pill" asChild>
-                <Link href="/sign-up">Start your first project &rarr;</Link>
-              </Button>
+            {/* Center: Image */}
+            <div className={s.contractorsImage}>
+              <Image
+                src="/images/contractor.jpg"
+                alt="Contractor on job site"
+                fill
+                sizes="(max-width: 1024px) 100vw, 340px"
+                className="object-cover"
+              />
+            </div>
+
+            {/* Right: Content block */}
+            <div className={s.contractorsContent}>
+              <div className={s.contractorsContentInner}>
+                <p className={s.contractorsEyebrow}>For Contractors</p>
+                <h2 className={s.contractorsHeading}>
+                  Stop chasing payments.
+                </h2>
+                <div className={s.contractorsDesc}>
+                  <p>
+                    Get paid faster with real-time budget transparency. Your clients
+                    watch every dollar as it&apos;s spent — eliminating disputes
+                    before they start.
+                  </p>
+                  <p>
+                    No more invoices, no more receipt tracking. Swipe your virtual
+                    card, and everything logs automatically. Win more bids by
+                    offering full visibility from day one.
+                  </p>
+                </div>
+                <Button variant="pill" asChild>
+                  <Link href="/sign-up">Start your first project &rarr;</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
 
         {/* For Clients */}
-        <section id="for-clients" className={cn(s.twoColSection, "bg-guild-cream")}>
-          <div className={s.twoColGrid}>
-            <div className={s.sectionContent}>
-              <div>
-                <p className={shared.eyebrowAccent}>For Clients</p>
-                <h2 className={cn(shared.sectionTitle, "leading-tight")}>
+        <section id="for-clients" className={s.clientsSection}>
+          <div className={s.clientsWrap}>
+            {/* Left: Content block */}
+            <div className={s.clientsContent}>
+              <div className={s.clientsContentInner}>
+                <p className={s.clientsEyebrow}>For Clients</p>
+                <h2 className={s.clientsHeading}>
                   See where every dollar goes.
                 </h2>
+                <div>
+                  <p className={s.clientsQuoteText}>
+                    &ldquo;I finally know where my money goes. Every purchase shows
+                    up in seconds — no more wondering, no more waiting for
+                    invoices.&rdquo;
+                  </p>
+                  <p className={s.clientsQuoteAttrib}>
+                    — Sarah M., Homeowner
+                  </p>
+                </div>
+                <Button variant="pill" asChild>
+                  <Link href="/sign-up">Get Started &rarr;</Link>
+                </Button>
               </div>
-
-              <div className={s.featureGrid}>
-                {[
-                  { icon: "visibility", title: "Live Feed", desc: "Every purchase appears within seconds — vendor, amount, category.", bg: "bg-guild-peach" },
-                  { icon: "lock", title: "Protected Funds", desc: "Money held by Stripe. Spending auto-blocks at category caps.", bg: "bg-white" },
-                  { icon: "swap_horiz", title: "Change Orders", desc: "Budget changes need your approval before any spending.", bg: "bg-white" },
-                  { icon: "verified_user", title: "Full Audit Trail", desc: "Complete paper trail. Every receipt, every transaction, exportable.", bg: "bg-guild-mint", dark: true },
-                ].map((item, i) => (
-                  <div
-                    key={item.title}
-                    className={cn(
-                      s.featureGridCell,
-                      item.bg,
-                      i < 2 && s.featureGridCellBorderBottom,
-                      i % 2 === 0 && s.featureGridCellBorderRight,
-                    )}
-                  >
-                    <Icon name={item.icon} className={cn(s.featureGridIcon, "dark" in item && item.dark ? "text-white" : "text-off-black")} />
-                    <h4 className={cn(s.featureGridTitle, "dark" in item && item.dark ? s.textLight : s.textDark)}>
-                      {item.title}
-                    </h4>
-                    <p className={cn(s.featureGridDesc, "dark" in item && item.dark ? s.textLightMuted : s.textDarkMuted)}>
-                      {item.desc}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <Button variant="pill" asChild>
-                <Link href="/sign-up">See how it works &rarr;</Link>
-              </Button>
             </div>
 
-            <div className={shared.imageFrame}>
-              <Image src="/images/client.jpg" alt="Homeowner reviewing budget on laptop" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover" />
+            {/* Center: Image */}
+            <div className={s.clientsImage}>
+              <Image
+                src="/images/client.jpg"
+                alt="Homeowner reviewing budget on phone"
+                fill
+                sizes="(max-width: 1024px) 100vw, 280px"
+                className="object-cover"
+              />
+            </div>
+
+            {/* Right: Stacked feature cards */}
+            <div className={s.clientsCards}>
+              {[
+                { icon: "visibility", title: "Live Feed", desc: "Every purchase appears within seconds." },
+                { icon: "lock", title: "Protected Funds", desc: "Money held by Stripe with category caps." },
+                { icon: "swap_horiz", title: "Change Orders", desc: "Budget changes need your approval." },
+                { icon: "verified_user", title: "Audit Trail", desc: "Receipts, transactions — all exportable." },
+              ].map((item) => (
+                <div key={item.title} className={s.clientCard}>
+                  <Icon name={item.icon} className={s.clientCardIcon} />
+                  <div>
+                    <h4 className={s.clientCardTitle}>{item.title}</h4>
+                    <p className={s.clientCardDesc}>{item.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -359,8 +452,8 @@ export default async function HomePage() {
         </div>
         <div className={s.footerInner}>
           <div>
-            <h2 className={s.footerBrand}>ProjectPay</h2>
-            <span className={s.footerSub}>by VisiBill</span>
+            <h2 className={s.footerBrand}>VisiBill</h2>
+            <span className={s.footerSub}>Financial transparency for construction</span>
           </div>
           <div className={s.footerLinks}>
             <a href="#how-it-works" className={s.footerLink}>How It Works</a>
