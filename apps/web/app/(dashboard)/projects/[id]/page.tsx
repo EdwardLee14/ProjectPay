@@ -14,6 +14,7 @@ import { ApproveProjectButton } from "@/components/projects/approve-project-butt
 import { SubmitForApprovalButton } from "@/components/projects/submit-for-approval-button";
 import { CounterRespondButton } from "@/components/projects/counter-respond-button";
 import { SidebarCardReveal } from "@/components/projects/sidebar-card-reveal";
+import { BudgetCategoryList } from "@/components/projects/budget-category-list";
 import s from "./project-detail.module.css";
 import shared from "@/styles/shared.module.css";
 import { cn } from "@/lib/utils";
@@ -329,49 +330,15 @@ export default async function ProjectDetailPage({
             <h3 className={s.sectionTitle}>
               {isClient ? "Spending by Category" : "Budget Categories"}
             </h3>
-            {project.budgetCategories.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                No categories defined yet.
-              </p>
-            ) : (
-              <div className={s.categoryList}>
-                {project.budgetCategories.map((cat) => {
-                  const pct =
-                    Number(cat.allocatedAmount) > 0
-                      ? (Number(cat.spentAmount) /
-                          Number(cat.allocatedAmount)) *
-                        100
-                      : 0;
-                  return (
-                    <div key={cat.id} className={s.categoryRow}>
-                      <div className={s.categoryHeader}>
-                        <span className={s.categoryName}>{cat.name}</span>
-                        <span
-                          className={cn(
-                            s.categoryPct,
-                            pct > 100
-                              ? shared.statusCritical
-                              : shared.statusNormal
-                          )}
-                        >
-                          {Math.round(pct)}%
-                        </span>
-                      </div>
-                      <ProgressBar value={pct} className="h-1.5" />
-                      <div className={s.categoryMeta}>
-                        <span>
-                          Spent: {formatCurrency(Number(cat.spentAmount))}
-                        </span>
-                        <span>
-                          Budget:{" "}
-                          {formatCurrency(Number(cat.allocatedAmount))}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <BudgetCategoryList
+              categories={project.budgetCategories.map((cat) => ({
+                id: cat.id,
+                name: cat.name,
+                allocatedAmount: Number(cat.allocatedAmount),
+                spentAmount: Number(cat.spentAmount),
+              }))}
+              isClient={isClient}
+            />
           </TabsContent>
 
           {/* Transactions tab */}
@@ -387,6 +354,10 @@ export default async function ProjectDetailPage({
             )}
             <TransactionFeed
               projectId={project.id}
+              categories={project.budgetCategories.map((c) => ({
+                id: c.id,
+                name: c.name,
+              }))}
               initialTransactions={project.transactions.map((tx) => ({
                 id: tx.id,
                 projectId: tx.projectId,
@@ -424,17 +395,19 @@ export default async function ProjectDetailPage({
 
       {/* ── RIGHT SIDEBAR ── */}
       <aside className={s.rightSidebar}>
-        {/* Virtual Card */}
-        <div className={s.sidebarSection}>
-          <h3 className={s.sidebarSectionTitle}>Virtual Card</h3>
-          <SidebarCardReveal
-            projectId={project.id}
-            projectName={project.name}
-            contractorName={project.contractor.name}
-            stripeCardId={project.stripeCardId}
-            isContractor={isContractor}
-          />
-        </div>
+        {/* Virtual Card — contractor only */}
+        {isContractor && (
+          <div className={s.sidebarSection}>
+            <h3 className={s.sidebarSectionTitle}>Virtual Card</h3>
+            <SidebarCardReveal
+              projectId={project.id}
+              projectName={project.name}
+              contractorName={project.contractor.name}
+              stripeCardId={project.stripeCardId}
+              isContractor={isContractor}
+            />
+          </div>
+        )}
 
         {/* Budget Overview */}
         <div className={s.sidebarSection}>

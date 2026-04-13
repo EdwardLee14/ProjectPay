@@ -1,0 +1,104 @@
+.list {
+  @apply space-y-1;
+}
+
+.empty {
+  @apply text-sm text-muted-foreground;
+}
+
+.row {
+  @apply space-y-2 py-3 px-3 rounded-lg cursor-pointer hover:bg-off-black/[0.01] transition-colors;
+}
+
+.rowHeader {
+  @apply flex items-center justify-between;
+}
+
+.catName {
+  @apply text-sm font-medium text-off-black;
+}
+
+.rowRight {
+  @apply flex items-center gap-2;
+}
+
+.pctNormal {
+  @apply text-xs font-bold text-primary;
+}
+
+.pctCritical {
+  @apply text-xs font-bold text-peach-800;
+}
+
+.chevron {
+  @apply text-sm text-off-black/20 transition-transform;
+}
+
+.chevronOpen {
+  composes: chevron;
+  @apply rotate-180;
+}
+
+.rowMeta {
+  @apply flex justify-between text-[11px] text-off-black/40;
+}
+
+/* ── Expanded ── */
+
+.expandedPanel {
+  @apply px-3 pb-3 space-y-3;
+}
+
+.detailGrid {
+  @apply grid grid-cols-2 gap-x-4 gap-y-2 bg-peach-50/30 rounded-lg p-3;
+}
+
+.detailItem {
+  @apply flex items-center justify-between;
+}
+
+.detailLabel {
+  @apply text-[10px] text-off-black/40 font-medium;
+}
+
+.detailValue {
+  @apply text-xs font-semibold text-off-black;
+}
+
+/* ── Edit ── */
+
+.editForm {
+  @apply space-y-2 pt-2 border-t border-off-black/5;
+}
+
+.editRow {
+  @apply grid grid-cols-2 gap-2;
+}
+
+.editLabel {
+  @apply text-[10px] font-medium text-off-black/50 block mb-0.5;
+}
+
+.editInput {
+  @apply w-full px-2 py-1.5 border border-border rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-primary/30;
+}
+
+.editActions {
+  @apply flex gap-2 pt-1;
+}
+
+.saveBtn {
+  @apply px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50;
+}
+
+.cancelBtn {
+  @apply px-3 py-1.5 text-xs font-medium text-off-black/40 hover:text-off-black transition-colors;
+}
+
+.actions {
+  @apply flex gap-2 pt-1 border-t border-off-black/5;
+}
+
+.editActionBtn {
+  @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-off-black border border-border rounded-lg hover:bg-peach-50 transition-colors;
+}

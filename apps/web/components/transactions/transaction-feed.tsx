@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatCurrency } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
+import { ImageLightbox } from "@/components/ui/image-lightbox";
+import s from "./transaction-feed.module.css";
 
 interface TransactionRow {
   id: string;
@@ -16,6 +19,34 @@ interface TransactionRow {
   stripeTransactionId: string;
   createdAt: string;
   budgetCategory?: { id: string; name: string } | null;
+}
+
+interface ParsedReceiptData {
+  merchantName?: string;
+  totalAmount?: number;
+  date?: string | null;
+  subtotal?: number | null;
+  taxAmount?: number | null;
+  lineItems?: {
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+  }[];
+  suggestedCategoryName?: string | null;
+}
+
+interface ReceiptData {
+  id: string;
+  storagePath: string;
+  fileName: string;
+  mimeType: string;
+  parsedData: ParsedReceiptData | null;
+}
+
+interface Category {
+  id: string;
+  name: string;
 }
 
 const MCC_ICONS: Record<string, string> = {
@@ -42,17 +73,54 @@ function getMccIcon(code: string): string {
   return MCC_ICONS[code] ?? "receipt_long";
 }
 
+function getReceiptImageUrl(storagePath: string): string {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  return `${base}/storage/v1/object/public/receipts/${storagePath}`;
+}
+
 export function TransactionFeed({
   projectId,
   initialTransactions,
+  categories = [],
 }: {
   projectId: string;
   initialTransactions: TransactionRow[];
+  categories?: Category[];
 }) {
+  const router = useRouter();
   const [transactions, setTransactions] =
     useState<TransactionRow[]>(initialTransactions);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [receiptCache, setReceiptCache] = useState<
+    Record<string, ReceiptData | null>
+  >({});
+  const [loadingReceipt, setLoadingReceipt] = useState<string | null>(null);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+  // Edit state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editMerchant, setEditMerchant] = useState("");
+  const [editAmount, setEditAmount] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editNote, setEditNote] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const addTransaction = useCallback((tx: TransactionRow) => {
+    setTransactions((prev) => {
+      if (prev.some((t) => t.id === tx.id)) return prev;
+      return [tx, ...prev];
+    });
+  }, []);
 
   useEffect(() => {
+    function handleManualAdd(e: Event) {
+      const tx = (e as CustomEvent).detail as TransactionRow;
+      addTransaction(tx);
+    }
+
+    window.addEventListener("transaction-created", handleManualAdd);
+
     const supabase = createClient();
     const channel = supabase
       .channel(`transactions:${projectId}`)
@@ -65,28 +133,129 @@ export function TransactionFeed({
           filter: `projectId=eq.${projectId}`,
         },
         (payload) => {
-          const newTx = payload.new as TransactionRow;
-          setTransactions((prev) => [newTx, ...prev]);
+          const raw = payload.new as Record<string, unknown>;
+          fetch(`/api/transactions/${raw.id}`)
+            .then((res) => (res.ok ? res.json() : Promise.reject()))
+            .then((fullTx: TransactionRow) => addTransaction(fullTx))
+            .catch(() => {
+              addTransaction({
+                ...(raw as unknown as TransactionRow),
+                amount: Number(raw.amount),
+                budgetCategory: null,
+              });
+            });
         }
       )
       .subscribe();
 
     return () => {
+      window.removeEventListener("transaction-created", handleManualAdd);
       supabase.removeChannel(channel);
     };
-  }, [projectId]);
+  }, [projectId, addTransaction]);
+
+  async function handleRowClick(txId: string) {
+    if (editingId) return; // Don't collapse while editing
+    if (expandedId === txId) {
+      setExpandedId(null);
+      return;
+    }
+
+    setExpandedId(txId);
+
+    if (receiptCache[txId] === undefined) {
+      setLoadingReceipt(txId);
+      try {
+        const res = await fetch(`/api/receipts?transactionId=${txId}`);
+        if (res.ok) {
+          const receipts = await res.json();
+          setReceiptCache((prev) => ({
+            ...prev,
+            [txId]: receipts.length > 0 ? receipts[0] : null,
+          }));
+        } else {
+          setReceiptCache((prev) => ({ ...prev, [txId]: null }));
+        }
+      } catch {
+        setReceiptCache((prev) => ({ ...prev, [txId]: null }));
+      } finally {
+        setLoadingReceipt(null);
+      }
+    }
+  }
+
+  function startEdit(tx: TransactionRow) {
+    setEditingId(tx.id);
+    setEditMerchant(tx.merchantName);
+    setEditAmount(String(tx.amount));
+    setEditCategory(tx.budgetCategory?.id ?? "");
+    setEditNote(tx.note ?? "");
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+  }
+
+  async function saveEdit(txId: string) {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/transactions/${txId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          merchantName: editMerchant,
+          amount: parseFloat(editAmount),
+          budgetCategoryId: editCategory || null,
+          note: editNote || null,
+        }),
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setTransactions((prev) =>
+          prev.map((t) =>
+            t.id === txId
+              ? { ...t, ...updated, amount: Number(updated.amount) }
+              : t
+          )
+        );
+        setEditingId(null);
+        router.refresh();
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handleDelete(txId: string) {
+    setDeleting(txId);
+    try {
+      const res = await fetch(`/api/transactions/${txId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setTransactions((prev) => prev.filter((t) => t.id !== txId));
+        setExpandedId(null);
+        router.refresh();
+      }
+    } finally {
+      setDeleting(null);
+    }
+  }
 
   if (transactions.length === 0) {
     return (
-      <div className="text-center py-8">
-        <Icon name="receipt_long" className="text-off-black/10" size={40} />
-        <p className="text-sm font-medium text-off-black mt-3">No transactions yet</p>
-        <p className="text-xs text-off-black/40 mt-1">Transactions will appear here in real time as the virtual card is used</p>
+      <div className={s.emptyState}>
+        <Icon name="receipt_long" className={s.emptyIcon} size={40} />
+        <p className={s.emptyTitle}>No transactions yet</p>
+        <p className={s.emptyDesc}>
+          Transactions will appear here in real time as the virtual card is used
+        </p>
       </div>
     );
   }
 
-  // Group by date
   const grouped: Record<string, TransactionRow[]> = {};
   for (const tx of transactions) {
     const day = new Date(tx.createdAt).toLocaleDateString("en-US", {
@@ -99,75 +268,330 @@ export function TransactionFeed({
   }
 
   return (
-    <div className="overflow-hidden">
-      <div className="px-5 py-4 border-b border-off-black/5">
-        <h3 className="text-sm font-bold text-off-black">Transactions</h3>
-      </div>
+    <>
+      {lightboxSrc && (
+        <ImageLightbox
+          src={lightboxSrc}
+          alt="Receipt"
+          onClose={() => setLightboxSrc(null)}
+        />
+      )}
 
-      {Object.entries(grouped).map(([day, txs]) => (
-        <div key={day}>
-          <div className="px-5 py-2 bg-off-black/[0.02] border-b border-off-black/5">
-            <span className="text-[10px] font-bold text-off-black/40 uppercase tracking-widest">
-              {day}
-            </span>
-          </div>
-          <div className="divide-y divide-off-black/5">
-            {txs.map((tx) => (
-              <div
-                key={tx.id}
-                className="group px-5 py-3.5 flex items-center gap-3 hover:bg-off-black/[0.01] transition-colors"
-              >
-                {/* Icon */}
-                <div className="w-8 h-8 rounded-full bg-off-black/5 flex items-center justify-center shrink-0">
-                  <Icon
-                    name={getMccIcon(tx.categoryCode)}
-                    className="text-base text-off-black/50"
-                  />
-                </div>
+      <div className={s.feedContainer}>
+        <div className={s.feedHeader}>
+          <h3 className={s.feedTitle}>Transactions</h3>
+        </div>
 
-                {/* Details */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-off-black truncate">
-                    {tx.merchantName}
-                  </p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    {tx.budgetCategory ? (
-                      <span className="text-[10px] font-semibold text-primary">
-                        {tx.budgetCategory.name}
+        {Object.entries(grouped).map(([day, txs]) => (
+          <div key={day}>
+            <div className={s.dateHeader}>
+              <span className={s.dateLabel}>{day}</span>
+            </div>
+            <div className={s.dateGroup}>
+              {txs.map((tx) => {
+                const isExpanded = expandedId === tx.id;
+                const receipt = receiptCache[tx.id];
+                const parsed = receipt?.parsedData ?? null;
+                const isLoading = loadingReceipt === tx.id;
+                const isEditing = editingId === tx.id;
+                const isDeleting = deleting === tx.id;
+                const receiptImgUrl = receipt?.storagePath
+                  ? getReceiptImageUrl(receipt.storagePath)
+                  : null;
+
+                return (
+                  <div key={tx.id}>
+                    {/* Collapsed row */}
+                    <div
+                      className={s.txRow}
+                      onClick={() => handleRowClick(tx.id)}
+                    >
+                      <div className={s.txIcon}>
+                        <Icon
+                          name={getMccIcon(tx.categoryCode)}
+                          className={s.txIconSymbol}
+                        />
+                      </div>
+
+                      <div className={s.txDetails}>
+                        <p className={s.txMerchant}>{tx.merchantName}</p>
+                        <div className={s.txMeta}>
+                          {tx.budgetCategory ? (
+                            <span className={s.txCategory}>
+                              {tx.budgetCategory.name}
+                            </span>
+                          ) : (
+                            <span className={s.txUncategorized}>
+                              Uncategorized
+                            </span>
+                          )}
+                          {tx.note && (
+                            <>
+                              <span className={s.txNoteDot}>·</span>
+                              <span className={s.txNote}>{tx.note}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <Icon
+                        name="expand_more"
+                        className={
+                          isExpanded ? s.txChevronOpen : s.txChevron
+                        }
+                      />
+
+                      <span className={s.txAmount}>
+                        -{formatCurrency(tx.amount)}
                       </span>
-                    ) : (
-                      <span className="text-[10px] text-off-black/30">
-                        Uncategorized
-                      </span>
-                    )}
-                    {tx.note && (
-                      <>
-                        <span className="text-off-black/20 text-[10px]">·</span>
-                        <span className="text-[10px] text-off-black/40 truncate">
-                          {tx.note}
-                        </span>
-                      </>
+                    </div>
+
+                    {/* Expanded panel */}
+                    {isExpanded && (
+                      <div className={s.expandedPanel}>
+                        {isLoading && (
+                          <div className={s.loadingReceipt}>
+                            <div className={s.spinner} />
+                            <span>Loading receipt...</span>
+                          </div>
+                        )}
+
+                        {!isLoading && (
+                          <>
+                            <div className={s.expandedContent}>
+                              {/* Receipt image */}
+                              <div className={s.receiptImageWrap}>
+                                {receiptImgUrl ? (
+                                  <img
+                                    src={receiptImgUrl}
+                                    alt={receipt?.fileName ?? "Receipt"}
+                                    className={`${s.receiptImage} ${s.receiptImageClickable}`}
+                                    onClick={() =>
+                                      setLightboxSrc(receiptImgUrl)
+                                    }
+                                  />
+                                ) : (
+                                  <div className={s.receiptPlaceholder}>
+                                    <Icon
+                                      name="receipt_long"
+                                      className={s.receiptPlaceholderIcon}
+                                      size={32}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Details */}
+                              <div className={s.expandedDetails}>
+                                <div className={s.detailRow}>
+                                  <span className={s.detailLabel}>
+                                    Merchant
+                                  </span>
+                                  <span className={s.detailValue}>
+                                    {tx.merchantName}
+                                  </span>
+                                </div>
+                                <div className={s.detailRow}>
+                                  <span className={s.detailLabel}>Date</span>
+                                  <span className={s.detailValue}>
+                                    {parsed?.date ??
+                                      new Date(
+                                        tx.createdAt
+                                      ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                {tx.budgetCategory && (
+                                  <div className={s.detailRow}>
+                                    <span className={s.detailLabel}>
+                                      Category
+                                    </span>
+                                    <span className={s.detailValue}>
+                                      {tx.budgetCategory.name}
+                                    </span>
+                                  </div>
+                                )}
+                                {tx.note && (
+                                  <div className={s.detailRow}>
+                                    <span className={s.detailLabel}>Note</span>
+                                    <span className={s.detailValue}>
+                                      {tx.note}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {/* Parsed line items */}
+                                {parsed?.lineItems &&
+                                  parsed.lineItems.length > 0 && (
+                                    <>
+                                      <p className={s.lineItemsTitle}>
+                                        Line Items
+                                      </p>
+                                      {parsed.lineItems.map((item, i) => (
+                                        <div key={i} className={s.lineItemRow}>
+                                          <span className={s.lineItemDesc}>
+                                            {item.quantity > 1
+                                              ? `${item.quantity}x `
+                                              : ""}
+                                            {item.description}
+                                          </span>
+                                          <span className={s.lineItemAmt}>
+                                            {formatCurrency(item.total)}
+                                          </span>
+                                        </div>
+                                      ))}
+
+                                      <div className={s.totalsDivider}>
+                                        {parsed.subtotal != null && (
+                                          <div className={s.totalsRow}>
+                                            <span>Subtotal</span>
+                                            <span>
+                                              {formatCurrency(parsed.subtotal)}
+                                            </span>
+                                          </div>
+                                        )}
+                                        {parsed.taxAmount != null && (
+                                          <div className={s.totalsRow}>
+                                            <span>Tax</span>
+                                            <span>
+                                              {formatCurrency(parsed.taxAmount)}
+                                            </span>
+                                          </div>
+                                        )}
+                                        <div className={s.totalsFinal}>
+                                          <span>Total</span>
+                                          <span>
+                                            {formatCurrency(
+                                              parsed.totalAmount ?? tx.amount
+                                            )}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+
+                                {receipt === null && !parsed && (
+                                  <p className={s.noReceipt}>
+                                    No receipt attached
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Edit form (inline) */}
+                            {isEditing && (
+                              <div className={s.editForm}>
+                                <div className={s.editFieldRow}>
+                                  <div>
+                                    <label className={s.editLabel}>
+                                      Merchant
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={editMerchant}
+                                      onChange={(e) =>
+                                        setEditMerchant(e.target.value)
+                                      }
+                                      className={s.editInput}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className={s.editLabel}>
+                                      Amount
+                                    </label>
+                                    <input
+                                      type="number"
+                                      step="0.01"
+                                      min="0"
+                                      value={editAmount}
+                                      onChange={(e) =>
+                                        setEditAmount(e.target.value)
+                                      }
+                                      className={s.editInput}
+                                    />
+                                  </div>
+                                </div>
+                                <div className={s.editFieldRow}>
+                                  <div>
+                                    <label className={s.editLabel}>
+                                      Category
+                                    </label>
+                                    <select
+                                      value={editCategory}
+                                      onChange={(e) =>
+                                        setEditCategory(e.target.value)
+                                      }
+                                      className={s.editSelect}
+                                    >
+                                      <option value="">Uncategorized</option>
+                                      {categories.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>
+                                          {cat.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className={s.editLabel}>Note</label>
+                                    <input
+                                      type="text"
+                                      value={editNote}
+                                      onChange={(e) =>
+                                        setEditNote(e.target.value)
+                                      }
+                                      placeholder="Optional"
+                                      className={s.editInput}
+                                    />
+                                  </div>
+                                </div>
+                                <div className={s.editActions}>
+                                  <button
+                                    onClick={() => saveEdit(tx.id)}
+                                    disabled={saving}
+                                    className={s.editSaveBtn}
+                                  >
+                                    {saving ? "Saving..." : "Save"}
+                                  </button>
+                                  <button
+                                    onClick={cancelEdit}
+                                    className={s.editCancelBtn}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Action buttons */}
+                            {!isEditing && (
+                              <div className={s.expandedActions}>
+                                <button
+                                  className={s.editBtn}
+                                  onClick={() => startEdit(tx)}
+                                >
+                                  <Icon name="edit" className="text-xs" />
+                                  Edit
+                                </button>
+                                <button
+                                  className={s.deleteBtn}
+                                  onClick={() => handleDelete(tx.id)}
+                                  disabled={isDeleting}
+                                >
+                                  <Icon name="delete" className="text-xs" />
+                                  {isDeleting ? "Deleting..." : "Delete"}
+                                </button>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
                     )}
                   </div>
-                </div>
-
-                {/* Edit */}
-                <button
-                  className="p-1 text-off-black/20 hover:text-off-black transition-colors opacity-0 group-hover:opacity-100 shrink-0"
-                  title="Edit transaction"
-                >
-                  <Icon name="edit" className="text-sm" />
-                </button>
-
-                {/* Amount */}
-                <span className="text-sm font-bold text-off-black shrink-0">
-                  -{formatCurrency(tx.amount)}
-                </span>
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }

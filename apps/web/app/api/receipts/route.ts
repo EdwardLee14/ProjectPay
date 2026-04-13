@@ -46,6 +46,7 @@ export async function GET(req: NextRequest) {
         storagePath: true,
         fileName: true,
         mimeType: true,
+        parsedData: true,
         uploadedBy: true,
         createdAt: true,
         uploader: {

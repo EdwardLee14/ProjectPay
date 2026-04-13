@@ -70,6 +70,13 @@ export default async function DashboardPage() {
       })),
     ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+    const recentClientTransactions = await prisma.transaction.findMany({
+      where: { projectId: { in: projectIds } },
+      include: { project: true },
+      orderBy: { createdAt: "desc" },
+      take: 6,
+    });
+
     const REVIEW_STATUSES = new Set(["PENDING_APPROVAL", "COUNTER_PROPOSED"]);
 
     const projectRequests = clientProjects
@@ -116,6 +123,17 @@ export default async function DashboardPage() {
     const totalSpent = mappedProjects.reduce((s, p) => s + p.totalSpent, 0);
     const activeCount = mappedProjects.filter((p) => p.status === "ACTIVE").length;
 
+    const clientTransactions = recentClientTransactions.map((tx) => ({
+      id: tx.id,
+      merchantName: tx.merchantName,
+      amount: Number(tx.amount),
+      categoryCode: tx.categoryCode,
+      projectName: tx.project.name,
+      createdAt: tx.createdAt.toISOString(),
+    }));
+
+    const totalFundedClient = mappedProjects.reduce((s, p) => s + p.fundedAmount, 0);
+
     return (
       <ClientDashboard
         userName={user.name}
@@ -124,7 +142,9 @@ export default async function DashboardPage() {
         pendingRequests={pendingRequests}
         totalBudget={totalBudget}
         totalSpent={totalSpent}
+        totalFunded={totalFundedClient}
         activeCount={activeCount}
+        recentTransactions={clientTransactions}
       />
     );
   }
@@ -186,6 +206,19 @@ export default async function DashboardPage() {
   const pendingOrders = pendingChangeOrders.length;
   const pendingTopUps = pendingTopUpRequests.length;
   const pendingTotal = pendingOrders + pendingTopUps;
+
+  // Category health for budget score
+  const allCategories = projects.flatMap((p) => p.budgetCategories);
+  const overSpentCount = allCategories.filter(
+    (c) => Number(c.allocatedAmount) > 0 && Number(c.spentAmount) > Number(c.allocatedAmount)
+  ).length;
+  const nearLimitCount = allCategories.filter((c) => {
+    const allocated = Number(c.allocatedAmount);
+    const spent = Number(c.spentAmount);
+    if (allocated <= 0) return false;
+    const pct = (spent / allocated) * 100;
+    return pct > 85 && pct <= 100;
+  }).length;
 
   // If all pending requests belong to one project, link directly to it
   const pendingProjectIds = new Set([
@@ -487,19 +520,46 @@ export default async function DashboardPage() {
                   {/* Vertical divider */}
                   <div className={s.utilInnerDivider} />
 
-                  {/* Score gauge */}
+                  {/* Score gauge — composite budget health score */}
                   {(() => {
-                    const budgetScore = Math.max(0, Math.min(100, Math.round(100 - usagePct)));
+                    // 1. Spend rate (40%) — only penalize near/over 100%
+                    const spendScore = usagePct <= 90 ? 100
+                      : usagePct <= 100 ? 100 - ((usagePct - 90) / 10) * 30
+                      : usagePct <= 110 ? 70 - ((usagePct - 100) / 10) * 40
+                      : 0;
+
+                    // 2. Funding health (20%)
+                    const fundingPct = totalBudget > 0 ? (totalFunded / totalBudget) * 100 : 0;
+                    const fundingScore = fundingPct >= 100 ? 100 : fundingPct;
+
+                    // 3. Category balance (25%) — overspent or near-limit categories
+                    const categoryScore = Math.max(0, Math.min(100,
+                      100 - (overSpentCount * 30 + nearLimitCount * 10)
+                    ));
+
+                    // 4. Budget pressure (15%) — pending change orders / top-ups
+                    const pressureScore = pendingTotal === 0 ? 100
+                      : pendingTotal === 1 ? 70
+                      : pendingTotal === 2 ? 40
+                      : 10;
+
+                    const budgetScore = Math.max(0, Math.min(100, Math.round(
+                      spendScore * 0.40 +
+                      fundingScore * 0.20 +
+                      categoryScore * 0.25 +
+                      pressureScore * 0.15
+                    )));
+
                     const scoreColor =
                       budgetScore >= 70
                         ? "hsl(152 60% 40%)"
-                        : budgetScore >= 40
+                        : budgetScore >= 45
                           ? "hsl(38 90% 50%)"
                           : "hsl(0 72% 51%)";
                     const scoreLabel =
                       budgetScore >= 70
                         ? "Healthy"
-                        : budgetScore >= 40
+                        : budgetScore >= 45
                           ? "Fair"
                           : "At Risk";
                     const circumference = 2 * Math.PI * 15.5;

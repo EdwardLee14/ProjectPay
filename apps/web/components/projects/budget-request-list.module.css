@@ -1,0 +1,164 @@
+/* ── Budget Request Feed (matches transaction-feed pattern) ── */
+
+.feedContainer {
+  @apply overflow-hidden;
+}
+
+.feedHeader {
+  @apply px-5 py-4 border-b border-off-black/5;
+}
+
+.feedTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.dateHeader {
+  @apply px-5 py-2 bg-off-black/[0.02] border-b border-off-black/5;
+}
+
+.dateLabel {
+  @apply text-[10px] font-bold text-off-black/40 uppercase tracking-widest;
+}
+
+.dateGroup {
+  @apply divide-y divide-off-black/5;
+}
+
+/* ── Request Row ── */
+
+.reqRow {
+  @apply px-5 py-3.5 flex items-center gap-3 hover:bg-off-black/[0.01] transition-colors cursor-pointer;
+}
+
+.reqIcon {
+  @apply w-8 h-8 rounded-full bg-off-black/5 flex items-center justify-center shrink-0;
+}
+
+.reqIconActive {
+  @apply w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0;
+}
+
+.reqIconSymbol {
+  @apply text-base text-off-black/50;
+}
+
+.reqDetails {
+  @apply flex-1 min-w-0;
+}
+
+.reqTitle {
+  @apply text-sm font-semibold text-off-black truncate;
+}
+
+.reqMeta {
+  @apply flex items-center gap-1.5 mt-0.5;
+}
+
+.reqCategory {
+  @apply text-[10px] font-semibold text-primary;
+}
+
+.reqRequester {
+  @apply text-[10px] text-off-black/30;
+}
+
+.reqAmount {
+  @apply text-sm font-bold text-off-black shrink-0;
+}
+
+.chevron {
+  @apply text-sm text-off-black/20 transition-transform shrink-0;
+}
+
+.chevronOpen {
+  composes: chevron;
+  @apply rotate-180;
+}
+
+/* ── Status Badges ── */
+
+.badgePending {
+  @apply text-[9px] font-bold rounded-full px-2 py-0.5 text-primary bg-primary/10 shrink-0;
+}
+
+.badgeApproved {
+  @apply text-[9px] font-bold rounded-full px-2 py-0.5 text-primary bg-primary/10 shrink-0;
+}
+
+.badgeRejected {
+  @apply text-[9px] font-bold rounded-full px-2 py-0.5 text-destructive bg-destructive/10 shrink-0;
+}
+
+.badgeDefault {
+  @apply text-[9px] font-bold rounded-full px-2 py-0.5 text-off-black/40 bg-off-black/5 shrink-0;
+}
+
+/* ── Expanded Panel ── */
+
+.expandedPanel {
+  @apply px-5 pb-4 bg-peach-50/20 border-b border-off-black/5 space-y-3;
+}
+
+.detailGrid {
+  @apply grid grid-cols-2 gap-x-4 gap-y-2 pt-2;
+}
+
+.detailRow {
+  @apply flex items-center justify-between text-xs;
+}
+
+.detailLabel {
+  @apply text-off-black/40 font-medium;
+}
+
+.detailValue {
+  @apply text-off-black font-semibold;
+}
+
+.reasonBlock {
+  @apply bg-peach-50/30 rounded-lg p-3;
+}
+
+.reasonLabel {
+  @apply text-[10px] font-bold text-off-black/40 uppercase tracking-wider block mb-1;
+}
+
+.reasonText {
+  @apply text-xs text-off-black leading-relaxed;
+}
+
+/* ── Actions ── */
+
+.actions {
+  @apply flex gap-2 pt-2 border-t border-off-black/5;
+}
+
+.approveBtn {
+  @apply inline-flex items-center gap-1 px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50;
+}
+
+.rejectBtn {
+  @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-off-black border border-border rounded-lg hover:bg-peach-50 transition-colors disabled:opacity-50;
+}
+
+.deleteBtn {
+  @apply inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-destructive border border-destructive/30 rounded-lg hover:bg-destructive/5 transition-colors disabled:opacity-50;
+}
+
+/* ── Empty State ── */
+
+.emptyState {
+  @apply text-center py-8;
+}
+
+.emptyIcon {
+  @apply text-off-black/10;
+}
+
+.emptyTitle {
+  @apply text-sm font-medium text-off-black mt-3;
+}
+
+.emptyDesc {
+  @apply text-xs text-off-black/40 mt-1;
+}

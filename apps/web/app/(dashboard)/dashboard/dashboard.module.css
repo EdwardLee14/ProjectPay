@@ -323,7 +323,7 @@
 }
 
 .utilCardMeta {
-  @apply flex items-center gap-2 text-[9px] text-off-black/50 mt-2;
+  @apply flex items-center gap-2 text-[9px] text-off-black mt-2;
 }
 
 .utilMetaDot {
@@ -339,7 +339,7 @@
 }
 
 .utilSubDesc {
-  @apply text-[10px] text-off-black/40;
+  @apply text-[10px] text-off-black;
 }
 
 /* Donut chart */
@@ -579,7 +579,7 @@
 
 /* ── Client view: incoming requests ── */
 .clientRequestCard {
-  @apply border border-border rounded-lg overflow-hidden border-l-4 border-l-primary;
+  @apply bg-white border border-border rounded-lg overflow-hidden border-l-4 border-l-primary shadow-sm;
 }
 
 .clientRequestBody {
@@ -652,15 +652,15 @@
 
 /* ── Client view: active projects ── */
 .clientProjectCard {
-  @apply border border-border rounded-lg overflow-hidden;
+  @apply bg-white border border-border rounded-lg overflow-hidden shadow-sm block transition-all hover:shadow-elevation-2 hover:border-primary/20;
 }
 
 .clientProjectTop {
-  @apply px-3.5 pt-3.5 pb-2.5 3xl:px-5 3xl:pt-5 3xl:pb-4 border-b border-border;
+  @apply px-4 pt-4 pb-3 3xl:px-5 3xl:pt-5 3xl:pb-4;
 }
 
 .clientProjectHeaderRow {
-  @apply flex items-start justify-between gap-3;
+  @apply flex items-start justify-between gap-3 mb-3;
 }
 
 .clientProjectNameWrap {
@@ -668,35 +668,35 @@
 }
 
 .clientProjectName {
-  @apply text-sm font-bold text-off-black hover:text-primary transition-colors truncate block;
+  @apply text-sm font-bold text-off-black truncate block;
 }
 
 .clientProjectContractor {
-  @apply text-xs text-off-black/40 mt-0.5;
+  @apply text-[11px] text-off-black/40 mt-0.5;
 }
 
 .clientProjectBudgetRow {
-  @apply mt-3 space-y-2;
+  @apply space-y-1.5;
 }
 
 .clientProjectSpentRow {
-  @apply flex items-center justify-between text-xs;
+  @apply flex items-center justify-between text-xs mt-1.5;
 }
 
 .clientProjectSpentLabel {
-  @apply text-off-black/50;
+  @apply text-off-black tabular-nums;
 }
 
-.clientProjectTotalLabel {
-  @apply font-semibold text-off-black;
+.clientProjectPctLabel {
+  @apply text-xs font-bold tabular-nums;
 }
 
 .clientProjectRemaining {
-  @apply text-[10px] text-off-black/30;
+  @apply text-xs text-off-black;
 }
 
 .clientProjectCategories {
-  @apply px-3.5 py-2.5 3xl:px-5 3xl:py-4 space-y-3;
+  @apply px-4 py-3 3xl:px-5 3xl:py-4 space-y-2.5 border-t border-border;
 }
 
 .clientProjectCategoryTitle {
@@ -716,7 +716,7 @@
 }
 
 .clientProjectCategoryAmounts {
-  @apply text-xs text-off-black/40 tabular-nums;
+  @apply text-xs text-off-black font-medium tabular-nums;
 }
 
 .clientProjectCategorySlash {
@@ -724,15 +724,19 @@
 }
 
 .clientProjectFooter {
-  @apply px-3.5 pb-3 3xl:px-5 3xl:pb-5;
+  @apply flex items-center justify-between px-4 py-2.5 3xl:px-5 3xl:py-3 border-t border-border bg-off-black/[0.02];
 }
 
-.clientProjectViewLink {
-  @apply text-xs font-semibold text-primary hover:underline;
+.clientProjectArrow {
+  @apply text-off-black/20 transition-transform;
+}
+
+.clientProjectCard:hover .clientProjectArrow {
+  @apply translate-x-1 text-primary;
 }
 
 .clientProjectsGrid {
-  @apply grid grid-cols-1 lg:grid-cols-2 gap-4;
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3;
 }
 
 /* ── Client view: section helpers ── */

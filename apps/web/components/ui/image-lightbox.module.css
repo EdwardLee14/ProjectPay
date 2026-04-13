@@ -1,0 +1,38 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.imageWrap {
+  @apply relative cursor-default;
+  animation: scaleIn 0.15s ease-out;
+}
+
+.closeBtn {
+  @apply absolute -top-12 -right-12 w-14 h-14 flex items-center justify-center text-white text-5xl font-light hover:text-white/60 transition-colors cursor-pointer z-10;
+}
+
+.image {
+  @apply max-w-[90vw] max-h-[85vh] rounded-lg shadow-2xl;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

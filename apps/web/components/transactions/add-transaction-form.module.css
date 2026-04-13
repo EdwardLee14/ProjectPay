@@ -1,0 +1,126 @@
+/* ── Add Transaction Form ── */
+
+.formContainer {
+  @apply border border-border rounded-lg p-4 bg-white space-y-3;
+}
+
+.formHeader {
+  @apply flex items-center justify-between;
+}
+
+.formTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.closeBtn {
+  @apply text-off-black/30 hover:text-off-black transition-colors;
+}
+
+.fieldRow {
+  @apply grid grid-cols-2 gap-3;
+}
+
+.fieldLabel {
+  @apply text-xs font-medium text-off-black/50 block mb-1;
+}
+
+.fieldInput {
+  @apply w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30;
+}
+
+.fieldSelect {
+  composes: fieldInput;
+  @apply bg-white;
+}
+
+/* ── Upload Button ── */
+
+.uploadBtn {
+  @apply flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-off-black/40 cursor-pointer hover:bg-peach-50 transition-colors;
+}
+
+.uploadBtnActive {
+  @apply flex items-center gap-2 px-3 py-2 border border-primary rounded-lg text-sm text-primary bg-peach-50 cursor-pointer;
+}
+
+/* ── Parsing State ── */
+
+.parsingState {
+  @apply flex items-center gap-2 text-xs text-off-black/40 py-2;
+}
+
+.spinner {
+  @apply w-3.5 h-3.5 border-2 border-off-black/10 border-t-primary rounded-full animate-spin;
+}
+
+/* ── Parsed Receipt Preview ── */
+
+.parsePreview {
+  @apply border border-border rounded-lg p-3 bg-peach-50/30 space-y-2;
+}
+
+.parsePreviewHeader {
+  @apply flex items-center justify-between;
+}
+
+.parseMerchant {
+  @apply text-sm font-bold text-off-black;
+}
+
+.parseDate {
+  @apply text-[10px] text-off-black/40;
+}
+
+.lineItemList {
+  @apply space-y-0.5;
+}
+
+.lineItem {
+  @apply flex items-center justify-between text-xs text-off-black/70 py-0.5;
+}
+
+.lineItemDesc {
+  @apply truncate flex-1 mr-2;
+}
+
+.lineItemAmount {
+  @apply shrink-0 font-medium;
+}
+
+.parseDivider {
+  @apply pt-1.5 border-t border-off-black/10 space-y-0.5;
+}
+
+.parseTotalRow {
+  @apply flex items-center justify-between text-xs text-off-black/50;
+}
+
+.parseTotalFinal {
+  @apply flex items-center justify-between text-sm font-bold text-off-black;
+}
+
+.parseCategoryMatch {
+  @apply flex items-center gap-1.5 text-[10px] font-semibold text-primary mt-1;
+}
+
+/* ── Actions ── */
+
+.actions {
+  @apply flex gap-2;
+}
+
+.submitBtn {
+  @apply px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50;
+}
+
+.cancelBtn {
+  @apply px-4 py-2 text-xs font-medium text-off-black/40 hover:text-off-black transition-colors;
+}
+
+.errorMsg {
+  @apply text-xs text-destructive flex items-center gap-1;
+}
+
+.triggerBtn {
+  @apply inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors;
+}
