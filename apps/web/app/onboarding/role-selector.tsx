@@ -44,7 +44,7 @@ export function RoleSelector({
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Welcome to ProjectPay</CardTitle>
+        <CardTitle className="text-2xl">Welcome to Visibill</CardTitle>
         <CardDescription>Select your role to get started</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">

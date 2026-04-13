@@ -23,7 +23,7 @@ export default async function HomePage() {
       {/* Navigation */}
       <header className={s.siteHeader}>
         <div className={s.headerInner}>
-          <h1 className={s.logo}>ProjectPay</h1>
+          <h1 className={s.logo}>Visibill</h1>
           <nav className={s.navGroup}>
             <a href="#how-it-works" className={shared.navLink}>How It Works</a>
             <a href="#for-contractors" className={shared.navLink}>For Contractors</a>
@@ -274,7 +274,7 @@ export default async function HomePage() {
                 {[
                   { icon: "speed", title: "Faster Payments", desc: "Clients release funds faster when they've watched every dollar being spent." },
                   { icon: "shield", title: "Fewer Disputes", desc: "Real-time visibility eliminates the invoice black box. Issues surface on day 3, not day 30." },
-                  { icon: "workspace_premium", title: "Win More Bids", desc: "\"I use ProjectPay — you'll see every dollar.\" That's the pitch that wins." },
+                  { icon: "workspace_premium", title: "Win More Bids", desc: "\"I use Visibill — you'll see every dollar.\" That's the pitch that wins." },
                   { icon: "schedule", title: "Zero Admin", desc: "No more tracking receipts. Swipe your card and everything logs automatically." },
                 ].map((item, i) => (
                   <div key={item.title} className={i < 3 ? s.featureItemBorder : s.featureItem}>
@@ -359,8 +359,7 @@ export default async function HomePage() {
         </div>
         <div className={s.footerInner}>
           <div>
-            <h2 className={s.footerBrand}>ProjectPay</h2>
-            <span className={s.footerSub}>by VisiBill</span>
+            <h2 className={s.footerBrand}>Visibill</h2>
           </div>
           <div className={s.footerLinks}>
             <a href="#how-it-works" className={s.footerLink}>How It Works</a>

@@ -49,7 +49,7 @@ export default function SignInPage() {
       <main className={shared.authPage}>
         <div className={shared.authCard}>
           <div className={shared.authHeader}>
-            <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+            <Link href="/" className={shared.authBrand}>Visibill</Link>
             <h1 className={shared.authTitle}>Sign in</h1>
             <p className={shared.authSubtitle}>I am a...</p>
           </div>
@@ -84,7 +84,7 @@ export default function SignInPage() {
     <main className={shared.authPage}>
       <div className={shared.authCard}>
         <div className={shared.authHeader}>
-          <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+          <Link href="/" className={shared.authBrand}>Visibill</Link>
           <h1 className={shared.authTitle}>Sign in</h1>
           <p className={shared.authSubtitle}>
             {role === "CONTRACTOR" ? "Signing in as a Contractor" : "Signing in as a Client"}

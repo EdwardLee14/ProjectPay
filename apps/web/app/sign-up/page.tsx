@@ -79,7 +79,7 @@ export default function SignUpPage() {
       <main className={shared.authPage}>
         <div className={shared.authCard}>
           <div className={shared.authHeader}>
-            <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+            <Link href="/" className={shared.authBrand}>Visibill</Link>
             <h1 className={shared.authTitle}>Check your email</h1>
             <p className={shared.authSubtitle}>
               We sent a confirmation link to <strong>{email}</strong>. Click it
@@ -112,7 +112,7 @@ export default function SignUpPage() {
       <main className={shared.authPage}>
         <div className={shared.authCard}>
           <div className={shared.authHeader}>
-            <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+            <Link href="/" className={shared.authBrand}>Visibill</Link>
             <h1 className={shared.authTitle}>Create your account</h1>
             <p className={shared.authSubtitle}>I am a...</p>
           </div>
@@ -148,7 +148,7 @@ export default function SignUpPage() {
     <main className={shared.authPage}>
       <div className={shared.authCard}>
         <div className={shared.authHeader}>
-          <Link href="/" className={shared.authBrand}>ProjectPay</Link>
+          <Link href="/" className={shared.authBrand}>Visibill</Link>
           <h1 className={shared.authTitle}>Create your account</h1>
           <p className={shared.authSubtitle}>
             {role === "CONTRACTOR" ? "Signing up as a Contractor" : "Signing up as a Client"}
