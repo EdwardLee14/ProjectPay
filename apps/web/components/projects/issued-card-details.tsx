@@ -90,7 +90,7 @@ export function IssuedCardDetails({
         {/* Card visual */}
         <div className={s.cardVisual}>
           <div className={s.cardVisualTop}>
-            <span className={s.cardBrand}>Visibill</span>
+            <span className={s.cardBrand}>VisiBill</span>
             <span className={s.cardNetwork}>VISA</span>
           </div>
           <div className={s.cardVisualTop}>

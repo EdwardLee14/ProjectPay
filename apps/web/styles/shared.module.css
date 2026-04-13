@@ -183,7 +183,7 @@
 
 /* Links / Actions */
 .navLink {
-  @apply text-sm font-medium text-off-black/60 hover:text-off-black transition-colors;
+  @apply text-sm font-medium text-off-black hover:text-primary transition-colors;
 }
 
 .textCta {
@@ -274,11 +274,11 @@
 }
 
 .authCard {
-  @apply w-full max-w-sm border border-off-black/80 bg-white;
+  @apply w-full max-w-sm bg-white shadow-lg rounded-xl;
 }
 
 .authHeader {
-  @apply px-6 py-6 border-b border-off-black/80 text-center;
+  @apply px-6 py-6 text-center;
 }
 
 .authBrand {
@@ -315,6 +315,18 @@
 
 .fieldLabel {
   @apply text-sm font-bold text-off-black;
+}
+
+.authDivider {
+  @apply flex items-center gap-3 text-off-black/30 text-xs;
+}
+
+.authDividerLine {
+  @apply flex-1 h-px bg-off-black/10;
+}
+
+.googleBtn {
+  @apply w-full flex items-center justify-center gap-2 border border-off-black/10 rounded-lg py-2.5 text-sm font-semibold text-off-black hover:bg-off-black/5 transition-colors;
 }
 
 /* Image container */

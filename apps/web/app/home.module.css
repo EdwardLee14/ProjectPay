@@ -2,7 +2,7 @@
 
 /* Navigation */
 .siteHeader {
-  @apply fixed top-0 w-full bg-guild-cream z-50 border-b border-off-black/10;
+  @apply fixed top-0 w-full bg-guild-cream z-50;
 }
 
 .headerInner {
@@ -123,58 +123,301 @@
   @apply space-y-8;
 }
 
-/* Feature list (For Contractors — dark green cards) */
-.featureList {
-  @apply space-y-3;
+/* Centered value statement */
+.valueStatement {
+  @apply px-6 lg:px-10 py-8 lg:py-10 text-center;
 }
 
-.featureItem {
-  @apply bg-guild-mint border-[3px] border-off-black p-5 flex gap-4 items-center;
+.valueStatementInner {
+  @apply max-w-2xl mx-auto;
 }
 
-.featureItemBorder {
-  composes: featureItem;
+.valueStatementText {
+  @apply font-headline text-2xl lg:text-3xl font-extrabold text-off-black leading-snug tracking-tight;
 }
 
-.featureTitle {
-  @apply font-headline text-sm font-bold text-white mb-1;
+/* For Contractors — flipped overlapping layout */
+.contractorsSection {
+  @apply px-6 lg:px-10 py-12 lg:py-16;
 }
 
-.featureDesc {
-  @apply text-xs text-white/80 leading-relaxed;
+.contractorsWrap {
+  @apply max-w-[1440px] mx-auto relative;
 }
 
-.featureIcon {
-  @apply text-3xl text-white flex-shrink-0;
+.contractorsContent {
+  @apply bg-guild-mint flex flex-col justify-start;
+  padding: 2.5rem;
 }
 
-/* Feature grid (For Clients) */
-.featureGrid {
-  @apply grid grid-cols-1 sm:grid-cols-2 gap-3;
+@media (min-width: 1024px) {
+  .contractorsContent {
+    width: 75%;
+    margin-left: auto;
+    padding: 4rem 5rem 5rem 16rem;
+  }
+
+  .contractorsContentInner {
+    max-width: 100%;
+  }
 }
 
-.featureGridCell {
-  @apply p-6 border-[3px] border-off-black;
+.contractorsEyebrow {
+  @apply text-xs font-bold uppercase tracking-[0.15em] text-white/60 mb-2;
 }
 
-.featureGridCellBorderBottom {
-  composes: featureGridCell;
+.contractorsHeading {
+  @apply font-headline text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight mb-6;
 }
 
-.featureGridCellBorderRight {
-  composes: featureGridCell;
+.contractorsDesc {
+  @apply text-base leading-loose text-white font-semibold mb-8 space-y-4;
 }
 
-.featureGridIcon {
-  @apply text-2xl mb-4;
+/* Contractor image — overlaps left edge of content block */
+.contractorsImage {
+  @apply relative min-h-[320px] lg:min-h-0;
 }
 
-.featureGridTitle {
-  @apply font-headline text-sm font-bold mb-1;
+@media (min-width: 1024px) {
+  .contractorsImage {
+    position: absolute;
+    top: 50%;
+    right: 60%;
+    transform: translateY(-50%);
+    width: 500px;
+    height: 85%;
+    z-index: 1;
+  }
 }
 
-.featureGridDesc {
-  @apply text-xs leading-relaxed text-off-black/70;
+/* Mini utilization card — floats left of image */
+.contractorsCards {
+  @apply py-6 lg:py-0 flex flex-col gap-2.5;
+}
+
+@media (min-width: 1024px) {
+  .contractorsCards {
+    position: absolute;
+    top: 50%;
+    left: -4%;
+    transform: translateY(-50%);
+    width: 180px;
+    z-index: 2;
+  }
+}
+
+/* Mini budget utilization card */
+.miniUtilCard {
+  @apply rounded-xl border border-off-black relative overflow-hidden;
+  background-color: #F6CA9E;
+}
+
+.miniUtilViz {
+  @apply absolute top-0 right-0 pointer-events-none;
+  width: 65%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.miniUtilContent {
+  @apply p-2.5 relative z-10;
+}
+
+.miniUtilEyebrow {
+  @apply font-headline text-[10px] text-off-black;
+}
+
+.miniUtilTitle {
+  @apply font-headline text-[10px] font-bold text-off-black;
+}
+
+.miniUtilDivider {
+  @apply w-full h-px bg-off-black my-2;
+}
+
+.miniUtilInner {
+  @apply bg-white rounded-lg p-2.5 flex gap-0 items-stretch border border-off-black;
+}
+
+.miniUtilLeft {
+  @apply flex-1 min-w-0 pr-2;
+}
+
+.miniUtilLabel {
+  @apply text-[9px] font-bold text-off-black mb-1.5;
+}
+
+.miniUtilBarRow {
+  @apply flex items-center gap-2;
+}
+
+.miniUtilTrack {
+  @apply h-1.5 flex-1 rounded-full overflow-hidden border border-off-black;
+  background-color: #FFF8F2;
+}
+
+.miniUtilFill {
+  @apply h-full rounded-full bg-primary;
+}
+
+.miniUtilPct {
+  @apply text-[9px] font-bold text-off-black;
+}
+
+.miniUtilMeta {
+  @apply text-[8px] text-off-black mt-1.5;
+}
+
+.miniUtilDividerV {
+  @apply w-px self-stretch bg-off-black flex-shrink-0;
+}
+
+.miniUtilRight {
+  @apply flex-shrink-0 flex items-center justify-center pl-2 relative;
+  width: 50px;
+  height: 50px;
+}
+
+.miniUtilDonutCenter {
+  @apply absolute inset-0 flex flex-col items-center justify-center;
+}
+
+.miniUtilScore {
+  @apply font-headline text-sm font-bold text-off-black leading-none;
+}
+
+.miniUtilScoreLabel {
+  @apply text-[7px] font-medium text-off-black mt-0.5;
+}
+
+/* Mini activity feed card */
+.miniActivityCard {
+  @apply rounded-xl border border-off-black bg-white p-2.5 relative overflow-hidden;
+}
+
+.miniActivityHeader {
+  @apply flex items-center gap-1.5 mb-2;
+}
+
+.miniActivityDot {
+  @apply w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse;
+}
+
+.miniActivityTitle {
+  @apply text-[9px] font-bold text-off-black uppercase tracking-wider;
+}
+
+.miniActivityRow {
+  @apply flex justify-between items-center py-1.5 border-b border-off-black/10;
+}
+
+.miniActivityRow:last-child {
+  @apply border-b-0;
+}
+
+.miniActivityMerchant {
+  @apply text-[9px] text-off-black font-medium;
+}
+
+.miniActivityCat {
+  @apply text-[7px] text-off-black/40;
+}
+
+.miniActivityAmt {
+  @apply text-[9px] text-primary font-bold;
+}
+
+/* For Clients — overlapping layout */
+.clientsSection {
+  @apply px-6 lg:px-10 py-12 lg:py-16;
+}
+
+.clientsWrap {
+  @apply max-w-[1440px] mx-auto relative;
+}
+
+/* Taupe block */
+.clientsContent {
+  @apply bg-guild-taupe flex flex-col justify-start;
+  padding: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .clientsContent {
+    width: 75%;
+    padding: 4rem 3rem 5rem 5rem;
+  }
+
+  .clientsContentInner {
+    max-width: 750px;
+  }
+}
+
+.clientsEyebrow {
+  @apply text-xs font-bold uppercase tracking-[0.15em] text-off-black/60 mb-2;
+}
+
+.clientsHeading {
+  @apply font-headline text-3xl lg:text-4xl font-extrabold text-off-black tracking-tight leading-tight mb-6;
+}
+
+.clientsQuoteText {
+  @apply text-base leading-relaxed text-off-black font-bold italic;
+}
+
+.clientsQuoteAttrib {
+  @apply text-base text-off-black mt-3 mb-10 not-italic font-semibold;
+}
+
+/* Image — shorter than component, overlaps right edge of taupe block */
+.clientsImage {
+  @apply relative min-h-[320px] lg:min-h-0;
+}
+
+@media (min-width: 1024px) {
+  .clientsImage {
+    position: absolute;
+    top: 50%;
+    left: 60%;
+    transform: translateY(-50%);
+    width: 500px;
+    height: 85%;
+    z-index: 1;
+  }
+}
+
+/* Feature cards container — no shared background, just layout */
+.clientsCards {
+  @apply flex flex-col justify-center gap-2 py-6 lg:py-0;
+}
+
+@media (min-width: 1024px) {
+  .clientsCards {
+    position: absolute;
+    top: 50%;
+    right: -4%;
+    transform: translateY(-50%);
+    width: 180px;
+    z-index: 2;
+  }
+}
+
+/* Each card is its own floating container */
+.clientCard {
+  @apply flex gap-1.5 items-start p-2 bg-guild-peach rounded-md shadow-sm border border-off-black;
+}
+
+.clientCardIcon {
+  @apply text-sm text-off-black flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-primary/20;
+}
+
+.clientCardTitle {
+  @apply font-headline text-[11px] font-bold text-off-black mb-0;
+}
+
+.clientCardDesc {
+  @apply text-[10px] text-off-black/50 leading-snug;
 }
 
 /* Footer (merged with trust/Stripe section) */
