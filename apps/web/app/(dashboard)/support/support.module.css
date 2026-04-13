@@ -13,11 +13,11 @@
 }
 
 .stepCard {
-  @apply bg-white rounded-2xl shadow-elevation-1 overflow-hidden;
+  @apply bg-white shadow-sm rounded-lg overflow-hidden;
 }
 
 .stepInner {
-  @apply p-5 space-y-2;
+  @apply p-3 space-y-1 3xl:p-5 3xl:space-y-2;
 }
 
 .stepNumber {
@@ -37,11 +37,11 @@
 }
 
 .faqCard {
-  @apply bg-white rounded-2xl shadow-elevation-1 overflow-hidden;
+  @apply bg-white shadow-sm rounded-lg overflow-hidden;
 }
 
 .faqBody {
-  @apply p-5;
+  @apply p-3 3xl:p-5;
 }
 
 .faqQuestion {
@@ -53,7 +53,11 @@
 }
 
 .contactCard {
-  @apply bg-primary rounded-2xl p-6 lg:p-8 shadow-elevation-1;
+  @apply bg-primary rounded-lg p-4 3xl:p-8;
+}
+
+.contactIconRow {
+  @apply flex items-center gap-3 mb-3;
 }
 
 .contactTitle {
@@ -65,5 +69,5 @@
 }
 
 .contactLink {
-  @apply inline-flex items-center gap-2 mt-4 text-sm font-semibold text-white bg-white/20 px-4 py-2 rounded-xl hover:bg-white/30 transition-colors;
+  @apply inline-flex items-center gap-2 mt-4 text-sm font-semibold text-white bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors;
 }

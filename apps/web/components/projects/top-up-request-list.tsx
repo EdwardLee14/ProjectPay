@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/utils";
-import shared from "@/styles/shared.module.css";
+// shared module available if needed
 
 interface TopUpRequest {
   id: string;
@@ -18,9 +18,9 @@ interface TopUpRequest {
 }
 
 const statusStyles: Record<string, string> = {
-  PENDING: "bg-amber-50 text-amber-700 border-amber-200",
-  APPROVED: "bg-green-50 text-green-700 border-green-200",
-  REJECTED: "bg-red-50 text-red-700 border-red-200",
+  PENDING: "bg-peach-50 text-primary border-primary/20",
+  APPROVED: "bg-primary/10 text-primary border-primary/20",
+  REJECTED: "bg-destructive/10 text-destructive border-destructive/20",
   CANCELLED: "bg-gray-50 text-gray-500 border-gray-200",
 };
 
@@ -50,7 +50,7 @@ export function TopUpRequestList({
 
   if (requests.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-elevation-1 p-5 lg:p-6">
+      <div className="border border-border rounded-lg p-5 lg:p-6">
         <h3 className="text-sm font-bold text-off-black mb-1">Budget Requests</h3>
         <p className="text-sm text-off-black/40">No budget requests yet.</p>
       </div>
@@ -63,12 +63,12 @@ export function TopUpRequestList({
   return (
     <div className="space-y-3">
       {pending.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           <div className="px-5 py-4 border-b border-off-black/5 flex items-center gap-2">
-            <Icon name="pending" className="text-amber-500 text-base" />
+            <Icon name="pending" className="text-primary text-base" />
             <h3 className="text-sm font-bold text-off-black">
               Pending Requests
-              <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">
+              <span className="ml-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
                 {pending.length}
               </span>
             </h3>
@@ -121,7 +121,7 @@ export function TopUpRequestList({
       )}
 
       {resolved.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden">
+        <div className="border border-border rounded-lg overflow-hidden">
           <div className="px-5 py-4 border-b border-off-black/5">
             <h3 className="text-sm font-bold text-off-black">Past Requests</h3>
           </div>

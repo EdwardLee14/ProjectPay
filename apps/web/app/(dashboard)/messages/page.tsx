@@ -6,7 +6,7 @@ import {
   type ConversationSummary,
   type ThreadMessage,
 } from "@/components/messages/messages-client";
-import shared from "@/styles/shared.module.css";
+
 
 export default async function MessagesPage({
   searchParams,
@@ -123,26 +123,51 @@ export default async function MessagesPage({
     }));
   }
 
-  return (
-    <main className={shared.dashboardPage}>
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-2 mb-6">
-        <div>
-          <h1 className={shared.pageTitle}>Messages</h1>
-          <p className="text-sm text-off-black/40 mt-1">
-            Communicate with your{" "}
-            {user.role === "CONTRACTOR" ? "clients" : "contractors"} per project
-          </p>
-        </div>
-      </div>
+  let projectDetail: {
+    id: string;
+    name: string;
+    status: string;
+    totalBudget: number;
+    totalSpent: number;
+    categories: { name: string; allocated: number; spent: number }[];
+  } | null = null;
 
-      <MessagesClient
-        conversations={conversations}
-        selectedProjectId={selectedProjectId}
-        selectedProjectName={selectedProjectName}
-        selectedOtherParty={selectedOtherParty}
-        threadMessages={threadMessages}
-        currentUserId={user.id}
-      />
-    </main>
+  if (selectedProject) {
+    const fullProject = await prisma.project.findUnique({
+      where: { id: selectedProjectId! },
+      include: {
+        budgetCategories: true,
+      },
+    });
+    if (fullProject) {
+      const totalSpent = fullProject.budgetCategories.reduce(
+        (sum, c) => sum + Number(c.spentAmount),
+        0
+      );
+      projectDetail = {
+        id: fullProject.id,
+        name: fullProject.name,
+        status: fullProject.status,
+        totalBudget: Number(fullProject.totalBudget),
+        totalSpent,
+        categories: fullProject.budgetCategories.map((c) => ({
+          name: c.name,
+          allocated: Number(c.allocatedAmount),
+          spent: Number(c.spentAmount),
+        })),
+      };
+    }
+  }
+
+  return (
+    <MessagesClient
+      conversations={conversations}
+      selectedProjectId={selectedProjectId}
+      selectedProjectName={selectedProjectName}
+      selectedOtherParty={selectedOtherParty}
+      threadMessages={threadMessages}
+      currentUserId={user.id}
+      projectDetail={projectDetail}
+    />
   );
 }

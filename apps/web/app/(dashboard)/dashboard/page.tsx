@@ -166,21 +166,36 @@ export default async function DashboardPage() {
     take: 6,
   });
 
-  const pendingOrders = await prisma.changeOrder.count({
-    where: {
-      projectId: { in: projects.map((p) => p.id) },
-      status: "PENDING",
-    },
-  });
+  const [pendingChangeOrders, pendingTopUpRequests] = await Promise.all([
+    prisma.changeOrder.findMany({
+      where: {
+        projectId: { in: projects.map((p) => p.id) },
+        status: "PENDING",
+      },
+      select: { id: true, projectId: true },
+    }),
+    prisma.topUpRequest.findMany({
+      where: {
+        projectId: { in: projects.map((p) => p.id) },
+        status: "PENDING",
+      },
+      select: { id: true, projectId: true },
+    }),
+  ]);
 
-  const pendingTopUps = await prisma.topUpRequest.count({
-    where: {
-      projectId: { in: projects.map((p) => p.id) },
-      status: "PENDING",
-    },
-  });
-
+  const pendingOrders = pendingChangeOrders.length;
+  const pendingTopUps = pendingTopUpRequests.length;
   const pendingTotal = pendingOrders + pendingTopUps;
+
+  // If all pending requests belong to one project, link directly to it
+  const pendingProjectIds = new Set([
+    ...pendingChangeOrders.map((co) => co.projectId),
+    ...pendingTopUpRequests.map((t) => t.projectId),
+  ]);
+  const pendingAlertHref =
+    pendingProjectIds.size === 1
+      ? `/projects/${Array.from(pendingProjectIds)[0]}`
+      : "/projects";
 
   const hasProjects = projects.length > 0;
 
@@ -189,9 +204,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className={s.header}>
         <div>
-          <h1 className={shared.pageTitle}>
-            Welcome back, {user.name?.split(" ")[0] ?? "there"}.
-          </h1>
+          <h1 className={shared.pageTitle}>Dashboard</h1>
         </div>
         {hasProjects && (
           <p className={s.headerMeta}>
@@ -202,7 +215,7 @@ export default async function DashboardPage() {
 
       {/* Pending alert */}
       {pendingTotal > 0 && (
-        <Link href="/projects" className={s.alertBar}>
+        <Link href={pendingAlertHref} className={s.alertBar}>
           <div className={s.alertBarContent}>
             <Icon name="pending_actions" className={s.alertBarIcon} />
             <span className={s.alertBarText}>
@@ -215,50 +228,45 @@ export default async function DashboardPage() {
 
       {/* Awaiting approval / counter-proposed */}
       {awaitingApproval.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden">
-          <div className="flex items-center gap-2 px-5 py-4 border-b border-off-black/5">
-            <Icon name="pending_actions" className="text-primary text-lg" />
-            <h2 className="text-sm font-bold text-off-black">Awaiting Client Approval</h2>
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold">
+        <div className={s.awaitingSection}>
+          <div className={s.awaitingSectionHeader}>
+            <Icon name="pending_actions" className={s.awaitingSectionIcon} />
+            <h2 className={s.awaitingSectionTitle}>Awaiting Client Approval</h2>
+            <span className={s.awaitingCount}>
               {awaitingApproval.length}
             </span>
           </div>
-          <div className="divide-y divide-off-black/5">
+          <div className={s.awaitingList}>
             {awaitingApproval.map((p) => (
               <Link
                 key={p.id}
                 href={`/projects/${p.id}`}
-                className="flex items-center gap-4 px-5 py-4 hover:bg-off-black/[0.01] transition-colors"
+                className={s.awaitingRow}
               >
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <div className={s.awaitingIconCircle}>
                   <Icon
                     name={p.status === "COUNTER_PROPOSED" ? "swap_horiz" : "hourglass_top"}
-                    className="text-base text-primary"
+                    className={s.awaitingIconCircleIcon}
                   />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-off-black truncate">{p.name}</p>
-                  <p className="text-xs text-off-black/40">
+                <div className={s.awaitingInfo}>
+                  <p className={s.awaitingName}>{p.name}</p>
+                  <p className={s.awaitingMeta}>
                     {p.clientName} &middot;{" "}
                     {new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                   </p>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-semibold text-off-black">{formatCurrency(p.totalBudget)}</p>
+                <div className={s.clientRequestBudgetWrap}>
+                  <p className={s.awaitingBudget}>{formatCurrency(p.totalBudget)}</p>
                   {p.status === "COUNTER_PROPOSED" && p.counterBudget ? (
-                    <p className="text-xs text-amber-600 font-medium">
+                    <p className={s.awaitingCounterText}>
                       Counter: {formatCurrency(p.counterBudget)}
                     </p>
                   ) : (
-                    <p className="text-[10px] text-off-black/30">waiting on client</p>
+                    <p className={s.awaitingWaiting}>waiting on client</p>
                   )}
                 </div>
-                <span className={cn(
-                  "shrink-0 px-2.5 py-1 text-[10px] font-bold rounded-full border",
-                  p.status === "COUNTER_PROPOSED"
-                    ? "bg-amber-50 text-amber-700 border-amber-200"
-                    : "bg-blue-50 text-blue-600 border-blue-200"
-                )}>
+                <span className={p.status === "COUNTER_PROPOSED" ? s.awaitingBadgeCounter : s.awaitingBadgePending}>
                   {p.status === "COUNTER_PROPOSED" ? "Counter Received" : "Pending Approval"}
                 </span>
               </Link>
@@ -479,30 +487,52 @@ export default async function DashboardPage() {
                   {/* Vertical divider */}
                   <div className={s.utilInnerDivider} />
 
-                  {/* Donut chart */}
-                  <div className={s.utilInnerRight}>
-                    <div className={s.utilDonut}>
-                      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                        <circle
-                          cx="18" cy="18" r="15.5"
-                          fill="none"
-                          stroke="hsl(0 0% 0% / 0.08)"
-                          strokeWidth="3"
-                        />
-                        <circle
-                          cx="18" cy="18" r="15.5"
-                          fill="none"
-                          stroke="hsl(22 82% 51%)"
-                          strokeWidth="3"
-                          strokeDasharray={`${Math.min(usagePct, 100)} ${100 - Math.min(usagePct, 100)}`}
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                      <div className={s.utilDonutCenter}>
-                        <span className={s.utilDonutPct}>{Math.round(usagePct)}%</span>
+                  {/* Score gauge */}
+                  {(() => {
+                    const budgetScore = Math.max(0, Math.min(100, Math.round(100 - usagePct)));
+                    const scoreColor =
+                      budgetScore >= 70
+                        ? "hsl(152 60% 40%)"
+                        : budgetScore >= 40
+                          ? "hsl(38 90% 50%)"
+                          : "hsl(0 72% 51%)";
+                    const scoreLabel =
+                      budgetScore >= 70
+                        ? "Healthy"
+                        : budgetScore >= 40
+                          ? "Fair"
+                          : "At Risk";
+                    const circumference = 2 * Math.PI * 15.5;
+                    const arcLength = (budgetScore / 100) * circumference;
+                    return (
+                      <div className={s.utilInnerRight}>
+                        <div className={s.utilDonut}>
+                          <svg viewBox="0 0 36 36" className="w-full h-full">
+                            <circle
+                              cx="18" cy="18" r="15.5"
+                              fill="none"
+                              stroke="hsl(0 0% 0% / 0.08)"
+                              strokeWidth="3"
+                            />
+                            <circle
+                              cx="18" cy="18" r="15.5"
+                              fill="none"
+                              stroke={scoreColor}
+                              strokeWidth="3"
+                              strokeDasharray={`${arcLength} ${circumference - arcLength}`}
+                              strokeDashoffset={circumference * 0.25}
+                              strokeLinecap="round"
+                              style={{ transition: "stroke-dasharray 0.6s ease" }}
+                            />
+                          </svg>
+                          <div className={s.utilDonutCenter}>
+                            <span className={s.utilDonutScore}>{budgetScore}</span>
+                            <span className={s.utilDonutLabel}>{scoreLabel}</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
@@ -569,10 +599,10 @@ export default async function DashboardPage() {
               <h3 className={s.plainHeaderTitle}>Recent Transactions</h3>
               <div className={s.txToolbar}>
                 <button className={shared.toolbarBtn}>
-                  <Icon name="filter_list" className="text-off-black/40 text-lg" />
+                  <Icon name="filter_list" className={s.toolbarIcon} />
                 </button>
                 <button className={shared.toolbarBtn}>
-                  <Icon name="download" className="text-off-black/40 text-lg" />
+                  <Icon name="download" className={s.toolbarIcon} />
                 </button>
               </div>
             </div>
@@ -589,23 +619,23 @@ export default async function DashboardPage() {
                 <p className={s.txRecordCount}>
                   Showing {recentTransactions.length} transaction{recentTransactions.length !== 1 ? "s" : ""}
                 </p>
-                <table className="w-full text-left">
+                <table className={s.txTable}>
                   <thead>
-                    <tr className="border-b border-off-black/5">
+                    <tr className={s.txTheadRow}>
                       <th className={shared.tableHeader}>
                         <span className={s.txSortHeader}>
-                          Vendor <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                          Vendor <Icon name="swap_vert" className={s.txSortIcon} />
                         </span>
                       </th>
-                      <th className={cn(shared.tableHeader, "hidden md:table-cell")}>
+                      <th className={cn(shared.tableHeader, s.txHeaderHiddenMd)}>
                         <span className={s.txSortHeader}>
-                          Project <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                          Project <Icon name="swap_vert" className={s.txSortIcon} />
                         </span>
                       </th>
-                      <th className={cn(shared.tableHeader, "hidden lg:table-cell")}>Category</th>
-                      <th className={cn(shared.tableHeader, "text-right")}>
-                        <span className={cn(s.txSortHeader, "justify-end")}>
-                          Amount <Icon name="swap_vert" className="text-[10px] text-off-black/20" />
+                      <th className={cn(shared.tableHeader, s.txHeaderHiddenLg)}>Category</th>
+                      <th className={cn(shared.tableHeader, s.txHeaderRight)}>
+                        <span className={s.txSortHeaderEnd}>
+                          Amount <Icon name="swap_vert" className={s.txSortIcon} />
                         </span>
                       </th>
                     </tr>
@@ -616,7 +646,7 @@ export default async function DashboardPage() {
                         key={tx.id}
                         className={cn(
                           i < recentTransactions.length - 1 ? shared.tableRowBorder : shared.tableRow,
-                          i % 2 === 1 && "bg-peach-50/30"
+                          i % 2 === 1 && s.txRowStriped
                         )}
                       >
                         <td className={shared.tableCell}>
@@ -625,13 +655,13 @@ export default async function DashboardPage() {
                             {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                           </p>
                         </td>
-                        <td className={cn(shared.tableCell, "hidden md:table-cell")}>
+                        <td className={cn(shared.tableCell, s.txCellHiddenMd)}>
                           <p className={s.txProject}>{tx.project.name}</p>
                         </td>
-                        <td className={cn(shared.tableCell, "hidden lg:table-cell")}>
+                        <td className={cn(shared.tableCell, s.txCellHiddenLg)}>
                           <span className={s.txCategory}>{tx.categoryCode}</span>
                         </td>
-                        <td className={cn(shared.tableCell, "text-right")}>
+                        <td className={cn(shared.tableCell, s.txCellRight)}>
                           <p className={s.txAmount}>{formatCurrency(Number(tx.amount))}</p>
                         </td>
                       </tr>
@@ -640,9 +670,9 @@ export default async function DashboardPage() {
                 </table>
               </>
             ) : (
-              <div className="text-center py-8 lg:py-12">
-                <Icon name="receipt_long" className="text-off-black/10 mb-2" size={40} />
-                <p className="text-sm text-off-black">No transactions yet</p>
+              <div className={s.txEmptyState}>
+                <Icon name="receipt_long" className={s.txEmptyIcon} size={40} />
+                <p className={s.txEmptyText}>No transactions yet</p>
               </div>
             )}
           </section>
@@ -651,12 +681,12 @@ export default async function DashboardPage() {
         /* Empty State */
         <section className={s.emptyGrid}>
           <div className={s.emptyHero}>
-            <p className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] text-white">Get Started</p>
+            <p className={s.emptyHeroEyebrow}>Get Started</p>
             <h2 className={s.emptyHeroTitle}>Create your first project.</h2>
             <p className={s.emptyHeroDesc}>
               Set up a structured budget, share it with your client, and start tracking every dollar in real time.
             </p>
-            <div className="pt-2">
+            <div className={s.emptyHeroBtnWrap}>
               <Button variant="pill" asChild>
                 <Link href="/projects/new">New Project &rarr;</Link>
               </Button>
@@ -669,7 +699,7 @@ export default async function DashboardPage() {
               { icon: "credit_card", title: "Spend transparently", desc: "Every dollar tracked and visible." },
             ].map((item, i) => (
               <div key={item.title} className={i < 2 ? s.emptyStepBorder : s.emptyStep}>
-                <Icon name={item.icon} className="text-lg lg:text-xl text-primary flex-shrink-0 mt-0.5" />
+                <Icon name={item.icon} className={s.emptyStepIcon} />
                 <div>
                   <p className={s.emptyStepTitle}>{item.title}</p>
                   <p className={s.emptyStepDesc}>{item.desc}</p>

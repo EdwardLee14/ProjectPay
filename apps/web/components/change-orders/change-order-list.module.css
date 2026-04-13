@@ -1,0 +1,16 @@
+.title { @apply text-sm font-bold text-off-black mb-3; }
+.emptyText { @apply text-sm text-off-black/40; }
+.list { @apply space-y-3; }
+.orderRow { @apply flex items-center justify-between rounded-lg border border-border p-3 hover:bg-peach-50/30 transition-colors; }
+.orderInfo { @apply space-y-1; }
+.orderTopRow { @apply flex items-center gap-2; }
+.orderReason { @apply text-sm font-medium text-off-black; }
+.orderBadge { @apply px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full; }
+.badgePending { composes: orderBadge; @apply bg-primary/10 text-primary; }
+.badgeApproved { composes: orderBadge; @apply bg-primary/20 text-primary; }
+.badgeRejected { composes: orderBadge; @apply bg-destructive/10 text-destructive; }
+.badgeCountered { composes: orderBadge; @apply bg-peach-50 text-peach-600; }
+.orderMeta { @apply text-xs text-off-black/40; }
+.actions { @apply flex gap-2 shrink-0; }
+.approveBtn { @apply px-3 py-1.5 text-xs font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all; }
+.rejectBtn { @apply px-3 py-1.5 text-xs font-semibold text-destructive border border-destructive/30 rounded-lg hover:bg-destructive/5 disabled:opacity-50 transition-all; }

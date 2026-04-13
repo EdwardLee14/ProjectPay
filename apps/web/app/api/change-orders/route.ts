@@ -101,6 +101,44 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function DELETE(req: NextRequest) {
+  try {
+    const user = await requireUser();
+    const { id } = await req.json();
+
+    if (!id || typeof id !== "string") {
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    }
+
+    const changeOrder = await prisma.changeOrder.findUnique({
+      where: { id },
+      include: { project: true },
+    });
+
+    if (!changeOrder) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    if (changeOrder.requestedBy !== user.id) {
+      return NextResponse.json({ error: "Only the requester can delete" }, { status: 403 });
+    }
+
+    if (changeOrder.status !== "PENDING") {
+      return NextResponse.json({ error: "Only pending requests can be deleted" }, { status: 400 });
+    }
+
+    await prisma.changeOrder.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized: no user found") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    console.error("[DELETE /api/change-orders]", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const user = await requireUser();

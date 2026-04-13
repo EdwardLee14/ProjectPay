@@ -1,11 +1,9 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import s from "./change-order-list.module.css";
 
 interface ChangeOrderItem {
   id: string;
@@ -18,11 +16,11 @@ interface ChangeOrderItem {
   };
 }
 
-const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-  PENDING: "secondary",
-  APPROVED: "default",
-  REJECTED: "destructive",
-  COUNTERED: "outline",
+const badgeClassMap: Record<string, string> = {
+  PENDING: s.badgePending,
+  APPROVED: s.badgeApproved,
+  REJECTED: s.badgeRejected,
+  COUNTERED: s.badgeCountered,
 };
 
 export function ChangeOrderList({
@@ -51,65 +49,52 @@ export function ChangeOrderList({
 
   if (changeOrders.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Change Orders</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            No change orders yet.
-          </p>
-        </CardContent>
-      </Card>
+      <div>
+        <h3 className={s.title}>Change Orders</h3>
+        <p className={s.emptyText}>No change orders yet.</p>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Change Orders</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {changeOrders.map((co) => (
-            <div
-              key={co.id}
-              className="flex items-center justify-between rounded-md border p-3"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-medium">{co.reason}</p>
-                  <Badge variant={statusVariant[co.status]}>{co.status}</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {formatCurrency(co.amount)} &middot; Requested by{" "}
-                  {co.requester.name} &middot;{" "}
-                  {new Date(co.createdAt).toLocaleDateString()}
-                </p>
+    <div>
+      <h3 className={s.title}>Change Orders</h3>
+      <div className={s.list}>
+        {changeOrders.map((co) => (
+          <div key={co.id} className={s.orderRow}>
+            <div className={s.orderInfo}>
+              <div className={s.orderTopRow}>
+                <p className={s.orderReason}>{co.reason}</p>
+                <span className={badgeClassMap[co.status] ?? s.badgePending}>
+                  {co.status}
+                </span>
               </div>
-              {userRole === "CLIENT" && co.status === "PENDING" && (
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleAction(co.id, "APPROVED")}
-                    disabled={loadingId === co.id}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleAction(co.id, "REJECTED")}
-                    disabled={loadingId === co.id}
-                  >
-                    Reject
-                  </Button>
-                </div>
-              )}
+              <p className={s.orderMeta}>
+                {formatCurrency(co.amount)} &middot; {co.requester.name} &middot;{" "}
+                {new Date(co.createdAt).toLocaleDateString()}
+              </p>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            {userRole === "CLIENT" && co.status === "PENDING" && (
+              <div className={s.actions}>
+                <button
+                  className={s.approveBtn}
+                  onClick={() => handleAction(co.id, "APPROVED")}
+                  disabled={loadingId === co.id}
+                >
+                  Approve
+                </button>
+                <button
+                  className={s.rejectBtn}
+                  onClick={() => handleAction(co.id, "REJECTED")}
+                  disabled={loadingId === co.id}
+                >
+                  Reject
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

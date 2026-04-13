@@ -1,0 +1,87 @@
+.container {
+  @apply shadow-sm rounded-lg overflow-hidden;
+}
+
+.header {
+  @apply flex items-center justify-between px-5 py-4 border-b border-border;
+}
+
+.headerLeft {
+  @apply flex items-center gap-2;
+}
+
+.headerIcon {
+  @apply text-primary text-lg;
+}
+
+.headerTitle {
+  @apply text-sm font-bold text-off-black;
+}
+
+.headerCount {
+  @apply inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold;
+}
+
+.list {
+  @apply divide-y divide-border;
+}
+
+.row {
+  @apply flex items-center gap-4 px-5 py-4 hover:bg-peach-50 transition-colors;
+}
+
+.typeIcon {
+  @apply w-9 h-9 rounded-full bg-off-black/5 flex items-center justify-center shrink-0;
+}
+
+.typeIconInner {
+  @apply text-base text-off-black/50;
+}
+
+.info {
+  @apply flex-1 min-w-0 space-y-0.5;
+}
+
+.infoTop {
+  @apply flex items-center gap-2 flex-wrap;
+}
+
+.infoAmount {
+  @apply text-sm font-semibold text-off-black;
+}
+
+.typeBadgeChangeOrder {
+  @apply px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wide bg-primary/10 text-primary;
+}
+
+.typeBadgeTopUp {
+  @apply px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wide bg-peach-50 text-peach-600;
+}
+
+.categoryLabel {
+  @apply text-[10px] text-off-black/40;
+}
+
+.reason {
+  @apply text-xs text-off-black/60 truncate;
+}
+
+.meta {
+  @apply text-[10px] text-off-black/30;
+}
+
+.actions {
+  @apply flex items-center gap-2 shrink-0;
+}
+
+.approveBtn {
+  @apply flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all;
+}
+
+.declineBtn {
+  @apply px-3 py-1.5 text-xs font-semibold text-off-black/60 bg-off-black/5 rounded-lg hover:bg-off-black/10 disabled:opacity-50 transition-all;
+}
+
+.approveBtnIcon {
+  @apply text-sm;
+}

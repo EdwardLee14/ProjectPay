@@ -78,12 +78,10 @@ export function TransactionFeed({
 
   if (transactions.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-elevation-1 p-5 lg:p-6">
-        <h3 className="text-sm font-bold text-off-black mb-1">Transactions</h3>
-        <p className="text-sm text-off-black/40">
-          No transactions yet. They will appear here in real time as the virtual
-          card is used.
-        </p>
+      <div className="text-center py-8">
+        <Icon name="receipt_long" className="text-off-black/10" size={40} />
+        <p className="text-sm font-medium text-off-black mt-3">No transactions yet</p>
+        <p className="text-xs text-off-black/40 mt-1">Transactions will appear here in real time as the virtual card is used</p>
       </div>
     );
   }
@@ -101,7 +99,7 @@ export function TransactionFeed({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden">
+    <div className="overflow-hidden">
       <div className="px-5 py-4 border-b border-off-black/5">
         <h3 className="text-sm font-bold text-off-black">Transactions</h3>
       </div>
@@ -117,7 +115,7 @@ export function TransactionFeed({
             {txs.map((tx) => (
               <div
                 key={tx.id}
-                className="px-5 py-3.5 flex items-center gap-3 hover:bg-off-black/[0.01] transition-colors"
+                className="group px-5 py-3.5 flex items-center gap-3 hover:bg-off-black/[0.01] transition-colors"
               >
                 {/* Icon */}
                 <div className="w-8 h-8 rounded-full bg-off-black/5 flex items-center justify-center shrink-0">
@@ -152,6 +150,14 @@ export function TransactionFeed({
                     )}
                   </div>
                 </div>
+
+                {/* Edit */}
+                <button
+                  className="p-1 text-off-black/20 hover:text-off-black transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                  title="Edit transaction"
+                >
+                  <Icon name="edit" className="text-sm" />
+                </button>
 
                 {/* Amount */}
                 <span className="text-sm font-bold text-off-black shrink-0">

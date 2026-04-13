@@ -51,6 +51,7 @@ interface Props {
 }
 
 export function ClientDashboard({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   userName,
   projects,
   projectRequests,
@@ -69,9 +70,7 @@ export function ClientDashboard({
       {/* Header */}
       <div className={s.header}>
         <div>
-          <h1 className={shared.pageTitle}>
-            Welcome back, {userName.split(" ")[0]}.
-          </h1>
+          <h1 className={shared.pageTitle}>Dashboard</h1>
         </div>
         {hasProjects && (
           <p className={s.headerMeta}>
@@ -124,28 +123,28 @@ export function ClientDashboard({
 
           {/* ── Project requests (PENDING_APPROVAL / COUNTER_PROPOSED) ── */}
           {projectRequests.length > 0 && (
-            <section className="space-y-3">
+            <section className={s.clientSectionWrap}>
               <div className={s.sectionHeader}>
-                <div className="flex items-center gap-2">
+                <div className={s.clientSectionHeaderRow}>
                   <h2 className={s.sectionHeaderTitle}>Incoming Requests</h2>
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold">
+                  <span className={s.clientRequestCountBadge}>
                     {projectRequests.length}
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className={s.clientRequestsInner}>
                 {projectRequests.map((req) => (
                   <div
                     key={req.id}
-                    className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden border-l-4 border-primary"
+                    className={s.clientRequestCard}
                   >
-                    <div className="px-5 pt-5 pb-4">
+                    <div className={s.clientRequestBody}>
                       {/* Header row */}
-                      <div className="flex items-start justify-between gap-4 mb-4">
+                      <div className={s.clientRequestHeaderRow}>
                         <div>
-                          <p className="text-sm font-bold text-off-black">{req.name}</p>
-                          <p className="text-xs text-off-black/40 mt-0.5">
+                          <p className={s.clientRequestName}>{req.name}</p>
+                          <p className={s.clientRequestMeta}>
                             From {req.contractorName} &middot;{" "}
                             {new Date(req.createdAt).toLocaleDateString("en-US", {
                               month: "short",
@@ -153,21 +152,21 @@ export function ClientDashboard({
                             })}
                           </p>
                           {req.description && (
-                            <p className="text-xs text-off-black/60 mt-1">{req.description}</p>
+                            <p className={s.clientRequestDesc}>{req.description}</p>
                           )}
                         </div>
-                        <div className="shrink-0 text-right">
-                          <p className="text-lg font-bold text-off-black">
+                        <div className={s.clientRequestBudgetWrap}>
+                          <p className={s.clientRequestBudget}>
                             {formatCurrency(req.totalBudget)}
                           </p>
-                          <p className="text-[10px] text-off-black/40">proposed budget</p>
+                          <p className={s.clientRequestBudgetLabel}>proposed budget</p>
                         </div>
                       </div>
 
                       {/* Category breakdown */}
                       {req.categories.length > 0 && (
-                        <div className="mb-4 space-y-1.5 bg-off-black/[0.02] rounded-xl p-3">
-                          <p className="text-[10px] font-bold text-off-black/40 uppercase tracking-widest mb-2">
+                        <div className={s.clientCategoryBreakdown}>
+                          <p className={s.clientCategoryTitle}>
                             Budget Breakdown
                           </p>
                           {req.categories.map((cat) => {
@@ -175,11 +174,11 @@ export function ClientDashboard({
                               ? (cat.allocatedAmount / req.totalBudget) * 100
                               : 0;
                             return (
-                              <div key={cat.id} className="flex items-center justify-between text-xs">
-                                <span className="text-off-black/70">{cat.name}</span>
-                                <span className="font-medium text-off-black tabular-nums">
+                              <div key={cat.id} className={s.clientCategoryRow}>
+                                <span className={s.clientCategoryName}>{cat.name}</span>
+                                <span className={s.clientCategoryAmount}>
                                   {formatCurrency(cat.allocatedAmount)}
-                                  <span className="text-off-black/30 ml-1">({Math.round(pct)}%)</span>
+                                  <span className={s.clientCategoryPct}>({Math.round(pct)}%)</span>
                                 </span>
                               </div>
                             );
@@ -189,9 +188,9 @@ export function ClientDashboard({
 
                       {/* Counter note */}
                       {req.status === "COUNTER_PROPOSED" && req.counterBudget && (
-                        <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-                          <p className="text-xs text-amber-700">
-                            You countered at <span className="font-semibold">{formatCurrency(req.counterBudget)}</span>. Waiting for contractor to respond.
+                        <div className={s.clientCounterNote}>
+                          <p className={s.clientCounterText}>
+                            You countered at <span className={s.clientCounterAmount}>{formatCurrency(req.counterBudget)}</span>. Waiting for contractor to respond.
                           </p>
                         </div>
                       )}
@@ -206,7 +205,7 @@ export function ClientDashboard({
 
                       <Link
                         href={`/projects/${req.id}`}
-                        className="inline-block mt-3 text-xs font-semibold text-primary hover:underline"
+                        className={s.clientViewLink}
                       >
                         View full details &rarr;
                       </Link>
@@ -222,7 +221,7 @@ export function ClientDashboard({
 
           {/* ── Active projects ── */}
           {hasProjects && (
-            <section className="space-y-3">
+            <section className={s.clientSectionWrap}>
               <div className={s.sectionHeader}>
                 <h2 className={s.sectionHeaderTitle}>Your Projects</h2>
                 <Link href="/projects" className={s.sectionHeaderAction}>
@@ -230,7 +229,7 @@ export function ClientDashboard({
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className={s.clientProjectsGrid}>
                 {projects.map((project) => {
                   const pct =
                     project.totalBudget > 0
@@ -241,18 +240,18 @@ export function ClientDashboard({
                   return (
                     <div
                       key={project.id}
-                      className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden"
+                      className={s.clientProjectCard}
                     >
-                      <div className="px-5 pt-5 pb-4 border-b border-off-black/5">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
+                      <div className={s.clientProjectTop}>
+                        <div className={s.clientProjectHeaderRow}>
+                          <div className={s.clientProjectNameWrap}>
                             <Link
                               href={`/projects/${project.id}`}
-                              className="text-sm font-bold text-off-black hover:text-primary transition-colors truncate block"
+                              className={s.clientProjectName}
                             >
                               {project.name}
                             </Link>
-                            <p className="text-xs text-off-black/40 mt-0.5">
+                            <p className={s.clientProjectContractor}>
                               Contractor: {project.contractorName}
                             </p>
                           </div>
@@ -263,8 +262,8 @@ export function ClientDashboard({
                             )}
                           >
                             {isActive && project.stripeCardId ? (
-                              <span className="flex items-center gap-1">
-                                <Icon name="credit_card" className="text-xs" />
+                              <span className={s.badgeIconWrap}>
+                                <Icon name="credit_card" className={s.badgeIconSmall} />
                                 Card Active
                               </span>
                             ) : (
@@ -273,25 +272,25 @@ export function ClientDashboard({
                           </span>
                         </div>
 
-                        <div className="mt-3 space-y-2">
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-off-black/50">
+                        <div className={s.clientProjectBudgetRow}>
+                          <div className={s.clientProjectSpentRow}>
+                            <span className={s.clientProjectSpentLabel}>
                               {formatCurrency(project.totalSpent)} spent
                             </span>
-                            <span className="font-semibold text-off-black">
+                            <span className={s.clientProjectTotalLabel}>
                               {formatCurrency(project.totalBudget)} total
                             </span>
                           </div>
                           <ProgressBar value={pct} className="h-2" />
-                          <p className="text-[10px] text-off-black/30">
+                          <p className={s.clientProjectRemaining}>
                             {formatCurrency(project.totalBudget - project.totalSpent)} remaining &middot; {Math.round(pct)}% used
                           </p>
                         </div>
                       </div>
 
                       {project.categories.length > 0 && (
-                        <div className="px-5 py-4 space-y-3">
-                          <p className="text-[10px] font-bold text-off-black/40 uppercase tracking-widest">
+                        <div className={s.clientProjectCategories}>
+                          <p className={s.clientProjectCategoryTitle}>
                             By Category
                           </p>
                           {project.categories.map((cat) => {
@@ -300,14 +299,14 @@ export function ClientDashboard({
                                 ? (cat.spentAmount / cat.allocatedAmount) * 100
                                 : 0;
                             return (
-                              <div key={cat.id} className="space-y-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-medium text-off-black">
+                              <div key={cat.id} className={s.clientProjectCategoryRow}>
+                                <div className={s.clientProjectCategoryHeader}>
+                                  <span className={s.clientProjectCategoryName}>
                                     {cat.name}
                                   </span>
-                                  <span className="text-xs text-off-black/40 tabular-nums">
+                                  <span className={s.clientProjectCategoryAmounts}>
                                     {formatCurrency(cat.spentAmount)}{" "}
-                                    <span className="text-off-black/25">/</span>{" "}
+                                    <span className={s.clientProjectCategorySlash}>/</span>{" "}
                                     {formatCurrency(cat.allocatedAmount)}
                                   </span>
                                 </div>
@@ -318,10 +317,10 @@ export function ClientDashboard({
                         </div>
                       )}
 
-                      <div className="px-5 pb-5">
+                      <div className={s.clientProjectFooter}>
                         <Link
                           href={`/projects/${project.id}`}
-                          className="text-xs font-semibold text-primary hover:underline"
+                          className={s.clientProjectViewLink}
                         >
                           View details &rarr;
                         </Link>
@@ -337,7 +336,7 @@ export function ClientDashboard({
         /* Empty state */
         <section className={s.emptyGrid}>
           <div className={s.emptyHero}>
-            <p className="text-[10px] lg:text-xs font-bold uppercase tracking-[0.15em] text-white">
+            <p className={s.emptyHeroEyebrow}>
               Welcome
             </p>
             <h2 className={s.emptyHeroTitle}>No projects yet.</h2>
@@ -371,7 +370,7 @@ export function ClientDashboard({
               >
                 <Icon
                   name={item.icon}
-                  className="text-lg lg:text-xl text-primary flex-shrink-0 mt-0.5"
+                  className={s.emptyStepIcon}
                 />
                 <div>
                   <p className={s.emptyStepTitle}>{item.title}</p>

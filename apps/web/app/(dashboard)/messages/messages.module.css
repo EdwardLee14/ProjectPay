@@ -1,167 +1,368 @@
-.header {
-  @apply flex flex-col md:flex-row md:items-end justify-between gap-2;
+/* Messages — Twilio Channels 3-column layout */
+
+/* Floating header */
+.pageHeader {
+  @apply px-4 pt-3 pb-1 3xl:px-6 3xl:pt-8 3xl:pb-3;
 }
 
-.headerMeta {
-  @apply text-sm text-off-black/40 mt-1;
+.pageStats {
+  @apply text-xs text-off-black/40 mt-0.5;
+}
+
+/* Channel tabs — header-style underline tabs */
+.channelTabs {
+  @apply flex items-center gap-3 px-4 3xl:gap-6 3xl:px-6 pt-1 pb-0 border-b border-border;
+}
+
+.channelTab {
+  @apply pb-2 text-sm font-medium text-off-black/40 border-b-2 border-transparent cursor-pointer transition-colors hover:text-off-black;
+}
+
+.channelTabActive {
+  composes: channelTab;
+  @apply text-primary border-primary;
+}
+
+.channelTabCount {
+  @apply ml-1.5 text-xs opacity-70;
+}
+
+.messagesWrapper {
+  @apply flex flex-col;
+  height: calc(100vh - 3rem);
 }
 
 .messagesLayout {
-  @apply grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[500px];
+  @apply flex min-h-0 gap-2.5 px-3 pt-2.5 pb-4 3xl:gap-4 3xl:px-6 3xl:pt-4 3xl:pb-8;
+  height: calc(100% - 7.5rem);
 }
 
-.conversationList {
-  @apply lg:col-span-4 bg-white rounded-2xl shadow-elevation-1 overflow-hidden flex flex-col;
+/* Combined conversation + chat container */
+.messagesContainer {
+  @apply flex flex-1 min-h-0 bg-white rounded-xl shadow-sm overflow-hidden;
 }
 
-.conversationListHeader {
-  @apply px-5 py-4 border-b border-off-black/5;
+/* Left panel — conversation list */
+.conversationPanel {
+  @apply w-[240px] 3xl:w-[280px] flex flex-col overflow-hidden bg-white shrink-0 hidden lg:flex border-r border-border;
 }
 
-.conversationListTitle {
-  @apply text-sm font-bold text-off-black;
+.convHeader {
+  @apply px-4 pt-3 pb-2;
 }
 
-.emptyConversations {
-  @apply flex-1 flex flex-col items-center justify-center p-6 text-center;
+.convHeaderRow {
+  @apply flex items-center justify-between;
 }
 
-.emptyTitle {
-  @apply text-sm font-semibold text-off-black mt-3;
+.convTitle {
+  @apply text-base font-bold font-headline text-off-black;
 }
 
-.emptyDesc {
-  @apply text-[11px] text-off-black/40 mt-1 max-w-[200px];
-}
-
-.messageContent {
-  @apply lg:col-span-8 bg-white rounded-2xl shadow-elevation-1 overflow-hidden flex flex-col min-h-[420px] lg:min-h-[500px];
-}
-
-.messageEmptyState {
-  @apply flex-1 flex flex-col items-center justify-center p-8 text-center;
-}
-
-.messageEmptyTitle {
-  @apply text-base font-bold text-off-black mt-4;
-}
-
-.messageEmptyDesc {
-  @apply text-sm text-off-black/40 mt-1 max-w-[280px];
-}
-
-.conversationItems {
-  @apply flex-1 overflow-y-auto divide-y divide-off-black/5;
-}
-
-.conversationItem {
-  @apply block px-5 py-3.5 transition-colors hover:bg-off-black/[0.02] border-l-2 border-l-transparent;
-}
-
-.conversationItemActive {
-  @apply bg-off-black/[0.04] border-l-off-black;
-}
-
-.conversationTitle {
-  @apply text-sm font-bold text-off-black truncate;
-}
-
-.conversationMeta {
-  @apply text-[11px] text-off-black/45 mt-0.5 truncate;
-}
-
-.conversationPreview {
-  @apply text-xs text-off-black/55 mt-1 line-clamp-2;
-}
-
-.conversationPreviewMuted {
-  @apply text-xs text-off-black/30 mt-1 italic;
-}
-
-.threadHeader {
-  @apply px-5 py-4 border-b border-off-black/5 shrink-0;
-}
-
-.threadTitle {
-  @apply text-sm font-bold text-off-black;
-}
-
-.threadMeta {
-  @apply text-xs text-off-black/45 mt-0.5;
-}
-
-.threadScroll {
-  @apply flex-1 overflow-y-auto min-h-0 p-4;
-}
-
-.threadEmptyInline {
-  @apply flex items-center justify-center py-12;
-}
-
-.threadEmptyText {
+.convCount {
   @apply text-sm text-off-black/40;
 }
 
-.threadList {
-  @apply flex flex-col gap-3;
+.convToolbar {
+  @apply px-4 py-3 space-y-2.5 border-b border-border;
 }
 
-.bubbleRow {
-  @apply flex w-full;
+.convToolbarRow {
+  @apply flex gap-2;
 }
 
-.bubbleRowMine {
+.convSearch {
+  @apply relative;
+}
+
+.convSearchIcon {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 text-off-black/30;
+}
+
+.convSearchInput {
+  @apply w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm bg-white placeholder:text-off-black/30 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30;
+}
+
+.convScroll {
+  @apply flex-1 overflow-y-auto;
+}
+
+.convItem {
+  @apply flex items-start gap-3 px-4 py-3 border-b border-border cursor-pointer transition-colors hover:bg-peach-50;
+}
+
+.convItemActive {
+  composes: convItem;
+  @apply bg-peach-50 border-l-4 border-l-primary;
+}
+
+.convAvatar {
+  @apply w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5;
+}
+
+.convContent {
+  @apply min-w-0 flex-1;
+}
+
+.convName {
+  @apply text-sm font-semibold text-off-black truncate;
+}
+
+.convPreview {
+  @apply text-xs text-off-black/40 truncate mt-0.5;
+}
+
+.convTime {
+  @apply text-[10px] text-off-black/30 shrink-0 mt-0.5;
+}
+
+.convEmpty {
+  @apply flex-1 flex flex-col items-center justify-center p-6 text-center;
+}
+
+.convEmptyTitle {
+  @apply text-sm font-semibold text-off-black mt-3;
+}
+
+.convEmptyDesc {
+  @apply text-xs text-off-black/40 mt-1 max-w-[200px];
+}
+
+/* Center panel — chat thread */
+.chatPanel {
+  @apply flex-1 flex flex-col overflow-hidden bg-white;
+}
+
+.chatHeader {
+  @apply flex items-center justify-between px-5 py-3 border-b border-border;
+}
+
+.chatHeaderLeft {
+  @apply flex items-center gap-3;
+}
+
+.chatHeaderName {
+  @apply text-base font-bold text-off-black;
+}
+
+.chatHeaderSub {
+  @apply text-xs text-off-black/40;
+}
+
+.chatHeaderActions {
+  @apply flex items-center gap-1;
+}
+
+.chatHeaderAction {
+  @apply w-8 h-8 flex items-center justify-center rounded-full text-off-black/40 hover:bg-peach-50 hover:text-off-black transition-colors;
+}
+
+.chatScroll {
+  @apply flex-1 overflow-y-auto px-3.5 py-2.5 space-y-2 3xl:px-5 3xl:py-4 3xl:space-y-3;
+}
+
+.msgRow {
+  @apply flex;
+}
+
+.msgRowMine {
+  composes: msgRow;
   @apply justify-end;
 }
 
-.bubbleRowTheirs {
+.msgRowTheirs {
+  composes: msgRow;
   @apply justify-start;
 }
 
-.bubble {
-  @apply max-w-[min(100%,28rem)] rounded-2xl px-4 py-2.5 shadow-sm;
+.msgBubble {
+  @apply max-w-[70%] px-4 py-2.5 text-sm leading-relaxed;
 }
 
-.bubbleMine {
-  @apply bg-off-black text-white rounded-br-md;
+.msgBubbleMine {
+  composes: msgBubble;
+  @apply bg-primary text-white rounded-2xl rounded-br-md;
 }
 
-.bubbleTheirs {
-  @apply bg-off-black/[0.06] text-off-black rounded-bl-md;
+.msgBubbleTheirs {
+  composes: msgBubble;
+  @apply bg-off-black/5 text-off-black rounded-2xl rounded-bl-md;
 }
 
-.bubbleSender {
+.msgSender {
   @apply text-[10px] font-bold uppercase tracking-wide text-off-black/45 mb-1;
 }
 
-.bubbleBody {
+.msgBody {
   @apply text-sm whitespace-pre-wrap break-words;
 }
 
-.bubbleMine .bubbleBody {
+.msgBubbleMine .msgBody {
   @apply text-white/95;
 }
 
-.bubbleTime {
-  @apply text-[10px] mt-1.5 opacity-60;
+.msgTime {
+  @apply text-[10px] text-off-black/30 mt-1;
 }
 
+.msgTimeMine {
+  composes: msgTime;
+  @apply text-right;
+}
+
+.msgTimeTheirs {
+  composes: msgTime;
+  @apply text-left;
+}
+
+/* Composer */
 .composer {
-  @apply border-t border-off-black/5 p-4 shrink-0 bg-off-black/[0.02];
+  @apply flex items-center gap-2 px-4 py-3 border-t border-border bg-white;
 }
 
 .composerError {
   @apply text-xs text-red-600 mb-2;
 }
 
-.composerRow {
-  @apply flex gap-2 items-end;
-}
-
 .composerInput {
-  @apply flex-1 resize-none rounded-xl border border-off-black/10 bg-white px-3 py-2.5 text-sm text-off-black placeholder:text-off-black/35 focus:outline-none focus:ring-2 focus:ring-off-black/15 min-h-[44px];
+  @apply flex-1 px-4 py-2 border border-border rounded-full text-sm bg-white placeholder:text-off-black/30 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30;
 }
 
 .composerSend {
-  @apply shrink-0 w-11 h-11 rounded-xl bg-off-black flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity;
+  @apply w-9 h-9 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-30;
+}
+
+/* Chat empty state */
+.chatEmpty {
+  @apply flex-1 flex flex-col items-center justify-center text-center;
+}
+
+.chatEmptyIcon {
+  @apply text-off-black/10;
+}
+
+.chatEmptyTitle {
+  @apply text-base font-bold text-off-black mt-4;
+}
+
+.chatEmptyDesc {
+  @apply text-sm text-off-black/40 mt-1 max-w-[280px];
+}
+
+/* Right panel — project details */
+.detailsPanel {
+  @apply w-[230px] 3xl:w-[320px] bg-white overflow-y-auto hidden xl:block shrink-0 rounded-xl shadow-sm;
+}
+
+.detailsHeader {
+  @apply p-4 border-b border-border;
+}
+
+.detailsName {
+  @apply text-lg font-bold font-headline text-off-black;
+}
+
+.detailsStatusRow {
+  @apply flex items-center gap-2 mt-1;
+}
+
+.detailsStatusBadge {
+  @apply text-xs font-medium px-2 py-0.5 rounded-full;
+}
+
+.detailsStatusActive {
+  @apply bg-green-100 text-green-700;
+}
+
+.detailsStatusDraft {
+  @apply bg-off-black/10 text-off-black/50;
+}
+
+.detailsStatusCompleted {
+  @apply bg-blue-100 text-blue-700;
+}
+
+.detailsActions {
+  @apply flex items-center gap-2 mt-3;
+}
+
+.detailsActionBtn {
+  @apply w-9 h-9 flex items-center justify-center rounded-full border border-border text-off-black/40 hover:bg-peach-50 hover:text-off-black transition-colors;
+}
+
+.detailsTabs {
+  @apply flex border-b border-border;
+}
+
+.detailsTab {
+  @apply px-4 py-2 text-sm font-medium text-off-black/40 border-b-2 border-transparent cursor-pointer transition-colors hover:text-off-black;
+}
+
+.detailsTabActive {
+  composes: detailsTab;
+  @apply text-primary border-primary;
+}
+
+.detailsBody {
+  @apply p-4;
+}
+
+.detailsSectionTitle {
+  @apply text-[10px] font-bold uppercase tracking-widest text-off-black/40 mb-3 mt-5 first:mt-0;
+}
+
+.detailsFieldGrid {
+  @apply grid grid-cols-2 gap-x-6 gap-y-3;
+}
+
+.detailsFieldItem {
+  @apply space-y-0.5;
+}
+
+.detailsFieldLabel {
+  @apply text-[10px] text-off-black/40 uppercase tracking-wider font-medium;
+}
+
+.detailsFieldValue {
+  @apply text-sm text-off-black;
+}
+
+.detailsBudgetRow {
+  @apply flex items-center justify-between py-2;
+}
+
+.detailsBudgetLabel {
+  @apply text-xs text-off-black/40;
+}
+
+.detailsBudgetValue {
+  @apply text-sm font-bold text-off-black;
+}
+
+.detailsCategoryRow {
+  @apply space-y-1;
+}
+
+.detailsCategoryHeader {
+  @apply flex justify-between text-xs;
+}
+
+.detailsCategoryName {
+  @apply font-medium text-off-black;
+}
+
+.detailsCategoryAmount {
+  @apply text-off-black/50 tabular-nums;
+}
+
+.detailsLink {
+  @apply text-xs font-semibold text-primary hover:underline mt-4 inline-block;
+}
+
+.detailsEmpty {
+  @apply flex-1 flex items-center justify-center p-4 text-center;
+}
+
+.detailsEmptyText {
+  @apply text-xs text-off-black/40;
 }

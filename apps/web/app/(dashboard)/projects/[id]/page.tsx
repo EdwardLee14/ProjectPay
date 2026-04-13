@@ -7,13 +7,13 @@ import { Icon } from "@/components/ui/icon";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { TransactionFeed } from "@/components/transactions/transaction-feed";
-import { ChangeOrderList } from "@/components/change-orders/change-order-list";
-import { ChangeOrderForm } from "@/components/change-orders/change-order-form";
-import { TopUpRequestList } from "@/components/projects/top-up-request-list";
+import { AddTransactionForm } from "@/components/transactions/add-transaction-form";
+import { BudgetRequestList } from "@/components/projects/budget-request-list";
+import { BudgetRequestForm } from "@/components/projects/budget-request-form";
 import { ApproveProjectButton } from "@/components/projects/approve-project-button";
 import { SubmitForApprovalButton } from "@/components/projects/submit-for-approval-button";
 import { CounterRespondButton } from "@/components/projects/counter-respond-button";
-import { IssuedCardDetails } from "@/components/projects/issued-card-details";
+import { SidebarCardReveal } from "@/components/projects/sidebar-card-reveal";
 import s from "./project-detail.module.css";
 import shared from "@/styles/shared.module.css";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export default async function ProjectDetailPage({
         include: { budgetCategory: { select: { id: true, name: true } } },
       },
       changeOrders: {
-        include: { requester: true },
+        include: { requester: true, budgetCategory: { select: { id: true, name: true } } },
         orderBy: { createdAt: "desc" },
       },
       topUpRequests: {
@@ -88,18 +88,45 @@ export default async function ProjectDetailPage({
   );
   const pendingCount = pendingChangeOrders.length + pendingTopUps.length;
 
+  // Determine the counterpart user to display in info grid
+  const counterpart = isClient ? project.contractor : project.client;
+  const counterpartLabel = isClient ? "Contractor" : "Client";
+
+  // Build unified budget requests list
+  const budgetRequests = [
+    ...project.changeOrders.map((co) => ({
+      id: co.id,
+      type: "change_order" as const,
+      amount: Number(co.amount),
+      reason: co.reason,
+      status: co.status,
+      categoryName: co.budgetCategory?.name ?? null,
+      requesterName: co.requester.name,
+      createdAt: co.createdAt.toISOString(),
+    })),
+    ...project.topUpRequests.map((r) => ({
+      id: r.id,
+      type: "top_up" as const,
+      amount: Number(r.requestedAmount),
+      reason: r.reason,
+      status: r.status,
+      categoryName: r.budgetCategory?.name ?? null,
+      requesterName: r.requester.name,
+      createdAt: r.createdAt.toISOString(),
+    })),
+  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
   return (
-    <main className={shared.detailPage}>
-      {/* Back + Header */}
-      <div>
-        <Link href="/dashboard" className={cn(shared.backLink, "group")}>
-          <Icon
-            name="arrow_back"
-            className="text-lg group-hover:-translate-x-1 transition-transform"
-          />
-          <span className="text-sm font-medium">Back to Dashboard</span>
+    <div className={s.detailLayout}>
+      {/* ── CENTER PANEL ── */}
+      <div className={s.centerPanel}>
+        {/* Back link */}
+        <Link href="/projects" className={s.backLink}>
+          <Icon name="arrow_back" className="text-base" />
+          <span>Back to Projects</span>
         </Link>
 
+        {/* Header */}
         <div className={s.headerRow}>
           <div className="space-y-2">
             <div className={s.titleRow}>
@@ -149,167 +176,157 @@ export default async function ProjectDetailPage({
             </div>
           )}
         </div>
-      </div>
 
-      {/* Cancelled banner */}
-      {isCancelled && (
-        <div className="bg-white rounded-2xl shadow-elevation-1 p-5 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-            <Icon name="block" className="text-destructive text-xl" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-off-black">
-              Project cancelled
-            </p>
-            <p className="text-xs text-off-black/50">
-              This project was cancelled
-              {project.closedAt
-                ? ` on ${new Date(project.closedAt).toLocaleDateString()}`
-                : ""}
-              . No further changes can be made.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Contractor: submit DRAFT for approval */}
-      {isContractor && project.status === "DRAFT" && (
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-5 flex items-center justify-between gap-4">
-          <div className="space-y-1">
-            <p className="text-sm font-bold text-off-black">Ready to send?</p>
-            <p className="text-xs text-off-black/60">
-              Submit this project to {project.client?.name ?? project.clientEmail ?? "your client"} for budget approval.
-            </p>
-          </div>
-          <SubmitForApprovalButton projectId={project.id} />
-        </div>
-      )}
-
-      {/* Client: review pending approval */}
-      {isClient && project.status === "PENDING_APPROVAL" && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
-          <div className="space-y-1">
-            <p className="text-sm font-bold text-off-black">
-              Budget approval required
-            </p>
-            <p className="text-xs text-off-black/60">
-              {project.contractor.name} has submitted this project for your
-              approval. Approving will issue a virtual Stripe card capped at the
-              project budget.
-            </p>
-          </div>
-          <ApproveProjectButton
-            projectId={project.id}
-            totalBudget={Number(project.totalBudget)}
-          />
-        </div>
-      )}
-
-      {/* Contractor: respond to counter-proposal */}
-      {isContractor && project.status === "COUNTER_PROPOSED" && project.counterBudget && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-2">
-          <p className="text-sm font-bold text-off-black">Client sent a counter-proposal</p>
-          <CounterRespondButton
-            projectId={project.id}
-            counterBudget={Number(project.counterBudget)}
-            originalBudget={Number(project.totalBudget)}
-          />
-        </div>
-      )}
-
-      {/* Client: waiting on contractor to respond to counter */}
-      {isClient && project.status === "COUNTER_PROPOSED" && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
-          <p className="text-sm font-bold text-off-black">Counter proposal sent</p>
-          <p className="text-xs text-off-black/60 mt-1">
-            Waiting for {project.contractor.name} to accept or decline your counter.
-          </p>
-        </div>
-      )}
-
-      {/* Contractor: real card details */}
-      {isContractor && project.status === "ACTIVE" && project.stripeCardId && (
-        <IssuedCardDetails
-          projectId={project.id}
-          totalBudget={Number(project.totalBudget)}
-          showOnLoad={searchParams.approved === "1"}
-        />
-      )}
-
-      {/* Client: card issued confirmation */}
-      {isClient && project.status === "ACTIVE" && project.stripeCardId && (
-        <div className={`bg-white rounded-2xl shadow-elevation-1 p-5 flex items-center gap-4 ${searchParams.approved === "1" ? "ring-2 ring-green-400" : ""}`}>
-          <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center shrink-0">
-            <Icon name="check_circle" className="text-green-600 text-xl" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-off-black">
-              {searchParams.approved === "1" ? "Card issued successfully!" : "Virtual card active"}
-            </p>
-            <p className="text-xs text-off-black/50">
-              A virtual card has been issued to {project.contractor.name} capped at{" "}
-              {formatCurrency(Number(project.totalBudget))}. All spending appears in transactions below.
-            </p>
-          </div>
-          <span className="ml-auto px-2.5 py-1 text-[10px] font-bold rounded-full bg-green-50 text-green-700 border border-green-200 shrink-0">
-            Active
-          </span>
-        </div>
-      )}
-
-      {/* Budget Overview */}
-      <div className={s.budgetBar}>
-        <div className={s.budgetBarInner}>
-          <div className="flex-1 space-y-3">
-            <div className={s.budgetMetrics}>
-              <div>
-                <span className={s.budgetMetricLabel}>Spent</span>
-                <span className={s.budgetMetricSpent}>
-                  {formatCurrency(totalSpent)}
-                </span>
-              </div>
-              <div>
-                <span className={s.budgetMetricLabel}>Remaining</span>
-                <span className={s.budgetMetricRemaining}>
-                  {formatCurrency(Number(project.totalBudget) - totalSpent)}
-                </span>
-              </div>
-              <div>
-                <span className={s.budgetMetricLabel}>Total Budget</span>
-                <span className={s.budgetMetricFunded}>
-                  {formatCurrency(Number(project.totalBudget))}
-                </span>
-              </div>
+        {/* Status banners */}
+        {isCancelled && (
+          <div className={s.cancelledBanner}>
+            <div className={s.cancelledIconCircle}>
+              <Icon name="block" className={s.cancelledIcon} />
             </div>
-            <ProgressBar value={usagePct} />
-            <p className={s.budgetUsageText}>
-              {Math.round(usagePct)}% of budget used
+            <div>
+              <p className={s.cancelledTitle}>Project cancelled</p>
+              <p className={s.cancelledDesc}>
+                This project was cancelled{project.closedAt ? ` on ${new Date(project.closedAt).toLocaleDateString()}` : ""}. No further changes can be made.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {isContractor && project.status === "DRAFT" && (
+          <div className={s.draftBanner}>
+            <div className={s.draftBannerInfo}>
+              <p className={s.draftBannerTitle}>Ready to send?</p>
+              <p className={s.draftBannerDesc}>
+                Submit this project to {project.client?.name ?? project.clientEmail ?? "your client"} for budget approval.
+              </p>
+            </div>
+            <SubmitForApprovalButton projectId={project.id} />
+          </div>
+        )}
+
+        {isClient && project.status === "PENDING_APPROVAL" && (
+          <div className={s.approvalBanner}>
+            <div className={s.approvalBannerInfo}>
+              <p className={s.approvalBannerTitle}>Budget approval required</p>
+              <p className={s.approvalBannerDesc}>
+                {project.contractor.name} has submitted this project for your
+                approval. Approving will issue a virtual Stripe card capped at the
+                project budget.
+              </p>
+            </div>
+            <ApproveProjectButton
+              projectId={project.id}
+              totalBudget={Number(project.totalBudget)}
+            />
+          </div>
+        )}
+
+        {isContractor && project.status === "COUNTER_PROPOSED" && project.counterBudget && (
+          <div className={s.counterBanner}>
+            <p className={s.counterBannerTitle}>Client sent a counter-proposal</p>
+            <CounterRespondButton
+              projectId={project.id}
+              counterBudget={Number(project.counterBudget)}
+              originalBudget={Number(project.totalBudget)}
+            />
+          </div>
+        )}
+
+        {isClient && project.status === "COUNTER_PROPOSED" && (
+          <div className={s.counterBanner}>
+            <p className={s.counterBannerTitle}>Counter proposal sent</p>
+            <p className={s.counterBannerDesc}>
+              Waiting for {project.contractor.name} to accept or decline your counter.
             </p>
           </div>
+        )}
+
+        {isClient && project.status === "ACTIVE" && project.stripeCardId && searchParams.approved === "1" && (
+          <div className={s.statusBannerActive}>
+            <Icon name="check_circle" className="text-primary text-lg" />
+            <p className={s.statusBannerText}>
+              Card issued to {project.contractor.name} — capped at {formatCurrency(Number(project.totalBudget))}
+            </p>
+          </div>
+        )}
+
+        {/* Project Information */}
+        <h2 className={s.sectionTitle}>Project Information</h2>
+        <div className={s.fieldGrid}>
+          <div>
+            <p className={s.fieldLabel}>{counterpartLabel}</p>
+            <p className={s.fieldValue}>
+              {counterpart?.name ?? project.clientEmail ?? "Not assigned"}
+            </p>
+          </div>
+          <div>
+            <p className={s.fieldLabel}>Email</p>
+            <p className={s.fieldValue}>
+              {counterpart?.email ?? project.clientEmail ?? "---"}
+            </p>
+          </div>
+          {counterpart?.phone && (
+            <div>
+              <p className={s.fieldLabel}>Phone</p>
+              <p className={s.fieldValue}>{counterpart.phone}</p>
+            </div>
+          )}
+          {counterpart?.companyName && (
+            <div>
+              <p className={s.fieldLabel}>Company</p>
+              <p className={s.fieldValue}>{counterpart.companyName}</p>
+            </div>
+          )}
+          <div>
+            <p className={s.fieldLabel}>Status</p>
+            <p className={s.fieldValue}>{project.status.replace(/_/g, " ")}</p>
+          </div>
+          <div>
+            <p className={s.fieldLabel}>Created</p>
+            <p className={s.fieldValue}>
+              {new Date(project.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </p>
+          </div>
+          <div>
+            <p className={s.fieldLabel}>Address</p>
+            <p className={s.fieldValue}>---</p>
+          </div>
+          <div>
+            <p className={s.fieldLabel}>Payment Mode</p>
+            <p className={s.fieldValue}>{project.stripeCardId ? "Virtual Card" : "Not configured"}</p>
+          </div>
+          {project.description && (
+            <div className="col-span-2 md:col-span-3">
+              <p className={s.fieldLabel}>Description</p>
+              <p className={s.fieldValue}>{project.description}</p>
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="budget" className="space-y-6">
-        <TabsList className={s.tabList}>
-          <TabsTrigger value="budget">
-            {isClient ? "Spending" : "Budget Categories"}
-          </TabsTrigger>
-          <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          <TabsTrigger value="requests" className="relative">
-            {isClient ? "Requests" : "Change Orders"}
-            {pendingCount > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold">
-                {pendingCount}
-              </span>
-            )}
-          </TabsTrigger>
-        </TabsList>
+        {/* Tabs */}
+        <Tabs defaultValue="budget" className="mt-8">
+          <TabsList className={s.tabStrip}>
+            <TabsTrigger value="budget">
+              {isClient ? "Spending" : "Budget Categories"}
+            </TabsTrigger>
+            <TabsTrigger value="transactions">Transactions</TabsTrigger>
+            <TabsTrigger value="requests" className="relative">
+              Budget Requests
+              {pendingCount > 0 && (
+                <span className={s.pendingCount}>
+                  {pendingCount}
+                </span>
+              )}
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Budget / Spending tab */}
-        <TabsContent value="budget">
-          <div className={s.budgetPanel}>
-            <h3 className={s.budgetPanelTitle}>
+          {/* Budget / Spending tab */}
+          <TabsContent value="budget" className="mt-6">
+            <h3 className={s.sectionTitle}>
               {isClient ? "Spending by Category" : "Budget Categories"}
             </h3>
             {project.budgetCategories.length === 0 ? (
@@ -355,64 +372,101 @@ export default async function ProjectDetailPage({
                 })}
               </div>
             )}
-          </div>
-        </TabsContent>
+          </TabsContent>
 
-        {/* Transactions tab */}
-        <TabsContent value="transactions">
-          <TransactionFeed
+          {/* Transactions tab */}
+          <TabsContent value="transactions" className="mt-6 space-y-4">
+            {isContractor && !isCancelled && (
+              <AddTransactionForm
+                projectId={project.id}
+                categories={project.budgetCategories.map((c) => ({
+                  id: c.id,
+                  name: c.name,
+                }))}
+              />
+            )}
+            <TransactionFeed
+              projectId={project.id}
+              initialTransactions={project.transactions.map((tx) => ({
+                id: tx.id,
+                projectId: tx.projectId,
+                merchantName: tx.merchantName,
+                amount: Number(tx.amount),
+                categoryCode: tx.categoryCode,
+                note: tx.note,
+                receiptUrl: null,
+                stripeTransactionId: tx.stripeTransactionId,
+                createdAt: tx.createdAt.toISOString(),
+                budgetCategory: tx.budgetCategory ?? null,
+              }))}
+            />
+          </TabsContent>
+
+          {/* Budget Requests tab */}
+          <TabsContent value="requests" className="space-y-4 mt-6">
+            {isContractor && !isCancelled && (
+              <BudgetRequestForm
+                projectId={project.id}
+                categories={project.budgetCategories.map((c) => ({
+                  id: c.id,
+                  name: c.name,
+                }))}
+              />
+            )}
+            <BudgetRequestList
+              requests={budgetRequests}
+              userRole={user.role}
+              isContractor={isContractor}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* ── RIGHT SIDEBAR ── */}
+      <aside className={s.rightSidebar}>
+        {/* Virtual Card */}
+        <div className={s.sidebarSection}>
+          <h3 className={s.sidebarSectionTitle}>Virtual Card</h3>
+          <SidebarCardReveal
             projectId={project.id}
-            initialTransactions={project.transactions.map((tx) => ({
-              id: tx.id,
-              projectId: tx.projectId,
-              merchantName: tx.merchantName,
-              amount: Number(tx.amount),
-              categoryCode: tx.categoryCode,
-              note: tx.note,
-              receiptUrl: null,
-              stripeTransactionId: tx.stripeTransactionId,
-              createdAt: tx.createdAt.toISOString(),
-              budgetCategory: tx.budgetCategory ?? null,
-            }))}
+            projectName={project.name}
+            contractorName={project.contractor.name}
+            stripeCardId={project.stripeCardId}
+            isContractor={isContractor}
           />
-        </TabsContent>
+        </div>
 
-        {/* Requests / Change Orders tab */}
-        <TabsContent value="requests" className="space-y-4">
-          {/* Top-up requests — visible to both roles */}
-          <TopUpRequestList
-            requests={project.topUpRequests.map((r) => ({
-              id: r.id,
-              requestedAmount: Number(r.requestedAmount),
-              reason: r.reason,
-              status: r.status as
-                | "PENDING"
-                | "APPROVED"
-                | "REJECTED"
-                | "CANCELLED",
-              createdAt: r.createdAt.toISOString(),
-              budgetCategory: r.budgetCategory,
-              requester: r.requester,
-            }))}
-            userRole={user.role}
-          />
-
-          {/* Change orders */}
-          <ChangeOrderList
-            changeOrders={project.changeOrders.map((co) => ({
-              id: co.id,
-              amount: Number(co.amount),
-              reason: co.reason,
-              status: co.status,
-              createdAt: co.createdAt.toISOString(),
-              requester: { name: co.requester.name },
-            }))}
-            userRole={user.role}
-          />
-
-          {isContractor && !isCancelled && <ChangeOrderForm projectId={project.id} />}
-        </TabsContent>
-      </Tabs>
-    </main>
+        {/* Budget Overview */}
+        <div className={s.sidebarSection}>
+          <h3 className={s.sidebarSectionTitle}>Budget Overview</h3>
+          <div className={s.sidebarMetrics}>
+            <div className={s.sidebarMetricRow}>
+              <span className={s.sidebarMetricLabel}>Spent</span>
+              <span className={s.sidebarMetricValue}>
+                {formatCurrency(totalSpent)}
+              </span>
+            </div>
+            <div className={s.sidebarMetricRow}>
+              <span className={s.sidebarMetricLabel}>Remaining</span>
+              <span className={s.sidebarMetricValue}>
+                {formatCurrency(Number(project.totalBudget) - totalSpent)}
+              </span>
+            </div>
+            <div className={s.sidebarMetricRow}>
+              <span className={s.sidebarMetricLabel}>Total Budget</span>
+              <span className={s.sidebarMetricValue}>
+                {formatCurrency(Number(project.totalBudget))}
+              </span>
+            </div>
+          </div>
+          <div className={s.sidebarProgressWrap}>
+            <ProgressBar value={usagePct} />
+            <p className={s.sidebarUsageText}>
+              {Math.round(usagePct)}% of budget used
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
   );
 }

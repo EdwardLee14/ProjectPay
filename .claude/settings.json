@@ -45,7 +45,20 @@
       "WebFetch(domain:trailhead.salesforce.com)",
       "WebFetch(domain:www.lightningdesignsystem.com)",
       "WebFetch(domain:developer.salesforce.com)",
-      "WebFetch(domain:www.winfomi.com)"
+      "WebFetch(domain:www.winfomi.com)",
+      "Bash(pnpm --filter web build)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/dashboard)",
+      "Bash(pnpm --filter web dev)",
+      "Bash(ls -la /Users/nam/Documents/Projects/ProjectPay/*.md)",
+      "Bash(ls -la /Users/nam/Documents/Projects/ProjectPay/apps/web/app/\\\\\\(dashboard\\\\\\)/projects/[id]/)",
+      "Bash(grep -E \"\\\\.tsx?$\")",
+      "Bash(grep -r \"px\\\\|rem\\\\|em\" apps/web/components/layout/*.tsx apps/web/components/layout/*.css)",
+      "Bash(grep -r \"ml-\\\\|mr-\\\\|md:\\\\|lg:\\\\|xl:\" apps/web/app/\\\\\\(dashboard\\\\\\)/layout.tsx apps/web/components/layout/*.tsx)",
+      "Bash(xargs cat:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(cat .next/static/css/*.css)",
+      "Bash(grep -l '3xl' /Users/nam/Documents/Projects/ProjectPay/apps/web/.next/static/css/app/**/*.css)",
+      "Bash(awk '{print $6, $7, $8}')"
     ],
     "additionalDirectories": [
       "/Users/nam/Documents/Projects/ProjectPay/.claude/skills",

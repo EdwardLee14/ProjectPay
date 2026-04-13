@@ -1,27 +1,14 @@
-/* Team page — Cosmos style */
+/* Team page — Twilio CRM style */
 
-.header {
-  @apply flex flex-col md:flex-row md:items-end justify-between gap-3;
+.pageCard { @apply bg-white rounded-lg shadow-sm overflow-hidden; }
+.pageMeta { @apply text-sm text-off-black/40 mt-1.5; }
+
+.collaboratorList {
+  @apply divide-y divide-border;
 }
 
-.headerMeta {
-  @apply text-sm text-off-black/40;
-}
-
-.collaboratorGrid {
-  @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4;
-}
-
-.collaboratorCard {
-  @apply bg-white rounded-2xl shadow-elevation-1 overflow-hidden transition-all hover:shadow-elevation-2;
-}
-
-.cardBody {
-  @apply p-5 space-y-3;
-}
-
-.cardTop {
-  @apply flex items-start gap-3;
+.collaboratorRow {
+  @apply flex items-center gap-4 px-5 py-4 hover:bg-peach-50 transition-colors;
 }
 
 .avatar {
@@ -29,7 +16,7 @@
 }
 
 .nameBlock {
-  @apply min-w-0;
+  @apply min-w-0 flex-1;
 }
 
 .name {
@@ -37,35 +24,27 @@
 }
 
 .email {
-  @apply text-[11px] text-off-black/40 truncate;
+  @apply text-xs text-off-black/40 truncate;
 }
 
 .company {
-  @apply text-[11px] text-off-black/40;
+  @apply text-xs text-off-black/40;
 }
 
 .roleBadgeContractor {
-  @apply px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-primary/30 text-primary bg-primary/5;
+  @apply px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-primary/30 text-primary bg-primary/5 rounded-full shrink-0;
 }
 
 .roleBadgeClient {
-  @apply px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-off-black/20 text-off-black/40;
+  @apply px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-off-black/20 text-off-black/40 rounded-full shrink-0;
 }
 
 .sharedCount {
-  @apply text-xs font-semibold text-off-black;
-}
-
-.projectList {
-  @apply mt-1 space-y-0.5;
-}
-
-.projectName {
-  @apply text-[11px] text-off-black/40;
+  @apply text-xs text-off-black/40 shrink-0;
 }
 
 .emptyContainer {
-  @apply bg-white rounded-2xl shadow-elevation-1 p-12 text-center flex flex-col items-center;
+  @apply p-12 text-center flex flex-col items-center;
 }
 
 .emptyIcon {

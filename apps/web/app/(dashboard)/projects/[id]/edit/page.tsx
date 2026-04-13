@@ -27,6 +27,7 @@ export default async function EditProjectPage({
       clientEmail: true,
       status: true,
       contractorId: true,
+      client: { select: { name: true, email: true, phone: true } },
     },
   });
 
@@ -48,6 +49,8 @@ export default async function EditProjectPage({
         description: project.description,
         clientEmail: project.clientEmail,
         status: project.status,
+        clientName: project.client?.name ?? null,
+        clientPhone: project.client?.phone ?? null,
       }}
     />
   );

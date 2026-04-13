@@ -142,7 +142,7 @@ export function ProjectSetupForm() {
   }
 
   return (
-    <div className="max-w-[900px] mx-auto px-5 py-8 lg:px-10 lg:py-12 space-y-8">
+    <div className="max-w-3xl mx-auto px-6 py-6 lg:px-8 lg:py-8 space-y-6">
       {/* Back */}
       <Link href="/dashboard" className={cn(shared.backLink, "group")}>
         <Icon
@@ -161,8 +161,8 @@ export function ProjectSetupForm() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Project details */}
-        <div className="bg-white rounded-2xl shadow-elevation-1 p-6 space-y-5">
-          <h2 className="text-sm font-bold text-off-black">Project Details</h2>
+        <div className="bg-white rounded-xl shadow-elevation-1 p-6 space-y-5">
+          <h2 className="text-base font-bold text-off-black">Project Details</h2>
 
           <div className={shared.fieldGroup}>
             <Label htmlFor="name" className={shared.fieldLabel}>
@@ -183,7 +183,7 @@ export function ProjectSetupForm() {
             </Label>
             <textarea
               id="description"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+              className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm placeholder:text-off-black/30 focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
               rows={3}
               placeholder="Brief overview of scope and work to be done..."
               value={description}
@@ -202,16 +202,16 @@ export function ProjectSetupForm() {
               value={clientEmail}
               onChange={(e) => setClientEmail(e.target.value)}
             />
-            <p className="text-xs text-off-black/40 mt-1">
+            <p className="text-[10px] text-off-black/30 mt-0.5">
               The client will be linked to this project when they sign up with this email.
             </p>
           </div>
         </div>
 
         {/* Budget */}
-        <div className="bg-white rounded-2xl shadow-elevation-1 p-6 space-y-5">
+        <div className="bg-white rounded-xl shadow-elevation-1 p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-off-black">Budget</h2>
+            <h2 className="text-base font-bold text-off-black">Budget</h2>
             {totalBudgetNum > 0 && categories.length >= 2 && (
               <button
                 type="button"
@@ -262,10 +262,10 @@ export function ProjectSetupForm() {
                 className={cn(
                   "text-xs font-semibold tabular-nums",
                   isBalanced
-                    ? "text-green-600"
+                    ? "text-primary"
                     : unallocated > 0
                       ? "text-off-black/40"
-                      : "text-red-500"
+                      : "text-destructive"
                 )}
               >
                 {isBalanced
@@ -277,7 +277,7 @@ export function ProjectSetupForm() {
             </div>
 
             <div className="space-y-2">
-              {categories.map((cat, i) => {
+              {categories.map((cat) => {
                 const amt = parseFloat(cat.amount) || 0;
                 const pct =
                   totalBudgetNum > 0 ? (amt / totalBudgetNum) * 100 : 0;
@@ -318,7 +318,7 @@ export function ProjectSetupForm() {
                       type="button"
                       onClick={() => removeCategory(cat.id)}
                       disabled={categories.length <= 2}
-                      className="text-off-black/20 hover:text-red-400 disabled:opacity-0 transition-colors shrink-0"
+                      className="text-off-black/20 hover:text-destructive disabled:opacity-0 transition-colors shrink-0"
                     >
                       <Icon name="close" className="text-base" />
                     </button>
@@ -338,7 +338,7 @@ export function ProjectSetupForm() {
                     key={suggestion}
                     type="button"
                     onClick={() => addCategory(suggestion)}
-                    className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-off-black/50 border border-dashed border-off-black/20 rounded-lg hover:border-primary hover:text-primary transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-off-black/50 bg-white border border-border rounded-lg hover:border-primary hover:text-primary shadow-sm transition-colors"
                   >
                     <Icon name="add" className="text-xs" />
                     {suggestion}
@@ -347,7 +347,7 @@ export function ProjectSetupForm() {
               <button
                 type="button"
                 onClick={() => addCategory()}
-                className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-off-black/50 border border-dashed border-off-black/20 rounded-lg hover:border-primary hover:text-primary transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-off-black/50 bg-white border border-border rounded-lg hover:border-primary hover:text-primary shadow-sm transition-colors"
               >
                 <Icon name="add" className="text-xs" />
                 Custom
@@ -358,7 +358,7 @@ export function ProjectSetupForm() {
 
         {/* Error */}
         {error && (
-          <div className={shared.errorBanner}>
+          <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/5 border border-destructive/20 rounded-lg px-4 py-3">
             <Icon name="error" className="text-destructive text-lg shrink-0" />
             <p className="text-sm text-destructive">{error}</p>
           </div>

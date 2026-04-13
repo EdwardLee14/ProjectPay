@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
-import { cn } from "@/lib/utils";
+import s from "./pending-requests.module.css";
 
 interface PendingChangeOrder {
   id: string;
@@ -60,57 +60,56 @@ export function PendingRequests({ requests }: { requests: PendingRequest[] }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-elevation-1 overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-off-black/5">
-        <div className="flex items-center gap-2">
-          <Icon name="pending_actions" className="text-primary text-lg" />
-          <h2 className="text-sm font-bold text-off-black">
+    <div className={s.container}>
+      <div className={s.header}>
+        <div className={s.headerLeft}>
+          <Icon name="pending_actions" className={s.headerIcon} />
+          <h2 className={s.headerTitle}>
             Pending Approvals
           </h2>
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold">
+          <span className={s.headerCount}>
             {requests.length}
           </span>
         </div>
       </div>
 
-      <div className="divide-y divide-off-black/5">
+      <div className={s.list}>
         {requests.map((req) => (
           <div
             key={req.id}
-            className="flex items-center gap-4 px-5 py-4 hover:bg-off-black/[0.01] transition-colors"
+            className={s.row}
           >
             {/* Type icon */}
-            <div className="w-9 h-9 rounded-full bg-off-black/5 flex items-center justify-center shrink-0">
+            <div className={s.typeIcon}>
               <Icon
                 name={req.type === "change_order" ? "receipt_long" : "trending_up"}
-                className="text-base text-off-black/50"
+                className={s.typeIconInner}
               />
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0 space-y-0.5">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-semibold text-off-black">
+            <div className={s.info}>
+              <div className={s.infoTop}>
+                <span className={s.infoAmount}>
                   +{formatCurrency(req.amount)}
                 </span>
                 <span
-                  className={cn(
-                    "px-2 py-0.5 text-[9px] font-bold rounded-full uppercase tracking-wide",
+                  className={
                     req.type === "change_order"
-                      ? "bg-blue-50 text-blue-600"
-                      : "bg-amber-50 text-amber-600"
-                  )}
+                      ? s.typeBadgeChangeOrder
+                      : s.typeBadgeTopUp
+                  }
                 >
                   {req.type === "change_order" ? "Change Order" : "Budget Request"}
                 </span>
                 {req.categoryName && (
-                  <span className="text-[10px] text-off-black/40">
+                  <span className={s.categoryLabel}>
                     {req.categoryName}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-off-black/60 truncate">{req.reason}</p>
-              <p className="text-[10px] text-off-black/30">
+              <p className={s.reason}>{req.reason}</p>
+              <p className={s.meta}>
                 {req.projectName} &middot; {req.requesterName} &middot;{" "}
                 {new Date(req.createdAt).toLocaleDateString("en-US", {
                   month: "short",
@@ -120,19 +119,19 @@ export function PendingRequests({ requests }: { requests: PendingRequest[] }) {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className={s.actions}>
               <button
                 onClick={() => handleAction(req, "APPROVED")}
                 disabled={loadingId === req.id}
-                className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all"
+                className={s.approveBtn}
               >
-                <Icon name="check" className="text-sm" />
+                <Icon name="check" className={s.approveBtnIcon} />
                 Approve
               </button>
               <button
                 onClick={() => handleAction(req, "REJECTED")}
                 disabled={loadingId === req.id}
-                className="px-3 py-1.5 text-xs font-semibold text-off-black/60 bg-off-black/5 rounded-lg hover:bg-off-black/10 disabled:opacity-50 transition-all"
+                className={s.declineBtn}
               >
                 Decline
               </button>

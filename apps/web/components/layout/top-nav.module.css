@@ -1,0 +1,79 @@
+/* Top Nav — full-width dark bar */
+
+.header {
+  @apply fixed top-0 left-0 right-0 h-12 z-50 flex items-center px-0 gap-0;
+  background-color: #1C1917;
+}
+
+.logoArea {
+  @apply hidden md:flex items-center justify-center shrink-0;
+  width: 52px;
+}
+
+.logoText {
+  @apply font-headline font-extrabold text-sm text-white/90;
+}
+
+.mobileBrand {
+  @apply md:hidden flex items-center gap-2 mr-auto;
+}
+
+.brandText {
+  @apply font-headline font-extrabold text-lg text-white;
+}
+
+.navContent {
+  @apply flex-1 flex items-center px-5 gap-3;
+}
+
+.searchWrap {
+  @apply hidden md:flex flex-1 justify-center;
+}
+
+.searchInner {
+  @apply relative w-full max-w-sm;
+}
+
+.searchIcon {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-base;
+}
+
+.searchInput {
+  @apply w-full pl-9 pr-4 py-1.5 bg-white/10 text-white placeholder:text-white/40 border-0 rounded-full text-[13px] focus:ring-1 focus:ring-white/20 focus:bg-white/15 transition-all;
+}
+
+.actions {
+  @apply flex items-center gap-2.5 ml-auto md:ml-0;
+}
+
+.newProjectBtn {
+  @apply h-7 px-3 text-[11px] bg-primary text-white hover:bg-primary/90 rounded-lg font-semibold inline-flex items-center justify-center gap-1 transition-colors;
+}
+
+.newProjectIcon {
+  @apply text-xs;
+}
+
+.bellBtn {
+  @apply flex items-center justify-center w-9 h-9 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all;
+}
+
+.bellIcon {
+  @apply text-xl;
+}
+
+.actionDivider {
+  @apply w-px h-5 bg-white/15 mx-1;
+}
+
+.avatarImg {
+  @apply w-8 h-8 rounded-full object-cover hover:ring-2 hover:ring-white/30 transition-all;
+}
+
+.avatarFallback {
+  @apply w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold hover:ring-2 hover:ring-white/30 transition-all cursor-pointer;
+}
+
+.avatarLink {
+  @apply flex-shrink-0;
+}

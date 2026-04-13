@@ -151,6 +151,44 @@ const approveRejectSchema = z.object({
   status: z.enum(["APPROVED", "REJECTED"]),
 });
 
+export async function DELETE(req: NextRequest) {
+  try {
+    const user = await requireUser();
+    const { id } = await req.json();
+
+    if (!id || typeof id !== "string") {
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    }
+
+    const topUp = await prisma.topUpRequest.findUnique({
+      where: { id },
+      include: { project: true },
+    });
+
+    if (!topUp) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    if (topUp.requestedBy !== user.id) {
+      return NextResponse.json({ error: "Only the requester can delete" }, { status: 403 });
+    }
+
+    if (topUp.status !== "PENDING") {
+      return NextResponse.json({ error: "Only pending requests can be deleted" }, { status: 400 });
+    }
+
+    await prisma.topUpRequest.delete({ where: { id } });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized: no user found") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    console.error("[DELETE /api/top-up-requests]", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const user = await requireUser();
