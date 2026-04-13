@@ -58,7 +58,7 @@ export default async function ProjectsPage() {
         <div>
           <h1 className={shared.pageTitle}>Projects</h1>
           <p className={s.headerMeta}>
-            {projects.length} project{projects.length !== 1 ? "s" : ""} total
+            {projects.filter((p) => p.status !== "CANCELLED").length} active project{projects.filter((p) => p.status !== "CANCELLED").length !== 1 ? "s" : ""}
           </p>
         </div>
         {isContractor && (

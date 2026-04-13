@@ -131,7 +131,7 @@ export default async function DashboardPage() {
 
   // ── Contractor dashboard ──────────────────────────────────────────────────
   const projects = await prisma.project.findMany({
-    where: { contractorId: user.id },
+    where: { contractorId: user.id, status: { not: "CANCELLED" } },
     include: { budgetCategories: true, client: true },
     orderBy: { createdAt: "desc" },
   });

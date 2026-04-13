@@ -22,6 +22,7 @@ export default async function MessagesPage({
   const projects = await prisma.project.findMany({
     where: {
       OR: [{ contractorId: user.id }, { clientId: user.id }],
+      status: { not: "CANCELLED" },
     },
     select: {
       id: true,

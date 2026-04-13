@@ -66,6 +66,7 @@ export default async function ProjectDetailPage({
 
   const isClient = user.role === "CLIENT";
   const isContractor = user.role === "CONTRACTOR";
+  const isCancelled = project.status === "CANCELLED";
 
   const totalSpent = project.budgetCategories.reduce(
     (sum, cat) => sum + Number(cat.spentAmount),
@@ -118,32 +119,58 @@ export default async function ProjectDetailPage({
             </p>
           </div>
 
-          <div className={s.actionRow}>
-            <Link
-              href={`/messages?project=${project.id}`}
-              className={s.actionBtn}
-            >
-              <Icon name="chat_bubble_outline" className="text-base" />
-              Messages
-            </Link>
-            {isContractor && (
-              <>
-                <Link
-                  href={`/projects/${project.id}/payment-mode`}
-                  className={s.actionBtn}
-                >
-                  <Icon name="tune" className="text-base" />
-                  Payment Mode
-                </Link>
-                <button className={s.actionBtn}>
-                  <Icon name="edit" className="text-base" />
-                  Edit Project
-                </button>
-              </>
-            )}
-          </div>
+          {!isCancelled && (
+            <div className={s.actionRow}>
+              <Link
+                href={`/messages?project=${project.id}`}
+                className={s.actionBtn}
+              >
+                <Icon name="chat_bubble_outline" className="text-base" />
+                Messages
+              </Link>
+              {isContractor && (
+                <>
+                  <Link
+                    href={`/projects/${project.id}/payment-mode`}
+                    className={s.actionBtn}
+                  >
+                    <Icon name="tune" className="text-base" />
+                    Payment Mode
+                  </Link>
+                  <Link
+                    href={`/projects/${project.id}/edit`}
+                    className={s.actionBtn}
+                  >
+                    <Icon name="edit" className="text-base" />
+                    Edit Project
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Cancelled banner */}
+      {isCancelled && (
+        <div className="bg-white rounded-2xl shadow-elevation-1 p-5 flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+            <Icon name="block" className="text-destructive text-xl" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-off-black">
+              Project cancelled
+            </p>
+            <p className="text-xs text-off-black/50">
+              This project was cancelled
+              {project.closedAt
+                ? ` on ${new Date(project.closedAt).toLocaleDateString()}`
+                : ""}
+              . No further changes can be made.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Contractor: submit DRAFT for approval */}
       {isContractor && project.status === "DRAFT" && (
@@ -383,7 +410,7 @@ export default async function ProjectDetailPage({
             userRole={user.role}
           />
 
-          {isContractor && <ChangeOrderForm projectId={project.id} />}
+          {isContractor && !isCancelled && <ChangeOrderForm projectId={project.id} />}
         </TabsContent>
       </Tabs>
     </main>

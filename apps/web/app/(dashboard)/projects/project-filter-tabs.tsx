@@ -66,7 +66,7 @@ export function ProjectFilterTabs({
 
   const filtered =
     active === "All"
-      ? projects
+      ? projects.filter((p) => p.status !== "CANCELLED")
       : projects.filter((p) => STATUS_MAP[active]?.includes(p.status));
 
   return (
