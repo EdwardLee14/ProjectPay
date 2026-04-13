@@ -16,7 +16,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "ProjectPay",
+  title: "Visibill",
   description: "Financial transparency for residential home renovations",
 };
 
